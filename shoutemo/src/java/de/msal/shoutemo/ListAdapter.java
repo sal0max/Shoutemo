@@ -19,7 +19,6 @@ package de.msal.shoutemo;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import android.widget.TextView;
 import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.helpers.TimeUtils;
 
 public class ListAdapter extends CursorAdapter {
 
@@ -117,6 +117,8 @@ public class ListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView message, textTime, author;
+        long timestamp = cursor.getLong(cursor
+                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
 
         switch (getItemViewType(cursor.getPosition())) {
             case SHOUT:
@@ -126,14 +128,9 @@ public class ListAdapter extends CursorAdapter {
 
                 message.setText(cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                textTime.setText(DateFormat.getMediumDateFormat(context)
-                        .format(cursor.getLong(cursor // TODO: better (custom) timeFormat
-                                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP)))
-                        + ", "
-                        + DateFormat.getTimeFormat(context).format(cursor.getLong(cursor
-                        .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP))));
                 author.setText(cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME)));
+                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
 
             /* show the right author color (mod/admin) */
                 String authorType = cursor
@@ -154,12 +151,8 @@ public class ListAdapter extends CursorAdapter {
 
                 message.setText(cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                textTime.setText(
-                        DateFormat.getMediumDateFormat(context).format(cursor.getLong(cursor
-                                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP)))
-                                + ", "
-                                + DateFormat.getTimeFormat(context).format(cursor.getLong(cursor
-                                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP))));
+                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
+
                 break;
             case AWARD:
                 break;
@@ -169,12 +162,8 @@ public class ListAdapter extends CursorAdapter {
 
                 message.setText(cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                textTime.setText(
-                        DateFormat.getMediumDateFormat(context).format(cursor.getLong(cursor
-                                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP)))
-                                + ", "
-                                + DateFormat.getTimeFormat(context).format(cursor.getLong(cursor
-                                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP))));
+                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
+
                 break;
         }
     }
