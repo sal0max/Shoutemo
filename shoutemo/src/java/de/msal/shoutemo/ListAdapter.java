@@ -18,7 +18,11 @@
 package de.msal.shoutemo;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,7 +119,7 @@ public class ListAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
         TextView message, textTime, author;
         long timestamp = cursor.getLong(cursor
                 .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
@@ -126,8 +130,35 @@ public class ListAdapter extends CursorAdapter {
                 textTime = (TextView) view.getTag(R.id.listrow_shout_timestamp);
                 author = (TextView) view.getTag(R.id.listrow_shout_author);
 
-                message.setText(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
+                // http://www.autemo.com/images/smileys/willis.jpg
+                Html.ImageGetter imageGetter = new Html.ImageGetter() {
+                    public Drawable getDrawable(String source) {
+                        String smiley = "";
+                        try {
+                            if (source.startsWith("http://www.autemo.com/images/smileys/")) {
+                                smiley = source.substring(source.lastIndexOf('/') + 1,
+                                        source.lastIndexOf('.'));
+                                int id = context.getResources().getIdentifier("smil_" + smiley,
+                                        "drawable", context.getPackageName());
+                                Drawable d = context.getResources().getDrawable(id);
+                                d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                                return d;
+                            } else {
+                                Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
+                            }
+                        } catch (Resources.NotFoundException e) {
+                            Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
+                        }
+                        return context.getResources() // TODO: Better placeholder drawable
+                                .getDrawable(android.R.drawable.ic_dialog_alert);
+                    }
+                };
+
+//                message.setText(cursor.getString(
+//                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
+                message.setText(Html.fromHtml(cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML)),
+                        imageGetter, null));
                 author.setText(cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME)));
                 textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
