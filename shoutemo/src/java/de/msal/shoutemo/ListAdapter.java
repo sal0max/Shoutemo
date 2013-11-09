@@ -36,14 +36,6 @@ import de.msal.shoutemo.helpers.TimeUtils;
 
 public class ListAdapter extends CursorAdapter {
 
-    private final int SHOUT = 0;
-
-    private final int THREAD = 1;
-
-    private final int AWARD = 2;
-
-    private final int GLOBAL = 3;
-
     private Context context;
 
     public ListAdapter(Context context, Cursor c, int flags) {
@@ -51,33 +43,21 @@ public class ListAdapter extends CursorAdapter {
         this.context = context;
     }
 
-    private int getItemViewType(Cursor cursor) {
-        String messageType = cursor
-                .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TYPE));
-
-        if (messageType.equals(Message.Type.SHOUT.name())) {
-            return SHOUT;
-        } else if (messageType.equals(Message.Type.THREAD.name())) {
-            return THREAD;
-        } else if (messageType.equals(Message.Type.AWARD.name())) {
-            return AWARD;
-        } else if (messageType.equals(Message.Type.GLOBAL.name())) {
-            return GLOBAL;
-        } else {
-            return -1;
-        }
-    }
-
     @Override
     public int getItemViewType(int position) {
-        Cursor cursor = (Cursor) getItem(position);
-
-        return getItemViewType(cursor);
+        return getItemType(position).ordinal();
     }
 
     @Override
     public int getViewTypeCount() {
-        return 5;
+        return Message.Type.values().length;
+    }
+
+    private Message.Type getItemType(int position) {
+        Cursor cursor = (Cursor) getItem(position);
+        String message = cursor.getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TYPE));
+        Message.Type messageType = Message.Type.valueOf(message);
+        return messageType;
     }
 
     @Override
@@ -85,7 +65,7 @@ public class ListAdapter extends CursorAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = null;
 
-        switch (getItemViewType(cursor.getPosition())) {
+        switch (getItemType(cursor.getPosition())) {
             case SHOUT:
                 view = inflater.inflate(R.layout.listrow_shout, parent, false);
 
@@ -120,80 +100,93 @@ public class ListAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-        TextView message, textTime, author;
-        long timestamp = cursor.getLong(cursor
-                .getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
+        TextView tvMessage, tvTimestamp, tvAuthor;
+        String message, author;
+        long timestamp = cursor.getLong(
+                cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
 
-        switch (getItemViewType(cursor.getPosition())) {
-            case SHOUT:
-                message = (TextView) view.getTag(R.id.listrow_shout_message);
-                textTime = (TextView) view.getTag(R.id.listrow_shout_timestamp);
-                author = (TextView) view.getTag(R.id.listrow_shout_author);
-
-                // http://www.autemo.com/images/smileys/willis.jpg
-                Html.ImageGetter imageGetter = new Html.ImageGetter() {
-                    public Drawable getDrawable(String source) {
-                        String smiley = "";
-                        try {
-                            if (source.startsWith("http://www.autemo.com/images/smileys/")) {
-                                smiley = source.substring(source.lastIndexOf('/') + 1,
-                                        source.lastIndexOf('.'));
-                                int id = context.getResources().getIdentifier("smil_" + smiley,
-                                        "drawable", context.getPackageName());
-                                Drawable d = context.getResources().getDrawable(id);
-                                d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-                                return d;
-                            } else {
-                                Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
-                            }
-                        } catch (Resources.NotFoundException e) {
-                            Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
-                        }
-                        return context.getResources() // TODO: Better placeholder drawable
-                                .getDrawable(android.R.drawable.ic_dialog_alert);
+        // http://www.autemo.com/images/smileys/willis.jpg
+        Html.ImageGetter imageGetter = new Html.ImageGetter() {
+            public Drawable getDrawable(String source) {
+                String smiley = "";
+                try {
+                    if (source.startsWith("http://www.autemo.com/images/smileys/")) {
+                        smiley = source.substring(source.lastIndexOf('/') + 1,
+                                source.lastIndexOf('.'));
+                        int id = context.getResources().getIdentifier("smil_" + smiley,
+                                "drawable", context.getPackageName());
+                        Drawable d = context.getResources().getDrawable(id);
+                        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                        return d;
+                    } else {
+                        Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
                     }
-                };
-
-//                message.setText(cursor.getString(
-//                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                message.setText(Html.fromHtml(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML)),
-                        imageGetter, null));
-                author.setText(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME)));
-                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-            /* show the right author color (mod/admin) */
-                String authorType = cursor
-                        .getString(cursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE));
-                if (authorType != null && authorType.equals(Author.Type.MOD.name())) {
-                    author.setTextColor(
-                            this.context.getResources().getColor(R.color.autemo_green_secondary));
-                } else if (authorType != null && authorType.equals(Author.Type.ADMIN.name())) {
-                    author.setTextColor(this.context.getResources().getColor(R.color.autemo_blue));
-                } else {
-                    author.setTextColor(
-                            this.context.getResources().getColor(R.color.autemo_grey_bright));
+                } catch (Resources.NotFoundException e) {
+                    Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
                 }
+                return context.getResources() // TODO: Better placeholder drawable
+                        .getDrawable(android.R.drawable.ic_dialog_alert);
+            }
+        };
+
+        switch (getItemType(cursor.getPosition())) {
+            case SHOUT:
+                tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
+                tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
+
+                message = cursor
+                        .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
+                author = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+
+                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
+                tvAuthor.setText(author);
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
+
+                /* show the right tvAuthor color (mod/admin) */
+                Author.Type authorType = Author.Type.valueOf(cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE)));
+                switch (authorType) {
+                    case ADMIN:
+                        tvAuthor.setTextColor(
+                                this.context.getResources().getColor(R.color.autemo_blue));
+                        break;
+                    case MOD:
+                        tvAuthor.setTextColor(
+                                this.context.getResources()
+                                        .getColor(R.color.autemo_green_secondary));
+                        break;
+                    default:
+                        tvAuthor.setTextColor(
+                                this.context.getResources().getColor(R.color.autemo_grey_bright));
+                        break;
+                }
+
                 break;
             case THREAD:
-                message = (TextView) view.getTag(R.id.listrow_thread_message);
-                textTime = (TextView) view.getTag(R.id.listrow_thread_timestamp);
+                tvMessage = (TextView) view.getTag(R.id.listrow_thread_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_thread_timestamp);
 
-                message.setText(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
+                message = cursor
+                        .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+
+                tvMessage.setText(message);
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
 
                 break;
             case AWARD:
+                // Nothing to show here, yet
                 break;
             case GLOBAL:
-                message = (TextView) view.getTag(R.id.listrow_global_message);
-                textTime = (TextView) view.getTag(R.id.listrow_global_timestamp);
+                tvMessage = (TextView) view.getTag(R.id.listrow_global_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_global_timestamp);
 
-                message.setText(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT)));
-                textTime.setText(TimeUtils.getRelativeTime(context, timestamp));
+                message = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+
+                tvMessage.setText(message);
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
 
                 break;
         }
