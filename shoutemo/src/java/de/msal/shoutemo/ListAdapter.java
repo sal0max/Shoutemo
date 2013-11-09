@@ -115,9 +115,11 @@ public class ListAdapter extends CursorAdapter {
                                 source.lastIndexOf('.'));
                         int id = context.getResources().getIdentifier("smil_" + smiley,
                                 "drawable", context.getPackageName());
+
                         Drawable d = context.getResources().getDrawable(id);
                         d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
                         return d;
+
                     } else {
                         Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
                     }
