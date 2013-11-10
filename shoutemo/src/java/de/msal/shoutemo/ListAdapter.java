@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -136,6 +137,9 @@ public class ListAdapter extends CursorAdapter {
                 tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
                 tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
+
+                // make links clickable (disables click of entire row, too)
+                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
                 message = cursor
                         .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
