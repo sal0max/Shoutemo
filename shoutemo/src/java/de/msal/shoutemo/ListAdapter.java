@@ -39,6 +39,36 @@ public class ListAdapter extends CursorAdapter {
 
     private Context context;
 
+    /**
+     * for loading the smileys
+     */
+    private Html.ImageGetter imageGetter = new Html.ImageGetter() {
+        public Drawable getDrawable(String source) {
+            String smiley = "";
+            try {
+                if (source.startsWith("http://www.autemo.com/images/smileys/")) {
+                    smiley = source.substring(source.lastIndexOf('/') + 1,
+                            source.lastIndexOf('.'));
+                    int id = context.getResources().getIdentifier("smil_" + smiley,
+                            "drawable", context.getPackageName());
+
+                    Drawable d = context.getResources().getDrawable(id);
+                    if (d != null) {
+                        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                        return d;
+                    }
+
+                } else {
+                    Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
+                }
+            } catch (Resources.NotFoundException e) {
+                Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
+            }
+            return context.getResources() // TODO: Better placeholder drawable
+                    .getDrawable(android.R.drawable.ic_dialog_alert);
+        }
+    };
+
     public ListAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.context = context;
@@ -57,8 +87,7 @@ public class ListAdapter extends CursorAdapter {
     private Message.Type getItemType(int position) {
         Cursor cursor = (Cursor) getItem(position);
         String message = cursor.getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TYPE));
-        Message.Type messageType = Message.Type.valueOf(message);
-        return messageType;
+        return Message.Type.valueOf(message);
     }
 
     @Override
@@ -87,6 +116,11 @@ public class ListAdapter extends CursorAdapter {
                 break;
             case AWARD:
                 view = inflater.inflate(R.layout.listrow_award, parent, false);
+
+                view.setTag(R.id.listrow_award_message,
+                        view.findViewById(R.id.listrow_award_message));
+                view.setTag(R.id.listrow_award_timestamp,
+                        view.findViewById(R.id.listrow_award_timestamp));
                 break;
             case GLOBAL:
                 view = inflater.inflate(R.layout.listrow_global, parent, false);
@@ -102,47 +136,25 @@ public class ListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
         TextView tvMessage, tvTimestamp, tvAuthor;
-        String message, author;
+
+        String author;
+        String message = cursor
+                .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
         long timestamp = cursor.getLong(
                 cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
-
-        // http://www.autemo.com/images/smileys/willis.jpg
-        Html.ImageGetter imageGetter = new Html.ImageGetter() {
-            public Drawable getDrawable(String source) {
-                String smiley = "";
-                try {
-                    if (source.startsWith("http://www.autemo.com/images/smileys/")) {
-                        smiley = source.substring(source.lastIndexOf('/') + 1,
-                                source.lastIndexOf('.'));
-                        int id = context.getResources().getIdentifier("smil_" + smiley,
-                                "drawable", context.getPackageName());
-
-                        Drawable d = context.getResources().getDrawable(id);
-                        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-                        return d;
-
-                    } else {
-                        Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
-                    }
-                } catch (Resources.NotFoundException e) {
-                    Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
-                }
-                return context.getResources() // TODO: Better placeholder drawable
-                        .getDrawable(android.R.drawable.ic_dialog_alert);
-            }
-        };
 
         switch (getItemType(cursor.getPosition())) {
             case SHOUT:
                 tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
                 tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
+                assert tvMessage != null;
+                assert tvTimestamp != null;
+                assert tvAuthor != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
-                message = cursor
-                        .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
                 author = cursor.getString(
                         cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
 
@@ -173,25 +185,49 @@ public class ListAdapter extends CursorAdapter {
             case THREAD:
                 tvMessage = (TextView) view.getTag(R.id.listrow_thread_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_thread_timestamp);
+                assert tvMessage != null;
+                assert tvTimestamp != null;
 
-                message = cursor
-                        .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+                // make links clickable (disables click of entire row, too)
+                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
-                tvMessage.setText(message);
+                author = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+                message = this.context.getResources().getString(R.string.thread_author, author)
+                        + message;
+
+                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
                 tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
 
                 break;
             case AWARD:
-                // Nothing to show here, yet
+                tvMessage = (TextView) view.getTag(R.id.listrow_award_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_award_timestamp);
+                assert tvMessage != null;
+                assert tvTimestamp != null;
+
+                // make links clickable (disables click of entire row, too)
+                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+
+                author = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+                message = this.context.getResources().getString(R.string.award_author, author)
+                        + message;
+
+                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
+
                 break;
             case GLOBAL:
                 tvMessage = (TextView) view.getTag(R.id.listrow_global_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_global_timestamp);
+                assert tvMessage != null;
+                assert tvTimestamp != null;
 
-                message = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+                // make links clickable (disables click of entire row, too)
+                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
-                tvMessage.setText(message);
+                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
                 tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
 
                 break;

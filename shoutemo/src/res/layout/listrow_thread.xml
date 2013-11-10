@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/sign_post_alternate" />
+        android:src="@drawable/ic_event_thread" />
 
     <TextView
         android:id="@+id/listrow_thread_message"
@@ -51,6 +51,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/listrow_thread_message"
         android:textAppearance="@style/TextAppearance.Small"
-        android:textColor="@color/autemo_white" />
+        android:textColor="@color/autemo_grey_bright" />
 
 </RelativeLayout>

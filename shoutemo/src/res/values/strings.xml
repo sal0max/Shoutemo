@@ -20,9 +20,13 @@
 <resources>
 
     <string name="app_name">Shoutemo</string>
-    <string name="app_title_login">Log in</string>
     <string name="action_settings">Settings</string>
     <string name="input_empty">Hey! Write a message!</string>
+
+    <!-- List rows -->
+    <string name="award_author">%s just got a new chopping award:\u0020</string>
+    <string name="global_announcement">~~ Global Announcement ~~</string>
+    <string name="thread_author">New thread by %s:\u0020</string>
     <string name="time_just_now">just now</string>
 
     <!-- Image descriptions (alt text) -->
@@ -30,7 +34,7 @@
     <string name="alt_addsmiley">Add smiley</string>
 
     <!-- Strings related to login -->
-    <string name="title_activity_login">Shoutemo - Login</string>
+    <string name="app_title_login">Shoutemo - Login</string>
 
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

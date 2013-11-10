@@ -18,12 +18,18 @@
   -->
 
 <resources>
+    <color name="autemo_blue">#28aab2</color>
     <color name="autemo_grey">#1b1b1b</color>
     <color name="autemo_grey_bright">#777777</color>
     <color name="autemo_green_primary">#508221</color>
     <color name="autemo_green_secondary">#c5f22c</color>
-    <color name="autemo_blue">#28aab2</color>
-    <color name="autemo_shadow">#51000000</color>
-    <color name="autemo_glow">#15ffffff</color>
-    <color name="autemo_white">#ddffffff</color>
+    <color name="autemo_orange">#ff4800</color>
+    <color name="autemo_pink">#ff264a</color>
+    <color name="autemo_yellow_dark">#e5c72e</color>
+    <color name="autemo_white_dirty">#f3f3f3</color>
+
+    <!-- transparent colors -->
+    <color name="autemo_trns_glow">#15ffffff</color>
+    <color name="autemo_trns_shadow">#51000000</color>
+    <color name="autemo_trns_white">#ddffffff</color>
 </resources>
