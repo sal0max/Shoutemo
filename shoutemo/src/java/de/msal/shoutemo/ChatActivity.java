@@ -57,7 +57,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
 
     private final static int LOADER_ID_MESSAGES = 0;
 
-    private Timer myTimer; // move to Service (but not running in ui thread!)
+    private Timer myTimer; // TODO: move to Service (but not running in ui thread!)
 
     private String mAccountType, mAuthToken;
 
@@ -66,6 +66,9 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     private Account mAccount;
 
     private ListAdapter listAdapter;
+
+    //  Holds all the parsed content from the website
+    private List<Post> posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,9 +230,10 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         @Override
         public void run() {
             try {
-                List<Post> posts = Connection.get(mAuthToken);
+                posts = Connection.get(mAuthToken);
                 if (posts.isEmpty()) {
-                    Log.v("!!!!!", "invalidating authtoken and fetch new one");
+                    Log.v("SHOUTEMO",
+                            "Received empty data. Invalidating authtoken and fetching new one...");
                     stopRepeatingTask();
                     mAccountManager
                             .invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE, mAuthToken);
@@ -264,7 +268,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
                     }
                 }
             } catch (IOException e) {
-                Log.e("shoutemo", e.getMessage());
+                Log.e("SHOUTEMO", e.getMessage());
             }
         }
     }
@@ -275,14 +279,14 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
             try {
                 return Connection.post(mAuthToken, message[0]);
             } catch (IOException e) {
-                Log.e("shoutemo:SendTask", e.getMessage());
+                Log.e("SHOUTEMO", e.getMessage());
             }
             return -1;
         }
 
         protected void onPostExecute(int ret) {
             if (ret != 200) {
-                Log.e("shoutemo:SendTask", "Error posting the message. Returned code=" + ret);
+                Log.e("SHOUTEMO", "Error posting the message. Returned code=" + ret);
             }
         }
     }
@@ -305,7 +309,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
                 return;
             }
             mAuthToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-            Log.d("main", "Received authentication token " + mAuthToken);
+            Log.d("SHOUTEMO", "Received authentication token: " + mAuthToken);
 
             // now get messages!
             startRepeatingTask();
