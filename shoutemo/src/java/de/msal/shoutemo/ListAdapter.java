@@ -129,6 +129,13 @@ public class ListAdapter extends CursorAdapter {
                 view.setTag(R.id.listrow_global_timestamp,
                         view.findViewById(R.id.listrow_global_timestamp));
                 break;
+            case COMPETITION:
+                view = inflater.inflate(R.layout.listrow_competition, parent, false);
+                view.setTag(R.id.listrow_competition_message,
+                        view.findViewById(R.id.listrow_competition_message));
+                view.setTag(R.id.listrow_competition_timestamp,
+                        view.findViewById(R.id.listrow_competition_timestamp));
+                break;
         }
         return view;
     }
@@ -226,6 +233,24 @@ public class ListAdapter extends CursorAdapter {
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+
+                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
+
+                break;
+            case COMPETITION:
+                tvMessage = (TextView) view.getTag(R.id.listrow_competition_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_competition_timestamp);
+                assert tvMessage != null;
+                assert tvTimestamp != null;
+
+                // make links clickable (disables click of entire row, too)
+                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+
+                author = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+                message = this.context.getResources().getString(R.string.competition_author, author)
+                        + message;
 
                 tvMessage.setText(Html.fromHtml(message, imageGetter, null));
                 tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));

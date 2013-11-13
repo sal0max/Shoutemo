@@ -58,6 +58,8 @@ public class Message implements Comparable<Message> {
             this.type = Type.THREAD;
         } else if (type.equals("just got a new chopping award in:")) {
             this.type = Type.AWARD;
+        } else if (type.equals("just created a new competition:")) {
+            this.type = Type.COMPETITION;
         }
     }
 
@@ -126,7 +128,11 @@ public class Message implements Comparable<Message> {
         /**
          * A user sent a post to the server/shoutbox.
          */
-        SHOUT;
+        SHOUT,
+        /**
+         * Generated announcement: Someone created a new competiition.
+         */
+        COMPETITION;
     }
 
 }

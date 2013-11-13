@@ -25,6 +25,7 @@
 
     <!-- List rows -->
     <string name="award_author">%s just got a new chopping award:\u0020</string>
+    <string name="competition_author">%s started a new competition:\u0020</string>
     <string name="global_announcement">~~ Global Announcement ~~</string>
     <string name="thread_author">New thread by %s:\u0020</string>
     <string name="time_just_now">just now</string>
