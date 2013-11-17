@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * The database version
      */
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
 
     DatabaseHelper(Context context) {
         /* calls the super constructor, requesting the default cursor factory. */

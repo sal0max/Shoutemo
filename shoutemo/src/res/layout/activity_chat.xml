@@ -18,6 +18,7 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_rl_parent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
@@ -86,5 +87,13 @@
             android:padding="@dimen/edittext_padding"
             android:textColorHint="@color/autemo_trns_glow" />
     </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/chat_ll_popup_parent"
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:background="@android:color/transparent"
+        android:visibility="gone" />
 
 </RelativeLayout>

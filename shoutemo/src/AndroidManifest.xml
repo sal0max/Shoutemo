@@ -60,6 +60,8 @@
                 android:resource="@xml/authenticator" />
         </service>
 
+        <service android:name=".connector.GetPostsService"/>
+
         <provider
             android:name=".db.ChatProvider"
             android:authorities="de.msal.provider.ChatDb" />
