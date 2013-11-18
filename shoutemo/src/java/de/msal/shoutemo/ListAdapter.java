@@ -155,9 +155,6 @@ public class ListAdapter extends CursorAdapter {
                 tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
                 tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
-                assert tvMessage != null;
-                assert tvTimestamp != null;
-                assert tvAuthor != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -192,8 +189,6 @@ public class ListAdapter extends CursorAdapter {
             case THREAD:
                 tvMessage = (TextView) view.getTag(R.id.listrow_thread_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_thread_timestamp);
-                assert tvMessage != null;
-                assert tvTimestamp != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -210,8 +205,6 @@ public class ListAdapter extends CursorAdapter {
             case AWARD:
                 tvMessage = (TextView) view.getTag(R.id.listrow_award_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_award_timestamp);
-                assert tvMessage != null;
-                assert tvTimestamp != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -228,8 +221,6 @@ public class ListAdapter extends CursorAdapter {
             case GLOBAL:
                 tvMessage = (TextView) view.getTag(R.id.listrow_global_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_global_timestamp);
-                assert tvMessage != null;
-                assert tvTimestamp != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -241,8 +232,6 @@ public class ListAdapter extends CursorAdapter {
             case COMPETITION:
                 tvMessage = (TextView) view.getTag(R.id.listrow_competition_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_competition_timestamp);
-                assert tvMessage != null;
-                assert tvTimestamp != null;
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
