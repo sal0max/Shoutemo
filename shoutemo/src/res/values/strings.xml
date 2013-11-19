@@ -20,7 +20,8 @@
 <resources>
 
     <string name="app_name">Shoutemo</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_about">About Shoutemo</string>
+    <string name="action_about">About</string>
     <string name="input_empty">Hey! Write a message!</string>
 
     <!-- List rows -->
@@ -47,6 +48,22 @@
 
     <string name="error_invalid_email_or_password">Email address or password is invalid.</string>
     <string name="error_field_required">This field is required.</string>
+
+    <!-- About page -->
+    <string name="pref_about_about_summary">
+        Version 1.0
+        \n© 2013 Maximilian Salomon
+        \n
+        \n♥♥♥
+    </string>
+    <string name="pref_about_translators_title">Translators</string>
+    <string name="pref_about_translators_summary">
+        • Dutch - Sam Vesters
+        \n• French - Sam Vesters
+        \n• Bulgarian - RGS
+        \n• Portuguese - Hugo Silva
+        \n• Danish - Nicklas Bredahl
+    </string>
 
 
 </resources>

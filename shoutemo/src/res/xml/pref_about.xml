@@ -17,10 +17,12 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/action_about"
-        android:orderInCategory="100"
-        android:showAsAction="never"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <de.msal.shoutemo.helpers.Preference
+        android:summary="@string/pref_about_about_summary"
         android:title="@string/action_about" />
-</menu>
+    <de.msal.shoutemo.helpers.Preference
+        android:summary="@string/pref_about_translators_summary"
+        android:title="@string/pref_about_translators_title" />
+</PreferenceScreen>

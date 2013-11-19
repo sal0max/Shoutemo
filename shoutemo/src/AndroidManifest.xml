@@ -43,6 +43,9 @@
             android:name=".LoginActivity"
             android:label="@string/app_title_login" />
         <activity
+            android:name=".MyPreferenceActivity"
+            android:label="@string/title_about" />
+        <activity
             android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
@@ -60,7 +63,7 @@
                 android:resource="@xml/authenticator" />
         </service>
 
-        <service android:name=".connector.GetPostsService"/>
+        <service android:name=".connector.GetPostsService" />
 
         <provider
             android:name=".db.ChatProvider"
