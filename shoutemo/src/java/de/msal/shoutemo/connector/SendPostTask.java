@@ -17,33 +17,82 @@
 
 package de.msal.shoutemo.connector;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
 
+import de.msal.shoutemo.LoginActivity;
+import de.msal.shoutemo.authenticator.AccountAuthenticator;
+
 /**
- * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b>Needs the two
- * String {@code authToken} and {@code message} passed to successfully run.</b>
+ * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b> {@code
+ * message} passed to successfully run.</b>
  */
 public class SendPostTask extends AsyncTask<String, Void, Integer> {
 
+    private final Context context;
+
+    public SendPostTask(Context context) {
+        this.context = context;
+    }
+
+    @Override
     protected Integer doInBackground(String... message) {
-        if (message.length != 2) {
+        if (message.length != 1) {
             throw new IllegalArgumentException(
-                    "Need to pass authToken and message to successfully call SendPostTask.");
+                    "Need to pass message to successfully call SendPostTask.");
         }
         try {
-            return Connection.post(message[0], message[1]);
+            return Connection.post(getAuthtoken(), message[0]);
         } catch (IOException e) {
             Log.e("SHOUTEMO", e.getMessage());
         }
         return -1;
     }
 
-    protected void onPostExecute(int ret) {
+    @Override
+    protected void onPostExecute(Integer ret) {
         if (ret != 200) {
             Log.e("SHOUTEMO", "Error posting the message. Returned code=" + ret);
         }
     }
+
+    private String getAuthtoken() {
+        AccountManager mAccountManager = AccountManager.get(context);
+        Account[] acc = mAccountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+
+        if (acc.length == 0) {
+            throw new IllegalStateException(
+                    "No suitable account found, while trying to send a message. This shouldn't happen.");
+        } else {
+            Account mAccount = acc[0]; // TODO: UI to pick account, for now just take the first
+            AccountManagerFuture<Bundle> result = mAccountManager.getAuthToken(
+                    mAccount,
+                    LoginActivity.PARAM_AUTHTOKEN_TYPE,
+                    null,
+                    false,
+                    null,
+                    null
+            );
+            try {
+                return result.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+            } catch (OperationCanceledException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AuthenticatorException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 }

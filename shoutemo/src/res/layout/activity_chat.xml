@@ -88,8 +88,7 @@
             android:textColorHint="@color/autemo_trns_glow" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <View
         android:id="@+id/chat_ll_popup_parent"
         android:layout_width="match_parent"
         android:layout_height="230dp"

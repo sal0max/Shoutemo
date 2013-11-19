@@ -17,7 +17,6 @@
 
 package de.msal.shoutemo;
 
-import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -27,8 +26,7 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -46,22 +44,20 @@ import android.widget.RelativeLayout;
 import java.lang.reflect.Field;
 
 import de.msal.shoutemo.connector.GetPostsService;
+import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.db.ChatDb;
-import de.msal.shoutemo.helpers.TypeFacespan;
 
 public class ChatActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    /*  */
+    private final static int NO_OF_EMOTICONS = 55;
     private final static int LOADER_ID_MESSAGES = 0;
-    private static final int NO_OF_EMOTICONS = 55;
     private ListAdapter listAdapter;
+    //
     /* stuff for the smiley selector  */
-    private int previousHeightDiffrence = 0;
-    private View popUpView;
-    private EditText editText;
-    private RelativeLayout parentLayout;
-    private LinearLayout emoticonsCover;
+    private View emoticonsCover, popUpView;
+    private int previousHeightDiffrence = 0, keyboardHeight;
     private PopupWindow emoticonsPopupWindow;
-    private int keyboardHeight;
     private boolean isKeyBoardVisible;
     private Drawable[] emoticons;
 
@@ -70,16 +66,36 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        emoticonsCover = (LinearLayout) findViewById(R.id.chat_ll_popup_parent);
-        parentLayout = (RelativeLayout) findViewById(R.id.chat_rl_parent);
         popUpView = getLayoutInflater().inflate(R.layout.emoticons_popup, null);
+        emoticonsCover = findViewById(R.id.chat_ll_popup_parent);
+        final RelativeLayout parentLayout = (RelativeLayout) findViewById(R.id.chat_rl_parent);
+        final EditText editText = (EditText) findViewById(R.id.et_input);
+        final ImageButton btnSend = (ImageButton) findViewById(R.id.ib_send);
+        final ImageView smileyButton = (ImageView) findViewById(R.id.ib_smileys);
 
+        listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         // Defining default height of keyboard which is equal to 230 dip
-        final float popUpheight = 230;//getResources().getDimension(R.dimen.keyboard_height);
-        changeKeyboardHeight((int) popUpheight);
+        final int popUpheight = 230;//getResources().getDimension(R.dimen.keyboard_height);
 
-        // Showing and dismissing popup on clicking emoticons button
-        ImageView smileyButton = (ImageView) findViewById(R.id.ib_smileys);
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (emoticonsPopupWindow.isShowing()) {
+                    emoticonsPopupWindow.dismiss();
+                }
+            }
+        });
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (editText.getText() != null && !TextUtils.isEmpty(editText.getText())) {
+                    new SendPostTask(getApplicationContext())
+                            .execute(editText.getText().toString());
+                    editText.setText("");
+                }
+            }
+        });
+        /* Showing and dismissing popup on clicking emoticons button */
         smileyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,47 +115,13 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
             }
         });
 
+        changeKeyboardHeight(popUpheight);
         getEmoticons();
         enablePopUpView();
         checkKeyboardHeight(parentLayout);
 
-        /* set custom action bar font */
-        SpannableString s = new SpannableString(getString(R.string.app_name).toLowerCase());
-        s.setSpan(new TypeFacespan(this, "BIRDMAN_.TTF"), 0, s.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(s);
-        }
-
-        /* */
-        editText = (EditText) findViewById(R.id.et_input);
-        editText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (emoticonsPopupWindow.isShowing()) {
-                    emoticonsPopupWindow.dismiss();
-                }
-            }
-        });
-        ImageButton btnSend = (ImageButton) findViewById(R.id.ib_send);
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                if (editText.getText() != null
-//                        && !TextUtils.isEmpty(editText.getText())
-//                        && !TextUtils.isEmpty(mAuthToken)) {
-//                    new SendPostTask().execute(mAuthToken, editText.getText().toString());
-                editText.setText("");
-//                }
-            }
-        });
-
         /* list stuff */
-        this.listAdapter = new ListAdapter(this, null,
-                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         setListAdapter(this.listAdapter);
-
         getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
     }
 
