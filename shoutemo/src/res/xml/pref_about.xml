@@ -21,7 +21,7 @@
 
     <de.msal.shoutemo.helpers.Preference
         android:summary="@string/pref_about_about_summary"
-        android:title="@string/action_about" />
+        android:title="@string/app_name" />
     <de.msal.shoutemo.helpers.Preference
         android:summary="@string/pref_about_translators_summary"
         android:title="@string/pref_about_translators_title" />
