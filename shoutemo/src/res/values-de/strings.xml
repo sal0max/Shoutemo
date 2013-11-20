@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2013 Maximilian Salomon.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses/.
+  -->
+
+<resources>
+
+    <!-- <string name="app_name"></string> -->
+    <string name="title_about">Über Shoutemo</string>
+    <string name="action_about">Über</string>
+    <string name="input_empty">Hey! Schreibe eine Nachricht!</string>
+
+    <!-- List rows -->
+    <string name="award_author">%s hat eine neue Auszeichnug erhalten:\u0020</string>
+    <string name="competition_author">%s hat einen neuen Wettbewerb gestartet:\u0020</string>
+    <string name="global_announcement">~~ Globale Ankündigung ~~</string>
+    <string name="thread_author">Neuer Thread von %s:\u0020</string>
+    <string name="time_just_now">gerade eben</string>
+
+    <!-- Image descriptions (alt text) -->
+    <string name="alt_send">Sende Nachricht</string>
+    <string name="alt_addsmiley">Füge Smiley hinzu</string>
+
+    <!-- Strings related to login -->
+    <!-- <string name="app_title_login"></string> -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="action_sign">Anmelden</string>
+    <string name="login_dont_have_account_yet_question">Du besitzt noch keinen Account?</string>
+    <string name="login_head_to_autemo_com">Gehe auf autemo.com und melde dich an!</string>
+    <string name="login_progress_signing_in">Logge ein…</string>
+    <string name="error_invalid_email_or_password">Email-Adresse oder Passwort ungültig.</string>
+    <string name="error_field_required">Pflichtfeld.</string>
+
+    <!-- About page -->
+    <!-- <string name="pref_about_about_summary"></string> -->
+    <string name="pref_about_translators_title">Übersetzer</string>
+    <string name="pref_about_translators_summary">
+        • Niederländisch - Sam Vesters
+        \n• Französisch - Sam Vesters
+        \n• Bulgarisch - RGS
+        \n• Portugiesisch - Hugo Silva
+        \n• Dänisch - Nicklas Bredahl
+    </string>
+
+</resources>
