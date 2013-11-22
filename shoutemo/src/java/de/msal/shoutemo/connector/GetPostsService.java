@@ -32,8 +32,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
@@ -45,63 +46,116 @@ import de.msal.shoutemo.db.ChatDb;
  */
 public class GetPostsService extends Service {
 
-    // constant
+    // repeating task (get posts)
     private static final long INTERVAL = 2500; // 2.5 seconds
-    // timer handling
-    private Timer mTimer = null;
+    private ScheduledExecutorService worker;
     // account handling
     private String mAuthToken;
     private AccountManager mAccountManager;
     private Account mAccount;
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
 
         mAccountManager = AccountManager.get(this);
-
-        assert mAccountManager != null;
         Account[] acc = mAccountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
+
+        /* No account; push the user into adding one */
         if (acc.length == 0) {
             Log.d("SHOUTEMO", "No suitable account found, directing user to add one");
-            /* No account; push the user into adding one */
             mAccountManager.addAccount(
                     AccountAuthenticator.ACCOUNT_TYPE,
                     null,
                     null,
                     new Bundle(),
                     null,
-                    new OnAccountAddComplete(),
+                    new AccountManagerCallback<Bundle>() {
+                        @Override
+                        public void run(AccountManagerFuture<Bundle> result) {
+                            Bundle bundle;
+                            try {
+                                bundle = result.getResult();
+                            } catch (OperationCanceledException e) {
+                                e.printStackTrace();
+                                return;
+                            } catch (AuthenticatorException e) {
+                                e.printStackTrace();
+                                return;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return;
+                            }
+
+                            /* no accounts saved, yet; ask the user for credentials */
+                            Intent launch = bundle.getParcelable(AccountManager.KEY_INTENT);
+                            if (launch != null) {
+                                launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(launch);
+                                return;
+                            }
+
+                            mAccount = new Account(
+                                    bundle.getString(AccountManager.KEY_ACCOUNT_NAME),
+                                    bundle.getString(AccountManager.KEY_ACCOUNT_TYPE)
+                            );
+                            Log.d("SHOUTEMO",
+                                    "Added account " + mAccount.name + "; now fetching new posts");
+                            startGetPostsTask();
+                        }
+                    },
                     null);
         } else {
-            mAccount = acc[0]; // TODO: UI to pick account, for now we'll just take the first
-            startAuthTokenFetch();
+            mAccount = acc[0];
+            startGetPostsTask();
         }
-
     }
 
     @Override
     public void onDestroy() {
-        if (mTimer != null) {
-            mTimer.cancel();
-        }
+        stopGetPostsTask();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     /**
      *
      */
-    private void startAuthTokenFetch() {
+    private void startGetPostsTask() {
         mAccountManager.getAuthToken(
                 mAccount,
                 LoginActivity.PARAM_AUTHTOKEN_TYPE,
                 null,
                 false,
-                new OnAccountManagerComplete(),
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> result) {
+                        Bundle bundle;
+                        try {
+                            bundle = result.getResult();
+                        } catch (OperationCanceledException e) {
+                            e.printStackTrace();
+                            return;
+                        } catch (AuthenticatorException e) {
+                            e.printStackTrace();
+                            return;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        mAuthToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
+                        Log.d("SHOUTEMO", "Received authentication token: " + mAuthToken);
+                        // now get messages!
+                        if (worker == null || worker.isShutdown()) {
+                            worker = Executors.newSingleThreadScheduledExecutor();
+                        }
+                        worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
+                                TimeUnit.MILLISECONDS);
+                    }
+                },
                 null
         );
     }
@@ -109,138 +163,71 @@ public class GetPostsService extends Service {
     /**
      *
      */
-    private class OnAccountManagerComplete implements AccountManagerCallback<Bundle> {
-
-        @Override
-        public void run(AccountManagerFuture<Bundle> result) {
-            Bundle bundle;
-            try {
-                bundle = result.getResult();
-            } catch (OperationCanceledException e) {
-                e.printStackTrace();
-                return;
-            } catch (AuthenticatorException e) {
-                e.printStackTrace();
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-            mAuthToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-            Log.d("SHOUTEMO", "Received authentication token: " + mAuthToken);
-            // now get messages!
-            startRepeatingTask();
-        }
-
-        void startRepeatingTask() {
-            // cancel if already existed
-            if (mTimer != null) {
-                mTimer.cancel();
-            } else {
-                // recreate new
-                mTimer = new Timer();
-            }
-            // schedule task
-            mTimer.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL);
+    private void stopGetPostsTask() {
+        if (worker != null) {
+            worker.shutdown();
         }
     }
 
     /**
      *
      */
-    private class GetPostsTask extends TimerTask {
+    private class GetPostsTask extends Thread {
+
+        List<Post> posts = null;
 
         @Override
         public void run() {
             try {
-                List<Post> posts = Connection.get(mAuthToken);
-                if (posts.isEmpty()) {
-                    Log.v("SHOUTEMO",
-                            "Received empty data. Invalidating authtoken and fetching new one...");
-                    stopRepeatingTask();
-                    mAccountManager.invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE,
-                            mAuthToken);
-                    startAuthTokenFetch();
-                }
-
-                for (Post post : posts) {
-                    ContentValues values;
-
-                    if (post.getAuthor() != null) {
-                        values = new ContentValues();
-                        values.put(ChatDb.Authors.COLUMN_NAME_NAME,
-                                post.getAuthor().getName());
-                        values.put(ChatDb.Authors.COLUMN_NAME_TYPE,
-                                post.getAuthor().getType().name());
-                        getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
-                    }
-
-                    values = new ContentValues();
-                    values.put(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME,
-                            post.getAuthor() == null ? null : post.getAuthor().getName());
-                    if (post.getMessage() != null) {
-                        values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML,
-                                post.getMessage().getHtml());
-                        values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT,
-                                post.getMessage().getText());
-                        values.put(ChatDb.Messages.COLUMN_NAME_TYPE,
-                                post.getMessage().getType().name());
-                        values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP,
-                                post.getDate().getTime());
-                    }
-                    if (values.size() > 0) {
-                        getContentResolver().insert(ChatDb.Messages.CONTENT_URI, values);
-                    }
-                }
+                posts = Connection.get(mAuthToken);
             } catch (IOException e) {
                 Log.e("SHOUTEMO", e.getMessage());
             }
-        }
 
-        void stopRepeatingTask() {
-            if (mTimer != null) {
-                mTimer.cancel();
+            /* check if new posts can be received */
+            if (posts.isEmpty()) {
+                Log.v("SHOUTEMO",
+                        "Received empty data. Invalidating authtoken and fetching new one...");
+                stopGetPostsTask();
+                mAccountManager.invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE,
+                        mAuthToken);
+                startGetPostsTask();
+            }
+
+            /* insert into DB */
+            for (Post post : posts) {
+                ContentValues values;
+
+                /* add a new person to the authors table if one is found */
+                if (post.getAuthor() != null) {
+                    values = new ContentValues();
+                    values.put(ChatDb.Authors.COLUMN_NAME_NAME,
+                            post.getAuthor().getName());
+                    values.put(ChatDb.Authors.COLUMN_NAME_TYPE,
+                            post.getAuthor().getType().name());
+                    getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
+                }
+
+                /* add a new post to the posts table */
+                values = new ContentValues();
+                values.put(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME,
+                        post.getAuthor() == null ? null : post.getAuthor().getName());
+                if (post.getMessage() != null) {
+                    values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML,
+                            post.getMessage().getHtml());
+                    values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT,
+                            post.getMessage().getText());
+                    values.put(ChatDb.Messages.COLUMN_NAME_TYPE,
+                            post.getMessage().getType().name());
+                    values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP,
+                            post.getDate().getTime());
+                }
+
+                // if (values.size() > 0) {
+                getContentResolver().insert(ChatDb.Messages.CONTENT_URI, values);
+                // }
             }
         }
     }
-
-    /**
-     *
-     */
-    private class OnAccountAddComplete implements AccountManagerCallback<Bundle> {
-
-        @Override
-        public void run(AccountManagerFuture<Bundle> result) {
-            Bundle bundle;
-            try {
-                bundle = result.getResult();
-            } catch (OperationCanceledException e) {
-                e.printStackTrace();
-                return;
-            } catch (AuthenticatorException e) {
-                e.printStackTrace();
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            /* no accounts saved, yet; ask the user for credentials */
-            Intent launch = bundle.getParcelable(AccountManager.KEY_INTENT);
-            if (launch != null) {
-                launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(launch);
-                return;
-            }
-
-            mAccount = new Account(
-                    bundle.getString(AccountManager.KEY_ACCOUNT_NAME),
-                    bundle.getString(AccountManager.KEY_ACCOUNT_TYPE)
-            );
-            Log.d("SHOUTEMO", "Added account " + mAccount.name + "; now fetching new posts");
-            startAuthTokenFetch();
-        }
-    }
-
 
 }
