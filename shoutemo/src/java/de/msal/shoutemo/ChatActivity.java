@@ -76,7 +76,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
 
         listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         // Defining default height of keyboard which is equal to 230 dip
-        final int popUpheight = 230;//getResources().getDimension(R.dimen.keyboard_height);
+        final int popUpheight = (int) getResources().getDimension(R.dimen.keyboard_height);
 
         editText.setOnClickListener(new View.OnClickListener() {
             @Override

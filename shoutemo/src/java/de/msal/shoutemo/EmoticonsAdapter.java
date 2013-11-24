@@ -28,7 +28,6 @@ import android.widget.ImageView;
 public class EmoticonsAdapter extends BaseAdapter {
 
     private final Context mContext;
-
     private final Drawable[] emoticons;
 
 
@@ -43,7 +42,9 @@ public class EmoticonsAdapter extends BaseAdapter {
 
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(72, 72)); //TODO: convert to dp
+            int touchArea = (int) mContext.getResources().getDimension(R.dimen.emoticon_area);
+            imageView.setLayoutParams(
+                    new GridView.LayoutParams(touchArea, touchArea));
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
             imageView = (ImageView) convertView;
