@@ -50,11 +50,11 @@
     <!-- <string name="pref_about_about_summary"></string> -->
     <string name="pref_about_translators_title">Übersetzer</string>
     <string name="pref_about_translators_summary">
-        • Niederländisch - Sam Vesters
-        \n• Französisch - Sam Vesters
-        \n• Bulgarisch - RGS
-        \n• Portugiesisch - Hugo Silva
-        \n• Dänisch - Nicklas Bredahl
+        • Niederländisch -
+        \n• Französisch -
+        \n• Bulgarisch - E. Marinov
+        \n• Portugiesisch -
+        \n• Dänisch -
     </string>
 
 </resources>

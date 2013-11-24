@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2013 Maximilian Salomon.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses/.
+  -->
+
+<resources>
+
+    <!-- <string name="app_name"></string> -->
+    <string name="title_about">За Shoutemo</string>
+    <string name="action_about">Информация</string>
+    <string name="input_empty">Хей! Напиши съобщение!</string>
+
+    <!-- List rows -->
+    <string name="award_author">%s току що получи нова награда:\u0020</string>
+    <string name="competition_author">%s започна състезание:\u0020</string>
+    <string name="global_announcement">~~ Важно Съобщение ~~</string>
+    <string name="thread_author">Нова тема от %s:\u0020</string>
+    <string name="time_just_now">току що</string>
+
+    <!-- Image descriptions (alt text) -->
+    <string name="alt_send">Изпрати съобщение</string>
+    <string name="alt_addsmiley">Добави усмивка</string>
+
+    <!-- Strings related to login -->
+    <string name="app_title_login">Shoutemo - Вписване</string>
+    <string name="prompt_email">Е-майл</string>
+    <string name="prompt_password">Парола</string>
+    <string name="action_sign">Вписване</string>
+    <string name="login_dont_have_account_yet_question">Без регистрация?</string>
+    <string name="login_head_to_autemo_com">Отиди на autemo.com и се регистрирай!</string>
+    <string name="login_progress_signing_in">Одобряване&#8230;</string>
+    <string name="error_invalid_email_or_password">Грешна парола или Емайл.</string>
+    <string name="error_field_required">Това поле трябва да се попълни.</string>
+
+    <!-- About page -->
+    <!-- <string name="pref_about_about_summary"></string> -->
+    <string name="pref_about_translators_title">Преводи</string>
+    <string name="pref_about_translators_summary">
+        • Холандски -
+        \n• Френски -
+        \n• Български - E. Marinov
+        \n• Португалски -
+        \n• Датск  -
+    </string>
+
+</resources>
