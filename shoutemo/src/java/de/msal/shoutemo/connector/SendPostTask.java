@@ -33,8 +33,8 @@ import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 
 /**
- * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b> {@code
- * message} passed to successfully run.</b>
+ * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b>Needs a
+ * {@code message} passed as a single String to successfully run.</b>
  */
 public class SendPostTask extends AsyncTask<String, Void, Integer> {
 
@@ -73,7 +73,7 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
             throw new IllegalStateException(
                     "No suitable account found, while trying to send a message. This shouldn't happen.");
         } else {
-            Account mAccount = acc[0]; // TODO: UI to pick account, for now just take the first
+            Account mAccount = acc[0];
             AccountManagerFuture<Bundle> result = mAccountManager.getAuthToken(
                     mAccount,
                     LoginActivity.PARAM_AUTHTOKEN_TYPE,
