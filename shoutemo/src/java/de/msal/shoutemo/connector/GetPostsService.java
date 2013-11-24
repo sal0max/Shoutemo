@@ -26,8 +26,10 @@ import android.accounts.OperationCanceledException;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.format.Time;
 import android.util.Log;
 
 import java.io.IOException;
@@ -47,7 +49,7 @@ import de.msal.shoutemo.db.ChatDb;
 public class GetPostsService extends Service {
 
     // repeating task (get posts)
-    private static final long INTERVAL = 2500; // 2.5 seconds
+    private static long INTERVAL = 2500; // default: 2.5s
     private ScheduledExecutorService worker;
     // account handling
     private String mAuthToken;
@@ -170,6 +172,40 @@ public class GetPostsService extends Service {
     }
 
     /**
+     * Sets the {@code INTERVAL} of this service in which the refresh calls should occur. This
+     * {@code INTERVAL} is dependant on the given {@code timeSinceLastPost}. If the latest post was
+     * some hours ago, it is not necessary to update every some seconds, but maybe every half a
+     * minute. <br/> After the new refresh rate is altered, the task will be stoped and restartet at
+     * its new rate.
+     *
+     * @param timeSinceLastPost the time in ms between the last post and the current time on the
+     *                          phone.
+     * @return the {@code INTERVAL} which was set, in ms.
+     */
+    private long setIntervall(long timeSinceLastPost) {
+        long oldInterval = INTERVAL;
+
+        if (timeSinceLastPost < 120000) { // < 2min
+            INTERVAL = 2500; //   2.5s
+        } else if (timeSinceLastPost < 300000) { // 2min - 5min
+            INTERVAL = 5000; //   5.0s
+        } else if (timeSinceLastPost < 600000) { // 5min - 10min
+            INTERVAL = 10000; // 10.0s
+        } else { // > 10min
+            INTERVAL = 15000; // 15.0s
+        }
+
+        if (INTERVAL != oldInterval && worker != null && !worker.isShutdown()) {
+            worker.shutdown();
+            worker = Executors.newSingleThreadScheduledExecutor();
+            worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
+                    TimeUnit.MILLISECONDS);
+        }
+
+        return INTERVAL;
+    }
+
+    /**
      *
      */
     private class GetPostsTask extends Thread {
@@ -227,6 +263,21 @@ public class GetPostsService extends Service {
                 getContentResolver().insert(ChatDb.Messages.CONTENT_URI, values);
                 // }
             }
+
+            /* dynamically alter the refresh rate */
+            //TODO: query only the newest post - everything else is a waste of resources
+            //TODO: CAUTION! ONLY WORKS IF TIME-SETTINGS ON PHONE MATCH SETTINGS ON WEBSITE! WARN USER!?
+            Cursor c = getContentResolver().query(ChatDb.Messages.CONTENT_URI,
+                    new String[]{ChatDb.Messages.COLUMN_NAME_TIMESTAMP}, null, null,
+                    ChatDb.Messages.COLUMN_NAME_TIMESTAMP + " DESC");
+            c.moveToFirst();
+            long newestPostTimestamp = c.getLong(0);
+            c.close();
+            Time now = new Time();
+            now.setToNow();
+            long timeSinceLastPost = now.toMillis(false) - newestPostTimestamp;
+            // Log.d("SHOUTEMO", "current diff: " + timeSinceLastPost / 1000 + "s");
+            setIntervall(timeSinceLastPost);
         }
     }
 
