@@ -23,6 +23,7 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,6 +63,10 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
     protected void onPostExecute(Integer ret) {
         if (ret != 200) {
             Log.e("SHOUTEMO", "Error posting the message. Returned code=" + ret);
+        } else {
+            /* restart GetPostsService, so that a sent message is directly shown without big delay */
+            context.stopService(new Intent(context, GetPostsService.class));
+            context.startService(new Intent(context, GetPostsService.class));
         }
     }
 
