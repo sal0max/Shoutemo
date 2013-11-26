@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -36,13 +35,8 @@ import android.view.ViewTreeObserver;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-
-import java.lang.reflect.Field;
 
 import de.msal.shoutemo.connector.GetPostsService;
 import de.msal.shoutemo.connector.SendPostTask;
@@ -51,79 +45,117 @@ import de.msal.shoutemo.db.ChatDb;
 public class ChatActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /*  */
-    private final static int NO_OF_EMOTICONS = 55;
     private final static int LOADER_ID_MESSAGES = 0;
     private ListAdapter listAdapter;
     //
     /* stuff for the smiley selector  */
-    private View emoticonsCover, popUpView;
-    private int previousHeightDiffrence = 0, keyboardHeight;
+    private View emoticonsSpacer;
     private PopupWindow emoticonsPopupWindow;
+    private int previousHeightDifference = 0, keyboardHeight;
     private boolean isKeyBoardVisible;
-    private Drawable[] emoticons;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        popUpView = getLayoutInflater().inflate(R.layout.emoticons_popup, null);
-        emoticonsCover = findViewById(R.id.chat_ll_popup_parent);
-        final RelativeLayout parentLayout = (RelativeLayout) findViewById(R.id.chat_rl_parent);
-        final EditText editText = (EditText) findViewById(R.id.et_input);
-        final ImageButton btnSend = (ImageButton) findViewById(R.id.ib_send);
-        final ImageView smileyButton = (ImageView) findViewById(R.id.ib_smileys);
+        emoticonsSpacer = findViewById(R.id.chat_emoticons_spacer);
+        final LinearLayout parentLayout = (LinearLayout) findViewById(R.id.chat_rl_parent);
+        final EditText inputField = (EditText) findViewById(R.id.et_input);
 
         listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        // Defining default height of keyboard which is equal to 230 dip
-        final int popUpheight = (int) getResources().getDimension(R.dimen.keyboard_height);
 
-        editText.setOnClickListener(new View.OnClickListener() {
+        /* Send message when clicked on SEND-BUTTON */
+        findViewById(R.id.ib_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (inputField.getText() != null && !TextUtils.isEmpty(inputField.getText())) {
+                    new SendPostTask(getApplicationContext())
+                            .execute(inputField.getText().toString());
+                    inputField.setText("");
+                }
+            }
+        });
+
+        inputField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    emoticonsPopupWindow.dismiss();
+            }
+        });
+
+        /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
+        findViewById(R.id.ib_smileys).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (emoticonsPopupWindow.isShowing()) {
                     emoticonsPopupWindow.dismiss();
-                }
-            }
-        });
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (editText.getText() != null && !TextUtils.isEmpty(editText.getText())) {
-                    new SendPostTask(getApplicationContext())
-                            .execute(editText.getText().toString());
-                    editText.setText("");
-                }
-            }
-        });
-        /* Showing and dismissing popup on clicking emoticons button */
-        smileyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!emoticonsPopupWindow.isShowing()) {
+                } else {
                     emoticonsPopupWindow.setHeight(keyboardHeight);
 
                     if (isKeyBoardVisible) {
-                        emoticonsCover.setVisibility(LinearLayout.GONE);
+                        emoticonsSpacer.setVisibility(LinearLayout.GONE);
                     } else {
-                        emoticonsCover.setVisibility(LinearLayout.VISIBLE);
+                        emoticonsSpacer.setVisibility(LinearLayout.VISIBLE);
                     }
                     emoticonsPopupWindow.showAtLocation(parentLayout, Gravity.BOTTOM, 0, 0);
-
-                } else {
-                    emoticonsPopupWindow.dismiss();
                 }
             }
         });
 
-        changeKeyboardHeight(popUpheight);
-        getEmoticons();
-        enablePopUpView();
-        checkKeyboardHeight(parentLayout);
+        /* listen for layout changes */
+        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Rect r = new Rect();
+                        parentLayout.getWindowVisibleDisplayFrame(r);
+
+                        int screenHeight = parentLayout.getRootView().getHeight();
+                        int heightDifference = screenHeight - (r.bottom);
+
+                        if (previousHeightDifference - heightDifference > 50) {
+                            emoticonsPopupWindow.dismiss();
+                        }
+
+                        previousHeightDifference = heightDifference;
+                        if (heightDifference > 100) {
+                            isKeyBoardVisible = true;
+                            setEmoticonsKeyboardHeight(heightDifference);
+                        } else {
+                            isKeyBoardVisible = false;
+                        }
+                    }
+                }
+        );
+
+        /* set the adapter for the emoticons */
+        final View emoticonsGrid = getLayoutInflater().inflate(R.layout.emoticons_grid, null);
+        ((GridView) emoticonsGrid.findViewById(R.id.emoticons_gridview)).setAdapter(
+                new EmoticonsAdapter(this, new EmoticonsAdapter.OnEmoticonClickListener() {
+                    @Override
+                    public void onEmoticonClick(String bbcode) {
+                        inputField.setText(inputField.getText() + " " + bbcode + " ");
+                        inputField.setSelection(inputField.getText().length());
+                    }
+                }));
+        // create a pop window that works as the emoticons keyboard
+        emoticonsPopupWindow = new PopupWindow(emoticonsGrid,
+                LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight, false);
+        // hide the spacer if the popup gets hidden
+        emoticonsPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                emoticonsSpacer.setVisibility(LinearLayout.GONE);
+            }
+        });
+
+        // default: 230dp
+        setEmoticonsKeyboardHeight((int) getResources().getDimension(R.dimen.keyboard_height));
 
         /* list stuff */
-        setListAdapter(this.listAdapter);
-        getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
+        this.setListAdapter(this.listAdapter);
+        this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
     }
 
     @Override
@@ -158,23 +190,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     }
 
     /**
-     * Reading all emoticons in local cache
-     */
-    private void getEmoticons() {
-        emoticons = new Drawable[NO_OF_EMOTICONS];
-        int i = 0;
-        Field[] drawables = de.msal.shoutemo.R.drawable.class.getDeclaredFields();
-        for (Field f : drawables) {
-            if (f.getName().startsWith("smil_")) {
-                emoticons[i] = getResources().getDrawable(getResources().getIdentifier(f.getName(),
-                        "drawable", getPackageName()));
-                i++;
-            }
-        }
-    }
-
-    /**
-     * Overriding onKeyDown for dismissing keyboard on key down
+     * override onKeyDown for dismissing the emoticons keyboard on key down
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -186,65 +202,18 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         }
     }
 
-    private void checkKeyboardHeight(final View parentLayout) {
-        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        Rect r = new Rect();
-                        parentLayout.getWindowVisibleDisplayFrame(r);
-
-                        int screenHeight = parentLayout.getRootView()
-                                .getHeight();
-                        int heightDifference = screenHeight - (r.bottom);
-
-                        if (previousHeightDiffrence - heightDifference > 50) {
-                            emoticonsPopupWindow.dismiss();
-                        }
-
-                        previousHeightDiffrence = heightDifference;
-                        if (heightDifference > 100) {
-                            isKeyBoardVisible = true;
-                            changeKeyboardHeight(heightDifference);
-                        } else {
-                            isKeyBoardVisible = false;
-                        }
-
-                    }
-                });
-    }
-
     /**
-     * change height of emoticons keyboard according to height of actual keyboard
+     * change the height of the emoticons keyboard matching to height of actual keyboard
      *
      * @param height minimum height by which we can make sure actual keyboard is open or not
      */
-    private void changeKeyboardHeight(int height) {
+    private void setEmoticonsKeyboardHeight(int height) {
         if (height > 100) {
             keyboardHeight = height;
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.MATCH_PARENT, keyboardHeight);
-            emoticonsCover.setLayoutParams(params);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight);
+            emoticonsSpacer.setLayoutParams(params);
         }
-    }
-
-    /**
-     * Defining all components of emoticons keyboard
-     */
-    private void enablePopUpView() {
-        final GridView grid = (GridView) popUpView.findViewById(R.id.emoticons_gridview);
-        grid.setAdapter(new EmoticonsAdapter(this, emoticons));
-
-        // Creating a pop window for emoticons keyboard
-        emoticonsPopupWindow = new PopupWindow(popUpView, LinearLayout.LayoutParams.MATCH_PARENT,
-                keyboardHeight, false);
-
-        emoticonsPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                emoticonsCover.setVisibility(LinearLayout.GONE);
-            }
-        });
     }
 
     @Override

@@ -17,20 +17,13 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<!-- Linear Layout for getting a black background behind the smileys-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridView
+    android:id="@+id/emoticons_gridview"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@color/autemo_grey_dark"
+    android:columnWidth="@dimen/emoticon_area"
     android:gravity="center"
-    android:orientation="vertical">
+    android:numColumns="auto_fit" />
 
-    <GridView
-        android:id="@+id/emoticons_gridview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnWidth="@dimen/emoticon_area"
-        android:gravity="center"
-        android:numColumns="auto_fit" />
-
-</LinearLayout>
