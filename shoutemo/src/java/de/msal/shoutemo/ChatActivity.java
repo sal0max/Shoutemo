@@ -25,16 +25,21 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
@@ -62,6 +67,9 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         emoticonsSpacer = findViewById(R.id.chat_emoticons_spacer);
         final LinearLayout parentLayout = (LinearLayout) findViewById(R.id.chat_rl_parent);
         final EditText inputField = (EditText) findViewById(R.id.et_input);
+        final ImageButton sendButton = (ImageButton) findViewById(R.id.ib_send);
+        /* initially the inputField is empty, so disable the send button */
+        sendButton.setVisibility(View.GONE);
 
         listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
@@ -80,7 +88,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         inputField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    emoticonsPopupWindow.dismiss();
+                emoticonsPopupWindow.dismiss();
             }
         });
 
@@ -94,11 +102,37 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
                     emoticonsPopupWindow.setHeight(keyboardHeight);
 
                     if (isKeyBoardVisible) {
-                        emoticonsSpacer.setVisibility(LinearLayout.GONE);
+                        emoticonsSpacer.setVisibility(View.GONE);
                     } else {
-                        emoticonsSpacer.setVisibility(LinearLayout.VISIBLE);
+                        emoticonsSpacer.setVisibility(View.VISIBLE);
                     }
                     emoticonsPopupWindow.showAtLocation(parentLayout, Gravity.BOTTOM, 0, 0);
+                }
+            }
+        });
+
+        /* hide send-button, if no text is entered */
+        inputField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (sendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
+                    Animation pushOut = AnimationUtils.loadAnimation(getApplicationContext(),
+                            R.anim.push_out);
+                    sendButton.startAnimation(pushOut);
+                    sendButton.setVisibility(View.GONE);
+                } else if (sendButton.getVisibility() == View.GONE && s.length() >= 1) {
+                    Animation pushIn = AnimationUtils
+                            .loadAnimation(getApplicationContext(), R.anim.push_in);
+                    sendButton.startAnimation(pushIn);
+                    sendButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -146,7 +180,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         emoticonsPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                emoticonsSpacer.setVisibility(LinearLayout.GONE);
+                emoticonsSpacer.setVisibility(View.GONE);
             }
         });
 
