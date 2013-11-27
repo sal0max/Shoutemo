@@ -46,7 +46,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/ib_smileys"
+            android:id="@+id/ib_emoticons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackground"
@@ -55,7 +55,7 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:src="@drawable/ic_action_emo_basic" />
+            android:src="@drawable/ic_action_emoticon" />
 
         <EditText
             android:id="@+id/et_input"

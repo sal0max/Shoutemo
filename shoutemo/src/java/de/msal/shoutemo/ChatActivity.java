@@ -56,6 +56,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     /* stuff for the smiley selector  */
     private View emoticonsSpacer;
     private PopupWindow emoticonsPopupWindow;
+    private ImageButton keyboardButton;
     private int previousHeightDifference = 0, keyboardHeight;
     private boolean isKeyBoardVisible;
 
@@ -74,7 +75,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         /* Send message when clicked on SEND-BUTTON */
-        findViewById(R.id.ib_send).setOnClickListener(new View.OnClickListener() {
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (inputField.getText() != null && !TextUtils.isEmpty(inputField.getText())) {
@@ -88,22 +89,27 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         inputField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
                 emoticonsPopupWindow.dismiss();
             }
         });
 
         /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
-        findViewById(R.id.ib_smileys).setOnClickListener(new View.OnClickListener() {
+        keyboardButton = (ImageButton) findViewById(R.id.ib_emoticons);
+        keyboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (emoticonsPopupWindow.isShowing()) {
+                    keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
                     emoticonsPopupWindow.dismiss();
                 } else {
                     emoticonsPopupWindow.setHeight(keyboardHeight);
 
                     if (isKeyBoardVisible) {
+                        keyboardButton.setImageResource(R.drawable.ic_action_keyboard);
                         emoticonsSpacer.setVisibility(View.GONE);
                     } else {
+                        keyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
                         emoticonsSpacer.setVisibility(View.VISIBLE);
                     }
                     emoticonsPopupWindow.showAtLocation(parentLayout, Gravity.BOTTOM, 0, 0);
@@ -149,6 +155,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
                         int heightDifference = screenHeight - (r.bottom);
 
                         if (previousHeightDifference - heightDifference > 50) {
+                            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
                             emoticonsPopupWindow.dismiss();
                         }
 
@@ -229,6 +236,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (emoticonsPopupWindow.isShowing()) {
+            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
             emoticonsPopupWindow.dismiss();
             return false;
         } else {
