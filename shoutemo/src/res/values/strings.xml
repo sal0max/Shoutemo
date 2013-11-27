@@ -25,6 +25,7 @@
     <string name="input_empty">Hey! Write a message!</string>
 
     <!-- List rows -->
+    <string name="promotion">%s just got promoted!</string>
     <string name="award_author">%s just got a new chopping award:\u0020</string>
     <string name="competition_author">%s started a new competition:\u0020</string>
     <string name="global_announcement">~~ Global Announcement ~~</string>

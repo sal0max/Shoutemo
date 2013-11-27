@@ -60,6 +60,8 @@ public class Message implements Comparable<Message> {
             this.type = Type.AWARD;
         } else if (type.equals("just created a new competition:")) {
             this.type = Type.COMPETITION;
+        } else if (type.equals("Just got Promoted")) {
+            this.type = Type.PROMOTION;
         }
     }
 
@@ -130,9 +132,13 @@ public class Message implements Comparable<Message> {
          */
         SHOUT,
         /**
-         * Generated announcement: Someone created a new competiition.
+         * Generated announcement: Someone created a new competition.
          */
-        COMPETITION;
+        COMPETITION,
+        /**
+         * Generated announcement: Someone got promoted.
+         */
+        PROMOTION;
     }
 
 }

@@ -136,6 +136,13 @@ public class ListAdapter extends CursorAdapter {
                 view.setTag(R.id.listrow_competition_timestamp,
                         view.findViewById(R.id.listrow_competition_timestamp));
                 break;
+            case PROMOTION:
+                view = inflater.inflate(R.layout.listrow_promotion, parent, false);
+                view.setTag(R.id.listrow_promotion_message,
+                        view.findViewById(R.id.listrow_promotion_message));
+                view.setTag(R.id.listrow_promotion_timestamp,
+                        view.findViewById(R.id.listrow_promotion_timestamp));
+                break;
         }
         return view;
     }
@@ -244,6 +251,17 @@ public class ListAdapter extends CursorAdapter {
                 tvMessage.setText(Html.fromHtml(message, imageGetter, null));
                 tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
 
+                break;
+            case PROMOTION:
+                tvMessage = (TextView) view.getTag(R.id.listrow_promotion_message);
+                tvTimestamp = (TextView) view.getTag(R.id.listrow_promotion_timestamp);
+
+                author = cursor.getString(
+                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+                message = this.context.getResources().getString(R.string.promotion, author);
+
+                tvMessage.setText(message);
+                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
                 break;
         }
     }
