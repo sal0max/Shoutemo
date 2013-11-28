@@ -26,8 +26,8 @@ import org.jsoup.nodes.Element;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,23 +42,12 @@ import de.msal.shoutemo.connector.model.Post;
 public class Connection {
 
     private final static String USER_AGENT = "Shoutemo";
-
     private final static int TIMEOUT = 12000;
 
-    private final String nick, password;
-
-    private Map<String, String> cookies;
-
     /**
-     * Creates a new Connection, needed to connect to autemo.com, get its shoutbox content or send
-     * shouts to it.
-     *
-     * @param mail     the users email address with which he is registered on autemo
-     * @param password the users password for this account
+     * Class for connecting to autemo.com, getting its shoutbox content and send shouts to it.
      */
-    public Connection(String mail, String password) throws IOException {
-        this.nick = mail;
-        this.password = password;
+    private Connection() throws IOException {
     }
 
     /**
@@ -70,34 +59,47 @@ public class Connection {
      * @return {@code true} if the attempt was successful, else {@code false}.
      */
     public static boolean isCredentialsCorrect(String nick, String password) throws IOException {
-        Connection x = new Connection(nick, password).connect();
-        return !(x.get().isEmpty());
-    } //TODO check token here, not just password
-
-    public static String getToken(String nick, String password) throws IOException {
-        Connection x = new Connection(nick, password).connect();
-        x.connect();
-        Log.d("Connection", "returning session id: PHPSESSID=" + x.cookies.get("PHPSESSID"));
-        return x.cookies.get("PHPSESSID");
+        Map<String, String> cookies = connect(nick, password);
+        String token = cookies.get("PHPSESSID");
+        return !(getPosts(token).isEmpty());
     }
 
-    public static List<Post> get(String authtoken) throws IOException {
-        Map<String, String> m = new HashMap<String, String>(1);
-        m.put("PHPSESSID", authtoken);
+    /**
+     * @param nick     the username. On autemo that is the email address which is registered.
+     * @param password the users password for this account.
+     * @return The session id that authenticates this user.
+     */
+    public static String getToken(String nick, String password) throws IOException {
+        Map<String, String> cookies = connect(nick, password);
+        Log.d("Connection", "returning session id: PHPSESSID=" + cookies.get("PHPSESSID"));
+        return cookies.get("PHPSESSID");
+    }
+
+    /**
+     * Gets the current chat history. About 3KB per call.
+     *
+     * @return A {@link java.util.List} of {@link de.msal.shoutemo.connector.model.Post}s,
+     * containing the current chat history. The size of it <strong>should</strong> always be 50, but
+     * may differ.
+     */
+    public static List<Post> getPosts(String authtoken) throws IOException {
+        Map<String, String> cookie = new HashMap<String, String>(1);
+        cookie.put("PHPSESSID", authtoken);
 
         Document document = Jsoup
                 .connect("http://www.autemo.com/includes/js/ajax/yshout.php")
                 .timeout(TIMEOUT)
                 .ignoreHttpErrors(true)
                 .followRedirects(true)
-                .cookies(m)
+                .cookies(cookie)
                 .userAgent(USER_AGENT)
                 .get();
 
-        List<Post> posts = new ArrayList<Post>();
+        List<Post> posts = new LinkedList<Post>();
 
+        Post p;
         for (Element element : document.getElementsByClass("ys-post")) {
-            Post p = new Post(element);
+            p = new Post(element);
             posts.add(p);
         }
 
@@ -123,34 +125,30 @@ public class Connection {
         m.put("PHPSESSID", authtoken);
 
       /* Code for splitting too long strings to chunks without cutting words. */
-        List<String> split = Splitter.on(" ").splitToList(message); //separate all words
-        List<String> sewn = new ArrayList<String>();
+        List<String> splits = Splitter.on(" ").splitToList(message); //separate all words
+        List<String> sewns = new LinkedList<String>();
         StringBuilder sb = new StringBuilder();
 
-        for (int j = 0; j < split.size(); j++) {              // iterate through all words
-            if ((sb.length() + split.get(j).length())
-                    < MAX_MESSAGE_LENGTH) {  // stich together while below max message length
-                sb.append(split.get(j) + " ");
-            } else {                                           // reached max message length now
-                if (sb.length()
-                        > MAX_MESSAGE_LENGTH) {         // oh no! chunk too big to be sent: throw exeption, send nothing
+        for (String split : splits) { // iterate through all words
+            if ((sb.length() + split.length())
+                    < MAX_MESSAGE_LENGTH) { // stich together while below max message length
+                sb.append(split).append(" ");
+            } else { // reached max message length now
+                if (sb.length() > MAX_MESSAGE_LENGTH) { // chunk too big to be sent: send nothing
                     throw new IllegalArgumentException(
                             "Connection.post(): max. 256 characters are allowed for input.");
-                } else if (sb.length()
-                        != 0) {                  // chunk seems fine: add to message list
-                    sewn.add(sb.toString());
+                } else if (sb.length() != 0) { // chunk seems fine: add to message list
+                    sewns.add(sb.toString());
                 }
-                sb = new StringBuilder();                       // now empty the StringBuilder
-                sb.append(split.get(j)
-                        + " ");                  // add the next element, else it gets lost
+                sb = new StringBuilder(); // now empty the StringBuilder
+                sb.append(split).append(" "); // add the next element, else it gets lost
             }
         }
 
-        sewn.add(sb.deleteCharAt(sb.length() - 1).toString());// finally add the last chunk
+        sewns.add(sb.deleteCharAt(sb.length() - 1).toString());// finally add the last chunk
 
         int statusCode = -1;
-        for (String stich : sewn) {                           // now send all messages from the message list
-            // System.out.println(stich + " (" + stich.length() + ")"); // TODO: remove sysout and activate actual sending
+        for (String stich : sewns) { // now send all messages from the message list
             statusCode = Jsoup
                     .connect("http://www.autemo.com/includes/js/ajax/yshout.php?m=shout")
                     .timeout(TIMEOUT)
@@ -169,112 +167,23 @@ public class Connection {
     /**
      * Establishes a connection to autemo.com and authenticates with the users credentials.
      *
-     * @return This {@link de.msal.shoutemo.connector.Connection} for chaining.
+     * @return this sessions cookies.
      */
-    public Connection connect() throws IOException {
+    private static Map<String, String> connect(String nick, String password) throws IOException {
         org.jsoup.Connection.Response response = Jsoup
                 .connect("http://www.autemo.com/login")
                 .timeout(TIMEOUT)
                 .ignoreHttpErrors(true)
                 .followRedirects(true)
                 .userAgent(USER_AGENT)
-                .data("lgemail", this.nick,
-                        "lgpassword", this.password,
+                .data("lgemail", nick,
+                        "lgpassword", password,
                         "Submit", "Login >",
                         "submitted", "TRUE")
                 .method(org.jsoup.Connection.Method.POST)
                 .execute();
-        //TODO: Verification if nick/pw are right here: public METHOD!
 
-        this.cookies = response.cookies();
-        return this;
-    }
-
-    /**
-     * Gets the current chat history. About 3KB per call.
-     *
-     * @return A {@link java.util.List} of {@link de.msal.shoutemo.connector.model.Post}s,
-     * containing the current chat history. The size of it <strong>should</strong> always be 50, but
-     * may differ.
-     */
-    public List<Post> get() throws IOException {
-        Document document = Jsoup
-                .connect("http://www.autemo.com/includes/js/ajax/yshout.php")
-                .timeout(TIMEOUT)
-                .ignoreHttpErrors(true)
-                .followRedirects(true)
-                .cookies(this.cookies)
-                .userAgent(USER_AGENT)
-                .get();
-
-        List<Post> posts = new ArrayList<Post>();
-
-        for (Element element : document.getElementsByClass("ys-post")) {
-            Post p = new Post(element);
-            posts.add(p);
-        }
-
-        return posts;
-    }
-
-    /**
-     * Sends a new shout to the server: the given message. The server accepts only a limited size
-     * for the message. If it is too long, this method will split the message in several chunks and
-     * make additional calls.
-     *
-     * @param message The message to send.
-     * @return the http status code of the request or -1 if nothing was sent. Should be 200 (OK) if
-     * everything worked.:
-     */
-    public int post(String message) throws IOException {
-        final int MAX_MESSAGE_LENGTH = 250;
-      /* Code when not using the splitting. Just throw if message length is too long */
-        // if (message.length() > MAX_MESSAGE_LENGTH) {
-        // throw new IllegalArgumentException("Connection.post(): max. 256 characters are allowed for input.");
-        // }
-
-      /* Code for splitting too long strings to chunks without cutting words. */
-        List<String> split = Splitter.on(" ").splitToList(message); //separate all words
-        List<String> sewn = new ArrayList<String>();
-        StringBuilder sb = new StringBuilder();
-
-        for (int j = 0; j < split.size(); j++) {              // iterate through all words
-            if ((sb.length() + split.get(j).length())
-                    < MAX_MESSAGE_LENGTH) {  // stich together while below max message length
-                sb.append(split.get(j) + " ");
-            } else {                                           // reached max message length now
-                if (sb.length()
-                        > MAX_MESSAGE_LENGTH) {         // oh no! chunk too big to be sent: throw exeption, send nothing
-                    throw new IllegalArgumentException(
-                            "Connection.post(): max. 256 characters are allowed for input.");
-                } else if (sb.length()
-                        != 0) {                  // chunk seems fine: add to message list
-                    sewn.add(sb.toString());
-                }
-                sb = new StringBuilder();                       // now empty the StringBuilder
-                sb.append(split.get(j)
-                        + " ");                  // add the next element, else it gets lost
-            }
-        }
-
-        sewn.add(sb.deleteCharAt(sb.length() - 1).toString());// finally add the last chunk
-
-        int statusCode = -1;
-        for (String stich : sewn) {                           // now send all messages from the message list
-            // System.out.println(stich + " (" + stich.length() + ")"); // TODO: remove sysout and activate actual sending
-            statusCode = Jsoup
-                    .connect("http://www.autemo.com/includes/js/ajax/yshout.php?m=shout")
-                    .timeout(TIMEOUT)
-                    .ignoreHttpErrors(true)
-                    .followRedirects(true)
-                    .cookies(this.cookies)
-                    .userAgent(USER_AGENT)
-                    .data("x_message", stich, "submit", "Shout!")
-                    .method(org.jsoup.Connection.Method.POST)
-                    .execute().statusCode();
-        }
-
-        return statusCode;
+        return response.cookies();
     }
 
 }

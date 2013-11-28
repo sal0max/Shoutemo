@@ -215,7 +215,7 @@ public class GetPostsService extends Service {
         @Override
         public void run() {
             try {
-                posts = Connection.get(mAuthToken);
+                posts = Connection.getPosts(mAuthToken);
             } catch (IOException e) {
                 Log.e("SHOUTEMO", e.getMessage());
             }
