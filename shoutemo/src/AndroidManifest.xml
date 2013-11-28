@@ -68,8 +68,6 @@
         <provider
             android:name=".db.ChatProvider"
             android:authorities="de.msal.provider.ChatDb" />
-        <!-- TODO: better name! -->
-
     </application>
 
 </manifest>
