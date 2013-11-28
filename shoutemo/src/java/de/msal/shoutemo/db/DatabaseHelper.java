@@ -30,16 +30,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Used for debugging and logging */
     private static final String TAG = "DatabaseHelper";
-
     /**
      * The database that the provider uses as its underlying data store
      */
     private static final String DATABASE_NAME = "chat.db";
-
     /**
      * The database version
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     DatabaseHelper(Context context) {
         /* calls the super constructor, requesting the default cursor factory. */
@@ -74,10 +72,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /* Logs that the database is being upgraded */
         Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
-        db.execSQL("DROP TABLE IF EXISTS " + ChatDb.Authors.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + ChatDb.Messages.TABLE_NAME);
-        // Create a new one.
-        onCreate(db);
+        if (newVersion == 2) {
+            String sql = "UPDATE " + ChatDb.Messages.TABLE_NAME
+                    + " SET "
+                    + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML
+                    + " = replace(" + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML + ","
+                    + " 'src=\"http://www.autemo.com/images/smileys/',"
+                    + " 'src=\"images/smileys/')"
+                    + ";";
+            db.execSQL(sql);
+        }
     }
 
     @Override

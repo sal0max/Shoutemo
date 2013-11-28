@@ -29,9 +29,7 @@ import org.jsoup.nodes.Element;
 public class Message implements Comparable<Message> {
 
     private String html, text;
-
     private Type type;
-
 
     /**
      * Creates a Message by parsing the given {@link Element} and getting the message, both in html
@@ -42,11 +40,6 @@ public class Message implements Comparable<Message> {
     Message(Element e) {
         this.text = e.getElementsByClass("ys-post-message").text();
         this.html = e.getElementsByClass("ys-post-message").html();
-
-        if (e.getAllElements().hasClass("bbcode_smiley")) { // TODO: replace smileys with assetts?
-            this.html = this.html.replace("src=\"images/smileys/",
-                    "src=\"http://www.autemo.com/images/smileys/");
-        }
 
       /* message type: new thread announcement or shout or global announcement? */
         String type = e.ownText();

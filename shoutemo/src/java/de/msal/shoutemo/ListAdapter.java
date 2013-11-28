@@ -38,7 +38,6 @@ import de.msal.shoutemo.helpers.TimeUtils;
 public class ListAdapter extends CursorAdapter {
 
     private Context context;
-
     /**
      * for loading the smileys
      */
@@ -46,7 +45,7 @@ public class ListAdapter extends CursorAdapter {
         public Drawable getDrawable(String source) {
             String smiley = "";
             try {
-                if (source.startsWith("http://www.autemo.com/images/smileys/")) {
+                if (source.startsWith("images/smileys/")) {
                     smiley = source.substring(source.lastIndexOf('/') + 1,
                             source.lastIndexOf('.'));
                     int id = context.getResources().getIdentifier("smil_" + smiley,
@@ -59,13 +58,14 @@ public class ListAdapter extends CursorAdapter {
                     }
 
                 } else {
-                    Log.v("SHOUTEMO", "UNKNOWN IMAGE EMBEDDED: " + source);
+                    Log.v("SHOUTEMO", "uknown image embedded: " + source);
                 }
             } catch (Resources.NotFoundException e) {
-                Log.e("SHOUTEMO", "UNKNOWN SMILEY SHOWED UP:" + smiley);
+                Log.e("SHOUTEMO", "unkown emoticon showed up:" + smiley);
             }
-            return context.getResources() // TODO: Better placeholder drawable
-                    .getDrawable(android.R.drawable.ic_dialog_alert);
+            Drawable d = context.getResources().getDrawable(R.drawable.ic_missing_image);
+            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            return d;
         }
     };
 
