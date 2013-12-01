@@ -176,8 +176,8 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
                 new EmoticonsAdapter(this, new EmoticonsAdapter.OnEmoticonClickListener() {
                     @Override
                     public void onEmoticonClick(String bbcode) {
-                        inputField.setText(inputField.getText() + " " + bbcode + " ");
-                        inputField.setSelection(inputField.getText().length());
+                        inputField.getText().replace(inputField.getSelectionStart(),
+                                inputField.getSelectionEnd(), " " + bbcode + " ");
                     }
                 }));
         // create a pop window that works as the emoticons keyboard
