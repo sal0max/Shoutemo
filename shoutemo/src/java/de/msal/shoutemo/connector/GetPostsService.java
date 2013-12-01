@@ -264,19 +264,17 @@ public class GetPostsService extends Service {
                 // }
             }
 
-            /* dynamically alter the refresh rate */
-            //TODO: query only the newest post - everything else is a waste of resources
             //TODO: CAUTION! ONLY WORKS IF TIME-SETTINGS ON PHONE MATCH SETTINGS ON WEBSITE! WARN USER!?
+            /* dynamically alter the refresh rate */
             Cursor c = getContentResolver().query(ChatDb.Messages.CONTENT_URI,
                     new String[]{ChatDb.Messages.COLUMN_NAME_TIMESTAMP}, null, null,
-                    ChatDb.Messages.COLUMN_NAME_TIMESTAMP + " DESC");
+                    ChatDb.Messages.COLUMN_NAME_TIMESTAMP + " DESC LIMIT 1");
             c.moveToFirst();
             long newestPostTimestamp = c.getLong(0);
             c.close();
             Time now = new Time();
             now.setToNow();
             long timeSinceLastPost = now.toMillis(false) - newestPostTimestamp;
-            // Log.d("SHOUTEMO", "current diff: " + timeSinceLastPost / 1000 + "s");
             setIntervall(timeSinceLastPost);
         }
     }

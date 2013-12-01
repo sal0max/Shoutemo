@@ -35,17 +35,11 @@ import de.msal.shoutemo.connector.model.Post;
 public class ChatProvider extends ContentProvider {
 
     private static final int URI_MATCH_MESSAGES = 10;
-
     private static final int URI_MATCH_MESSAGE_ID = 11;
-
     private static final int URI_MATCH_AUTHORS = 20;
-
     private static final int URI_MATCH_AUTHOR_ID = 21;
-
     private static final int URI_MATCH_POSTS = 30;
-
     private static final UriMatcher mUriMatcher;
-
     private DatabaseHelper mOpenHelper;
 
     /**
@@ -61,11 +55,11 @@ public class ChatProvider extends ContentProvider {
         mUriMatcher.addURI(ChatDb.AUTHORITY, "posts", URI_MATCH_POSTS);
     }
 
-	/*
+    /*
      * =======================================================================
-	 * ContentProvider
-	 * =======================================================================
-	 */
+     * ContentProvider
+     * =======================================================================
+     */
 
     /**
      * Initializes the provider by creating a new DatabaseHelper. onCreate() is called automatically
@@ -75,12 +69,12 @@ public class ChatProvider extends ContentProvider {
     public boolean onCreate() {
         /*
          * Creates a new helper object. Note that the database itself isn't
-		 * opened until something tries to access it, and it's only created if
-		 * it doesn't already exist.
-		 */
+         * opened until something tries to access it, and it's only created if
+         * it doesn't already exist.
+         */
         mOpenHelper = new DatabaseHelper(getContext());
 
-		/* Assumes that any failures will be reported by a thrown exception. */
+        /* Assumes that any failures will be reported by a thrown exception. */
         return true;
     }
 
@@ -146,7 +140,7 @@ public class ChatProvider extends ContentProvider {
                 sortOrder // The sort order
         );
 
-	  /* Tells the Cursor what URI to watch, so it knows when its source data changes */
+        /* Tells the Cursor what URI to watch, so it knows when its source data changes */
         c.setNotificationUri(getContext().getContentResolver(), uri);
         return c;
     }
@@ -217,7 +211,7 @@ public class ChatProvider extends ContentProvider {
          /* notifies observers registered against this provider that the data changed */
         getContext().getContentResolver().notifyChange(uri, null);
         getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
-            return uri;
+        return uri;
 //        }
 //        else { // if the insert didn't succeed, then the rowID is <= 0: throws an exception
 //            throw new SQLException("Failed to insert row into " + uri);
@@ -325,12 +319,12 @@ public class ChatProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-		/*
+        /*
          * Gets a handle to the content resolver object for the current context,
-		 * and notifies it that the incoming URI changed. The object passes this
-		 * along to the resolver framework, and observers that have registered
-		 * themselves for the provider are notified.
-		 */
+         * and notifies it that the incoming URI changed. The object passes this
+         * along to the resolver framework, and observers that have registered
+         * themselves for the provider are notified.
+         */
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Returns the number of rows deleted.
@@ -406,15 +400,15 @@ public class ChatProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-		/*
+        /*
          * Gets a handle to the content resolver object for the current context,
-		 * and notifies it that the incoming URI changed. The object passes this
-		 * along to the resolver framework, and observers that have registered
-		 * themselves for the provider are notified.
-		 */
+         * and notifies it that the incoming URI changed. The object passes this
+         * along to the resolver framework, and observers that have registered
+         * themselves for the provider are notified.
+         */
         getContext().getContentResolver().notifyChange(uri, null);
 
-		/* Returns the number of rows updated. */
+        /* Returns the number of rows updated. */
         return count;
     }
 
