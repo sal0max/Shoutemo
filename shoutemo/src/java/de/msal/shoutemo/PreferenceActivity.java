@@ -18,10 +18,9 @@
 package de.msal.shoutemo;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
-public class MyPreferenceActivity extends PreferenceActivity {
+public class PreferenceActivity extends android.preference.PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

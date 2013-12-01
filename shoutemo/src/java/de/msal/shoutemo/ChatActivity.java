@@ -224,7 +224,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_about:
-                Intent intent = new Intent(this, MyPreferenceActivity.class);
+                Intent intent = new Intent(this, PreferenceActivity.class);
                 startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

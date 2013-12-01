@@ -43,8 +43,8 @@
             android:name=".LoginActivity"
             android:label="@string/app_title_login" />
         <activity
-            android:name=".MyPreferenceActivity"
-            android:label="@string/title_about" />
+            android:name=".PreferenceActivity"
+            android:label="@string/menu_prefs" />
         <activity
             android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">

@@ -19,10 +19,27 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <de.msal.shoutemo.helpers.Preference
-        android:summary="@string/pref_about_about_summary"
-        android:title="@string/app_name" />
-    <de.msal.shoutemo.helpers.Preference
-        android:summary="@string/pref_about_translators_summary"
-        android:title="@string/pref_about_translators_title" />
+    <PreferenceCategory android:title="@string/pref_header_general">
+        <de.msal.shoutemo.helpers.DeleteChatHistoryPreference
+            android:dialogIcon="@android:drawable/ic_dialog_alert"
+            android:dialogMessage="@string/pref_clear_chat_history_dialog_message"
+            android:dialogTitle="@string/pref_clear_chat_history_dialog_title"
+            android:persistent="false"
+            android:selectable="true"
+            android:title="@string/pref_clear_chat_history" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:persistent="false"
+        android:title="@string/pref_header_about">
+        <Preference
+            android:selectable="false"
+            android:summary="@string/pref_about_about_summary"
+            android:title="@string/app_name" />
+        <Preference
+            android:selectable="false"
+            android:summary="@string/pref_about_translators_summary"
+            android:title="@string/pref_about_translators_title" />
+    </PreferenceCategory>
+
 </PreferenceScreen>

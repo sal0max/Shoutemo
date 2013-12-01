@@ -20,8 +20,6 @@
 <resources>
 
     <!-- <string name="app_name"></string> -->
-    <string name="title_about">За Shoutemo</string>
-    <string name="action_about">Информация</string>
     <string name="input_empty">Хей! Напиши съобщение!</string>
 
     <!-- List rows -->
@@ -48,6 +46,7 @@
     <string name="error_field_required">Това поле трябва да се попълни.</string>
 
     <!-- About page -->
+    <string name="pref_header_about">Информация</string>
     <!-- <string name="pref_about_about_summary"></string> -->
     <string name="pref_about_translators_title">Преводи</string>
     <string name="pref_about_translators_summary">
