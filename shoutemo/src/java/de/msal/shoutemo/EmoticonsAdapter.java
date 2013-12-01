@@ -66,7 +66,7 @@ public class EmoticonsAdapter extends BaseAdapter {
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_irritated), ":/"));
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_j_boss), ":j_hui:"));
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_kiss), ":kiss:"));
-        emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_laugh), "XD xD"));
+        emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_laugh), "XD"));
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_lookleft), ":lookleft:"));
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_lookright), ":lookright:"));
         emoticons.add(Pair.create(res.getDrawable(R.drawable.smil_nerd), ":nerd:"));
