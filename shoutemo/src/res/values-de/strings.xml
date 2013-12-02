@@ -21,7 +21,7 @@
 
     <!-- <string name="app_name"></string> -->
     <string name="menu_prefs">Einstellungen</string>
-    <string name="input_empty">Hey! Schreibe eine Nachricht!</string>
+    <string name="input_empty">Hey! Schreibe etwas!</string>
 
     <!-- List rows -->
     <string name="promotion">%s wurde befördert!</string>

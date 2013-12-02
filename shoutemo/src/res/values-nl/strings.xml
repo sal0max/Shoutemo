@@ -20,6 +20,7 @@
 <resources>
 
     <!-- <string name="app_name"></string> -->
+    <!-- TODO <string name="menu_prefs"></string> -->
     <string name="input_empty">Hey! Schrijf een boodschap!</string>
 
     <!-- List rows -->
