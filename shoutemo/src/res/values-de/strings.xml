@@ -63,4 +63,15 @@
         \n• Dänisch -
     </string>
 
+    <!-- Message filters -->
+    <string name="menu_filter_title">Nachrichtenfilter</string>
+    <string name="menu_filter_title_condensed">Filter</string>
+    <string name="menu_filter_all">Zeige alles</string>
+    <string name="menu_filter_shouts">Shouts</string>
+    <string name="menu_filter_global">Globale Ankündigungen</string>
+    <string name="menu_filter_competitions">Wettbewerbe</string>
+    <string name="menu_filter_awards">Auszeichnungen</string>
+    <string name="menu_filter_promotions">Beförderungen</string>
+    <string name="menu_filter_threads">Neue Threads</string>
+
 </resources>

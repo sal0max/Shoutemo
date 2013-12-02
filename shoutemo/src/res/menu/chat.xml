@@ -19,7 +19,48 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_about"
+        android:icon="@drawable/ic_action_filter"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_filter_title"
+        android:titleCondensed="@string/menu_filter_title_condensed">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_filter_all"
+                    android:checked="true"
+                    android:icon="@drawable/ic_event_all"
+                    android:title="@string/menu_filter_all" />
+                <item
+                    android:id="@+id/menu_filter_shouts"
+                    android:icon="@drawable/ic_event_shout"
+                    android:title="@string/menu_filter_shouts" />
+                <item
+                    android:id="@+id/menu_filter_global"
+                    android:icon="@drawable/ic_event_global"
+                    android:title="@string/menu_filter_global" />
+                <item
+                    android:id="@+id/menu_filter_competitions"
+                    android:icon="@drawable/ic_event_competition"
+                    android:title="@string/menu_filter_competitions" />
+                <item
+                    android:id="@+id/menu_filter_awards"
+                    android:icon="@drawable/ic_event_award"
+                    android:title="@string/menu_filter_awards" />
+                <item
+                    android:id="@+id/menu_filter_promotions"
+                    android:icon="@drawable/ic_event_promotion"
+                    android:title="@string/menu_filter_promotions" />
+                <item
+                    android:id="@+id/menu_filter_threads"
+                    android:icon="@drawable/ic_event_thread"
+                    android:title="@string/menu_filter_threads" />
+
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_prefs"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_prefs" />

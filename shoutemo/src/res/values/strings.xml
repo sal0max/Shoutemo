@@ -68,4 +68,15 @@
         \n• Danish -
     </string>
 
+    <!-- Message filters -->
+    <string name="menu_filter_title">Filter messages</string>
+    <string name="menu_filter_title_condensed">Filter</string>
+    <string name="menu_filter_all">Show everything</string>
+    <string name="menu_filter_shouts">Shouts</string>
+    <string name="menu_filter_global">Global Announcements</string>
+    <string name="menu_filter_competitions">Competitions</string>
+    <string name="menu_filter_awards">Awards</string>
+    <string name="menu_filter_promotions">Promotions</string>
+    <string name="menu_filter_threads">New threads</string>
+
 </resources>

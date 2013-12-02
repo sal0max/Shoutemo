@@ -45,6 +45,7 @@ import android.widget.PopupWindow;
 
 import de.msal.shoutemo.connector.GetPostsService;
 import de.msal.shoutemo.connector.SendPostTask;
+import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
 
 public class ChatActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -222,10 +223,61 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Bundle args = new Bundle();
+
         switch (item.getItemId()) {
-            case R.id.action_about:
+            /* settings menu */
+            case R.id.action_prefs:
                 Intent intent = new Intent(this, PreferenceActivity.class);
                 startActivity(intent);
+            /* filters */
+            case R.id.menu_filter_all:
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, null, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_shouts:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.SHOUT + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_global:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.GLOBAL + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_competitions:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.COMPETITION + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_awards:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.AWARD + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_promotions:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.PROMOTION + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
+            case R.id.menu_filter_threads:
+                args.putString("WHERE",
+                        ChatDb.Messages.COLUMN_NAME_TYPE + " = '" + Message.Type.THREAD + "'");
+                getLoaderManager().restartLoader(LOADER_ID_MESSAGES, args, this);
+
+                item.setChecked(true);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -262,7 +314,11 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_MESSAGES:
-                return new CursorLoader(this, ChatDb.Posts.CONTENT_URI, null, null, null, null);
+                String where = null;
+                if (args != null) {
+                    where = args.getString("WHERE");
+                }
+                return new CursorLoader(this, ChatDb.Posts.CONTENT_URI, null, where, null, null);
             default:
                 return null;
         }
