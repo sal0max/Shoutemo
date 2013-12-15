@@ -154,6 +154,9 @@ public class GetPostsService extends Service {
                         if (worker == null || worker.isShutdown()) {
                             worker = Executors.newSingleThreadScheduledExecutor();
                         }
+                        // fix (possible) wrong time-setting on autemo.com
+                        new SetUserTimezoneTask(getApplicationContext()).execute();
+                        // only now recieve messages (with right time)
                         worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
                                 TimeUnit.MILLISECONDS);
                     }
@@ -198,8 +201,7 @@ public class GetPostsService extends Service {
         if (INTERVAL != oldInterval && worker != null && !worker.isShutdown()) {
             worker.shutdown();
             worker = Executors.newSingleThreadScheduledExecutor();
-            worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
-                    TimeUnit.MILLISECONDS);
+            worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL, TimeUnit.MILLISECONDS);
         }
 
         return INTERVAL;
@@ -264,7 +266,6 @@ public class GetPostsService extends Service {
                 // }
             }
 
-            //TODO: CAUTION! ONLY WORKS IF TIME-SETTINGS ON PHONE MATCH SETTINGS ON WEBSITE! WARN USER!?
             /* dynamically alter the refresh rate */
             Cursor c = getContentResolver().query(ChatDb.Messages.CONTENT_URI,
                     new String[]{ChatDb.Messages.COLUMN_NAME_TIMESTAMP}, null, null,

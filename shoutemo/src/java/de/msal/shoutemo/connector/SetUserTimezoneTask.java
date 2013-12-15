@@ -23,36 +23,35 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.TimeZone;
 
 import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 
 /**
- * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b>Needs a
- * {@code message} passed as a single String to successfully run.</b>
+ * @since 14.12.13
  */
-public class SendPostTask extends AsyncTask<String, Void, Integer> {
+public class SetUserTimezoneTask extends AsyncTask<Void, Void, Integer> {
 
-    private final Context context;
+    private Context context;
 
-    public SendPostTask(Context context) {
+    public SetUserTimezoneTask(Context context) {
         this.context = context;
     }
 
     @Override
-    protected Integer doInBackground(String... message) {
-        if (message.length != 1) {
-            throw new IllegalArgumentException(
-                    "Need to pass message to successfully call SendPostTask.");
-        }
+    protected Integer doInBackground(Void... params) {
+        /* the offset includes daylight savings time if currently being within the dst period */
+        double offsetinHours = TimeZone.getDefault().getOffset(new Date().getTime()) / 1000.0 / 60 / 60;
+
         try {
-            return Connection.post(getAuthtoken(), message[0]);
+            return Connection.setUserTimezone(getAuthtoken(), offsetinHours);
         } catch (IOException e) {
             Log.e("SHOUTEMO", e.getMessage());
         }
@@ -62,15 +61,11 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer ret) {
         if (ret != 200) {
-            Log.e("SHOUTEMO", "Error posting the message. Returned code=" + ret);
-        } else {
-            /* restart GetPostsService, so that a sent message is directly shown without big delay */
-            context.stopService(new Intent(context, GetPostsService.class));
-            context.startService(new Intent(context, GetPostsService.class));
+            Log.e("SHOUTEMO", "Error setting the timezone. Returned code=" + ret);
         }
     }
 
-    // TODO merge with SetUserTimezoneTask.getAuthtoken()
+    // TODO merge with SendPostTask.getAuthtoken()
     /* Assume here that a account is already created. Everything else wouldn't make sense. */
     private String getAuthtoken() {
         AccountManager mAccountManager = AccountManager.get(context);
@@ -101,5 +96,4 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
         }
         return null;
     }
-
 }
