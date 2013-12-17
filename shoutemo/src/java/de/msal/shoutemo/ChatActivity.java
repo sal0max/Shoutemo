@@ -195,6 +195,18 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         // default: 230dp
         setEmoticonsKeyboardHeight((int) getResources().getDimension(R.dimen.keyboard_height));
 
+        /* receive and handle share intent */
+        Intent intent = getIntent();
+        String type = intent.getType();
+        if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
+            if (type.equals("text/plain")) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    inputField.setText(sharedText);
+                }
+            }
+        }
+
         /* list stuff */
         this.setListAdapter(this.listAdapter);
         this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
