@@ -274,8 +274,8 @@ public class Connection {
                     .execute()
                     .statusCode();
             Log.d("SHOUTEMO",
-                    "Changing user timezone to " + offsetCode + " (timezone code) (offsetInHours:"
-                            + offsetInHours + "; autemoOffsetInHours" + autemoOffsetInHours + ")"
+                    "Changing user timezone to " + offsetCode + " (timezone code) (GMT+"
+                            + offsetInHours + " (offsetInHours); autemoOffsetInHours:" + autemoOffsetInHours + ")"
                             + ". Server answer: "
                             + statusCode);
             return statusCode;

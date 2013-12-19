@@ -33,7 +33,9 @@ import android.text.format.Time;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -155,7 +157,7 @@ public class GetPostsService extends Service {
                             worker = Executors.newSingleThreadScheduledExecutor();
                         }
                         // fix (possible) wrong time-setting on autemo.com
-                        new SetUserTimezoneTask(getApplicationContext()).execute();
+                        worker.execute(new SetTimezoneTask());
                         // only now recieve messages (with right time)
                         worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
                                 TimeUnit.MILLISECONDS);
@@ -277,6 +279,24 @@ public class GetPostsService extends Service {
             now.setToNow();
             long timeSinceLastPost = now.toMillis(false) - newestPostTimestamp;
             setIntervall(timeSinceLastPost);
+        }
+    }
+
+    private class SetTimezoneTask extends Thread {
+
+        @Override
+        public void run() {
+            double offsetinHours = TimeZone.getDefault().getOffset(new Date().getTime()) / 1000.0
+                    / 60 / 60;
+            int returnCode = -1;
+            try {
+                returnCode = Connection.setUserTimezone(mAuthToken, offsetinHours);
+            } catch (IOException e) {
+                Log.e("SHOUTEMO", e.getMessage());
+            }
+            if (returnCode != 200) {
+                Log.e("SHOUTEMO", "Error setting the timezone. Returned code=" + returnCode);
+            }
         }
     }
 
