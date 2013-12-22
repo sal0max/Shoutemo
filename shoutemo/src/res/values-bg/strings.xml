@@ -51,11 +51,8 @@
     <!-- <string name="pref_about_about_summary"></string> -->
     <string name="pref_about_translators_title">Преводи</string>
     <string name="pref_about_translators_summary">
-        • Холандски -
-        \n• Френски -
+        • Холандски - Sam Vesters
         \n• Български - E. Marinov
-        \n• Португалски -
-        \n• Датск  -
     </string>
 
 </resources>
