@@ -21,7 +21,7 @@
 
     <PreferenceCategory android:title="@string/pref_header_general">
         <de.msal.shoutemo.helpers.DeleteChatHistoryPreference
-            android:dialogIcon="@android:drawable/ic_dialog_alert"
+            android:dialogIcon="@drawable/ic_dialog_alert"
             android:dialogMessage="@string/pref_clear_chat_history_dialog_message"
             android:dialogTitle="@string/pref_clear_chat_history_dialog_title"
             android:persistent="false"
