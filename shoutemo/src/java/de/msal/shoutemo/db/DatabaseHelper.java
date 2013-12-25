@@ -29,7 +29,7 @@ import android.util.Log;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     /* Used for debugging and logging */
-    private static final String TAG = "DatabaseHelper";
+    private static final String TAG = "Shoutemo|DatabaseHelper";
     /**
      * The database that the provider uses as its underlying data store
      */
@@ -71,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         /* Logs that the database is being upgraded */
-        Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
+        Log.i(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
         if (newVersion == 2) {
             String sql = "UPDATE " + ChatDb.Messages.TABLE_NAME
                     + " SET "

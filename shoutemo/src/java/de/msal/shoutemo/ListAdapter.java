@@ -37,6 +37,7 @@ import de.msal.shoutemo.helpers.TimeUtils;
 
 public class ListAdapter extends CursorAdapter {
 
+    private static final String TAG = "Shoutemo|ListAdapter";
     private Context context;
     /**
      * for loading the smileys
@@ -58,10 +59,10 @@ public class ListAdapter extends CursorAdapter {
                     }
 
                 } else {
-                    Log.v("SHOUTEMO", "uknown image embedded: " + source);
+                    Log.v(TAG, "Unknown image embedded: " + source);
                 }
             } catch (Resources.NotFoundException e) {
-                Log.e("SHOUTEMO", "unkown emoticon showed up:" + smiley);
+                Log.w(TAG, "Unkown emoticon showed up: " + smiley);
             }
             Drawable d = context.getResources().getDrawable(R.drawable.ic_missing_image);
             d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());

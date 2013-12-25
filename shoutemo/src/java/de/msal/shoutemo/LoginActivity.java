@@ -46,7 +46,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
     public static final String PARAM_USERNAME = "username";
-    // public static final String PARAM_PASSWORD = "mPassword";
+    private static final String TAG = "Shoutemo|LoginActivity";
     private String mEmail, mPassword;
     private EditText mEmailView, mPasswordView;
     private View mLoginFormView, mLoginStatusView;
@@ -106,7 +106,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 //            public void handleMessage(Message msg) {
 //                if (msg.what == 0) { //NetworkUtil.ERR) {
 //                    showProgress(false);
-//                    Log.d("!!!!!", "Login Failed");
+//                    Log.d(TAG, "Login Failed");
 //                } else if (msg.what == 1) { //NetworkUtil.OK) {
 //                    handleLoginResponse();
 //                }
@@ -225,7 +225,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            Log.d("shoutemo", "> Started authenticating");
+            Log.v(TAG, "Started authenticating.");
             try {
                 return Connection.isCredentialsCorrect(mEmail, mPassword);
             } catch (IOException e) {

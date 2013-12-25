@@ -50,6 +50,7 @@ import de.msal.shoutemo.db.ChatDb;
  */
 public class GetPostsService extends Service {
 
+    private static final String TAG = "Shoutemo|GetPostsService";
     // repeating task (get posts)
     private static long INTERVAL = 2500; // default: 2.5s
     private ScheduledExecutorService worker;
@@ -67,7 +68,7 @@ public class GetPostsService extends Service {
 
         /* No account; push the user into adding one */
         if (acc.length == 0) {
-            Log.d("SHOUTEMO", "No suitable account found, directing user to add one");
+            Log.v(TAG, "No suitable account found, directing user to add one.");
             mAccountManager.addAccount(
                     AccountAuthenticator.ACCOUNT_TYPE,
                     null,
@@ -103,8 +104,8 @@ public class GetPostsService extends Service {
                                     bundle.getString(AccountManager.KEY_ACCOUNT_NAME),
                                     bundle.getString(AccountManager.KEY_ACCOUNT_TYPE)
                             );
-                            Log.d("SHOUTEMO",
-                                    "Added account " + mAccount.name + "; now fetching new posts");
+                            Log.v(TAG,
+                                    "Added account " + mAccount.name + "; now fetching new posts.");
                             startGetPostsTask();
                         }
                     },
@@ -151,7 +152,7 @@ public class GetPostsService extends Service {
                             return;
                         }
                         mAuthToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-                        Log.d("SHOUTEMO", "Received authentication token: " + mAuthToken);
+                        Log.v(TAG, "Received authentication token=" + mAuthToken);
                         // now get messages!
                         if (worker == null || worker.isShutdown()) {
                             worker = Executors.newSingleThreadScheduledExecutor();
@@ -221,16 +222,14 @@ public class GetPostsService extends Service {
             try {
                 posts = Connection.getPosts(mAuthToken);
             } catch (IOException e) {
-                Log.e("SHOUTEMO", e.getMessage());
+                Log.e(TAG, e.getMessage());
             }
 
             /* check if new posts can be received */
             if (posts.isEmpty()) {
-                Log.v("SHOUTEMO",
-                        "Received empty data. Invalidating authtoken and fetching new one...");
+                Log.v(TAG, "Received empty data. Invalidating authtoken & fetching new one.");
                 stopGetPostsTask();
-                mAccountManager.invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE,
-                        mAuthToken);
+                mAccountManager.invalidateAuthToken(AccountAuthenticator.ACCOUNT_TYPE, mAuthToken);
                 startGetPostsTask();
             }
 
@@ -241,10 +240,8 @@ public class GetPostsService extends Service {
                 /* add a new person to the authors table if one is found */
                 if (post.getAuthor() != null) {
                     values = new ContentValues();
-                    values.put(ChatDb.Authors.COLUMN_NAME_NAME,
-                            post.getAuthor().getName());
-                    values.put(ChatDb.Authors.COLUMN_NAME_TYPE,
-                            post.getAuthor().getType().name());
+                    values.put(ChatDb.Authors.COLUMN_NAME_NAME, post.getAuthor().getName());
+                    values.put(ChatDb.Authors.COLUMN_NAME_TYPE, post.getAuthor().getType().name());
                     getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
                 }
 
@@ -259,8 +256,7 @@ public class GetPostsService extends Service {
                             post.getMessage().getText());
                     values.put(ChatDb.Messages.COLUMN_NAME_TYPE,
                             post.getMessage().getType().name());
-                    values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP,
-                            post.getDate().getTime());
+                    values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP, post.getDate().getTime());
                 }
 
                 // if (values.size() > 0) {
@@ -292,10 +288,10 @@ public class GetPostsService extends Service {
             try {
                 returnCode = Connection.setUserTimezone(mAuthToken, offsetinHours);
             } catch (IOException e) {
-                Log.e("SHOUTEMO", e.getMessage());
+                Log.e(TAG, e.getMessage());
             }
             if (returnCode != 200) {
-                Log.e("SHOUTEMO", "Error setting the timezone. Returned code=" + returnCode);
+                Log.e(TAG, "Error setting the timezone. Returned code=" + returnCode);
             }
         }
     }

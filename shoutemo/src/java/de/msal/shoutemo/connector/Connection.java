@@ -44,9 +44,9 @@ import de.msal.shoutemo.connector.model.Post;
  */
 public class Connection {
 
-    /**/
-    private final static String USER_AGENT = "Shoutemo";
-    private final static int TIMEOUT = 12000;
+    private static final String TAG = "Shoutemo|Connection";
+    private static final String USER_AGENT = "Shoutemo";
+    private static final int TIMEOUT = 12000;
 
     /**
      * Class for connecting to autemo.com, getting its shoutbox content and send shouts to it.
@@ -75,7 +75,7 @@ public class Connection {
      */
     public static String getToken(String nick, String password) throws IOException {
         Map<String, String> cookies = connect(nick, password);
-        Log.d("Connection", "returning session id: PHPSESSID=" + cookies.get("PHPSESSID"));
+        Log.v(TAG, "Returning session id: PHPSESSID=" + cookies.get("PHPSESSID"));
         return cookies.get("PHPSESSID");
     }
 
@@ -273,11 +273,9 @@ public class Connection {
                     .method(org.jsoup.Connection.Method.POST)
                     .execute()
                     .statusCode();
-            Log.d("SHOUTEMO",
-                    "Changing user timezone to " + offsetCode + " (timezone code) (GMT+"
-                            + offsetInHours + " (offsetInHours); autemoOffsetInHours:" + autemoOffsetInHours + ")"
-                            + ". Server answer: "
-                            + statusCode);
+            Log.v(TAG, "Changing user timezone to " + offsetCode + " (timezone code) (GMT+"
+                    + offsetInHours + " (offsetInHours); autemoOffsetInHours=" + autemoOffsetInHours
+                    + "). Server answer=" + statusCode);
             return statusCode;
         } else {
             return -1;

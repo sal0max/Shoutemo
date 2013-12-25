@@ -39,6 +39,7 @@ import de.msal.shoutemo.authenticator.AccountAuthenticator;
  */
 public class SendPostTask extends AsyncTask<String, Void, Integer> {
 
+    private static final String TAG = "Shoutemo|SendPostTask";
     private final Context context;
 
     public SendPostTask(Context context) {
@@ -54,7 +55,7 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
         try {
             return Connection.post(getAuthtoken(), message[0]);
         } catch (IOException e) {
-            Log.e("SHOUTEMO", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         return -1;
     }
@@ -62,7 +63,7 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer ret) {
         if (ret != 200) {
-            Log.e("SHOUTEMO", "Error posting the message. Returned code=" + ret);
+            Log.e(TAG, "Error posting the message. Returned code=" + ret);
         } else {
             /* restart GetPostsService, so that a sent message is directly shown without big delay */
             context.stopService(new Intent(context, GetPostsService.class));
