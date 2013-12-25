@@ -40,7 +40,7 @@
     <string name="prompt_password">Wachtwoord</string>
     <string name="action_sign">Meld aan</string>
     <string name="login_dont_have_account_yet_question">Heb je nog geen account?</string>
-    <string name="login_head_to_autemo_com">Ga snel naar autemo.com en registreer je!</string>
+    <string name="login_head_to_autemo_com">Ga snel naar &lt;a href="http://www.autemo.com/signup/?m=artist"&gt;autemo.com&lt;/a&gt; en registreer je!</string>
     <string name="login_progress_signing_in">Authenticating&#8230;</string>
     <string name="error_invalid_email_or_password">Email adres of wachtwoord is niet correct.</string>
     <string name="error_field_required">Dit veld is verplicht.</string>

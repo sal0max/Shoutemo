@@ -41,7 +41,7 @@
     <string name="prompt_password">Passwort</string>
     <string name="action_sign">Anmelden</string>
     <string name="login_dont_have_account_yet_question">Du besitzt noch keinen Account?</string>
-    <string name="login_head_to_autemo_com">Gehe auf autemo.com und melde dich an!</string>
+    <string name="login_head_to_autemo_com">Gehe auf &lt;a href="http://www.autemo.com/signup/?m=artist"&gt;autemo.com&lt;/a&gt; und melde dich an!</string>
     <string name="login_progress_signing_in">Logge ein…</string>
     <string name="error_invalid_email_or_password">Email-Adresse oder Passwort ungültig.</string>
     <string name="error_field_required">Pflichtfeld.</string>

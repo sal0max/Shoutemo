@@ -26,12 +26,15 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.IOException;
 
@@ -48,13 +51,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
     public static final String PARAM_USERNAME = "username";
     // public static final String PARAM_PASSWORD = "mPassword";
-
     private String mEmail, mPassword;
-
     private EditText mEmailView, mPasswordView;
-
     private View mLoginFormView, mLoginStatusView;
-
     private UserLoginTask mAuthTask;
 
     @Override
@@ -67,6 +66,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusView = findViewById(R.id.login_status);
+
+        /* link description to autemo.com/signup */
+        ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com))
+                .setMovementMethod(LinkMovementMethod.getInstance());
+        ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com)).setText(
+                Html.fromHtml(getResources().getString(R.string.login_head_to_autemo_com)));
 
         /* set custom action bar font */
         SpannableString s = new SpannableString(getString(R.string.app_title_login).toLowerCase());

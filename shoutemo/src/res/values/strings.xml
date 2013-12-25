@@ -41,7 +41,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign">Sign in</string>
     <string name="login_dont_have_account_yet_question">Don\'t have an account yet?</string>
-    <string name="login_head_to_autemo_com">Head over to autemo.com and sign up!</string>
+    <string name="login_head_to_autemo_com">Head over to &lt;a href="http://www.autemo.com/signup/?m=artist"&gt;autemo.com&lt;/a&gt; and sign up!</string>
     <string name="login_progress_signing_in">Authenticating&#8230;</string>
     <string name="error_invalid_email_or_password">Email address or password is invalid.</string>
     <string name="error_field_required">This field is required.</string>

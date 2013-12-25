@@ -40,7 +40,7 @@
     <string name="prompt_password">Парола</string>
     <string name="action_sign">Вписване</string>
     <string name="login_dont_have_account_yet_question">Без регистрация?</string>
-    <string name="login_head_to_autemo_com">Отиди на autemo.com и се регистрирай!</string>
+    <string name="login_head_to_autemo_com">Отиди на &lt;a href="http://www.autemo.com/signup/?m=artist"&gt;autemo.com&lt;/a&gt; и се регистрирай!</string>
     <string name="login_progress_signing_in">Одобряване&#8230;</string>
     <string name="error_invalid_email_or_password">Грешна парола или Емайл.</string>
     <string name="error_field_required">Това поле трябва да се попълни.</string>
