@@ -22,13 +22,10 @@ import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -40,7 +37,6 @@ import java.io.IOException;
 
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 import de.msal.shoutemo.connector.Connection;
-import de.msal.shoutemo.helpers.TypeFacespan;
 
 /**
  * Activity which displays a login screen to the user
@@ -73,14 +69,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com)).setText(
                 Html.fromHtml(getResources().getString(R.string.login_head_to_autemo_com)));
 
-        /* set custom action bar font */
-        SpannableString s = new SpannableString(getString(R.string.app_title_login).toLowerCase());
-        s.setSpan(new TypeFacespan(this, "BIRDMAN_.TTF"), 0, s.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(s);
-        }
+        /* show title */
+        getActionBar().setDisplayUseLogoEnabled(false);
+        getActionBar().setDisplayShowTitleEnabled(true);
 
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
