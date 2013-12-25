@@ -70,7 +70,6 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
         }
     }
 
-    // TODO merge with SetUserTimezoneTask.getAuthtoken()
     /* Assume here that a account is already created. Everything else wouldn't make sense. */
     private String getAuthtoken() {
         AccountManager mAccountManager = AccountManager.get(context);

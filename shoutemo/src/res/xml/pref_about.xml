@@ -34,12 +34,19 @@
         android:title="@string/pref_header_about">
         <Preference
             android:selectable="false"
+            android:icon="@drawable/ic_launcher"
             android:summary="@string/pref_about_about_summary"
             android:title="@string/app_name" />
         <Preference
             android:selectable="false"
             android:summary="@string/pref_about_translators_summary"
             android:title="@string/pref_about_translators_title" />
+
+        <Preference android:enabled="true"
+            android:key="notices"
+            android:selectable="true"
+            android:title="Some icons by Mihaiciuc Bogdan"
+            android:summary="from the set 'Project Icons'"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

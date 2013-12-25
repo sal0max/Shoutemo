@@ -17,10 +17,14 @@
 
 package de.msal.shoutemo;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.view.MenuItem;
 
-public class PreferenceActivity extends android.preference.PreferenceActivity {
+public class PreferenceActivity extends android.preference.PreferenceActivity implements
+        Preference.OnPreferenceClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +35,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
         getActionBar().setDisplayShowTitleEnabled(true);
 
         addPreferencesFromResource(R.xml.pref_about);
+
+        findPreference("notices").setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -43,4 +49,15 @@ public class PreferenceActivity extends android.preference.PreferenceActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference.getKey().equals("notices")) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse("http://bogo-d.deviantart.com"));
+            startActivity(i);
+        }
+        return true;
+    }
+
 }
