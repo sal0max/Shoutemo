@@ -1,0 +1,8 @@
+-dontwarn com.google.common.**
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+-keep public class org.jsoup.** {
+public *;
+}
