@@ -10,5 +10,9 @@ gradlew.bat
 *.iml
 local.properties
 
+## Keystore for signing
+signing.properties
+*.keystore
+
 # Misc
 .DS_Store
