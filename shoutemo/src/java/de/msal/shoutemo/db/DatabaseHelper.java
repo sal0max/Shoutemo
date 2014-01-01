@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * The database version
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     DatabaseHelper(Context context) {
         /* calls the super constructor, requesting the default cursor factory. */
@@ -79,6 +79,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + " = replace(" + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML + ","
                     + " 'src=\"http://www.autemo.com/images/smileys/',"
                     + " 'src=\"images/smileys/')"
+                    + ";";
+            db.execSQL(sql);
+        }
+        /*
+         * fix new-year-problem (2013 -> 2014):
+         * delete wrong entries (deletes every post that is > Sep 2014. That is the date the user
+         * must have updated the app in order to not lose correct posts)
+         */
+        if (newVersion == 3) {
+            String sql = "DELETE FROM "
+                    + ChatDb.Messages.TABLE_NAME
+                    + " WHERE "
+                    + ChatDb.Messages.COLUMN_NAME_TIMESTAMP
+                    + " > 1410000000000"
                     + ";";
             db.execSQL(sql);
         }

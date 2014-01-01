@@ -36,9 +36,7 @@ import java.util.Locale;
 public class Post implements Comparable<Post> {
 
     private Author author;
-
     private Message message;
-
     private Date date;
 
     /**
@@ -112,7 +110,18 @@ public class Post implements Comparable<Post> {
         Calendar cal = new GregorianCalendar();
         try {
             cal.setTime(sdf.parse(date));
-            cal.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+
+            /*
+             * As autemo doesn't provide year identifier, see that on year swich, the old messages
+             * from december won't be transfered 1 year to the future.
+             * Assumes that no messages are on autemo.com that are older than 1 year!
+             */
+            Calendar now = Calendar.getInstance();
+            if (cal.get(Calendar.MONTH) > now.get(Calendar.MONTH)) {
+                cal.set(Calendar.YEAR, now.get(Calendar.YEAR) - 1);
+            } else {
+                cal.set(Calendar.YEAR, now.get(Calendar.YEAR));
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
