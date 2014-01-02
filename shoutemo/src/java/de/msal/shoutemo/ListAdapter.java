@@ -18,12 +18,9 @@
 package de.msal.shoutemo;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,41 +31,12 @@ import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
 import de.msal.shoutemo.helpers.TimeUtils;
+import de.msal.shoutemo.helpers.UrlImageGetter;
 
 public class ListAdapter extends CursorAdapter {
 
     private static final String TAG = "Shoutemo|ListAdapter";
     private Context context;
-    /**
-     * for loading the smileys
-     */
-    private Html.ImageGetter imageGetter = new Html.ImageGetter() {
-        public Drawable getDrawable(String source) {
-            String smiley = "";
-            try {
-                if (source.startsWith("images/smileys/")) {
-                    smiley = source.substring(source.lastIndexOf('/') + 1,
-                            source.lastIndexOf('.'));
-                    int id = context.getResources().getIdentifier("smil_" + smiley,
-                            "drawable", context.getPackageName());
-
-                    Drawable d = context.getResources().getDrawable(id);
-                    if (d != null) {
-                        d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-                        return d;
-                    }
-
-                } else {
-                    Log.v(TAG, "Unknown image embedded: " + source);
-                }
-            } catch (Resources.NotFoundException e) {
-                Log.w(TAG, "Unkown emoticon showed up: " + smiley);
-            }
-            Drawable d = context.getResources().getDrawable(R.drawable.ic_missing_image);
-            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-            return d;
-        }
-    };
 
     public ListAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -151,6 +119,7 @@ public class ListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
         TextView tvMessage, tvTimestamp, tvAuthor;
+        UrlImageGetter imageGetter;
 
         String author;
         String message = cursor
@@ -163,6 +132,7 @@ public class ListAdapter extends CursorAdapter {
                 tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
                 tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
+                imageGetter = new UrlImageGetter(context, tvMessage);
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -197,6 +167,7 @@ public class ListAdapter extends CursorAdapter {
             case THREAD:
                 tvMessage = (TextView) view.getTag(R.id.listrow_thread_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_thread_timestamp);
+                imageGetter = new UrlImageGetter(context, tvMessage);
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -213,6 +184,7 @@ public class ListAdapter extends CursorAdapter {
             case AWARD:
                 tvMessage = (TextView) view.getTag(R.id.listrow_award_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_award_timestamp);
+                imageGetter = new UrlImageGetter(context, tvMessage);
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -229,6 +201,7 @@ public class ListAdapter extends CursorAdapter {
             case GLOBAL:
                 tvMessage = (TextView) view.getTag(R.id.listrow_global_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_global_timestamp);
+                imageGetter = new UrlImageGetter(context, tvMessage);
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
@@ -240,6 +213,7 @@ public class ListAdapter extends CursorAdapter {
             case COMPETITION:
                 tvMessage = (TextView) view.getTag(R.id.listrow_competition_message);
                 tvTimestamp = (TextView) view.getTag(R.id.listrow_competition_timestamp);
+                imageGetter = new UrlImageGetter(context, tvMessage);
 
                 // make links clickable (disables click of entire row, too)
                 tvMessage.setMovementMethod(LinkMovementMethod.getInstance());

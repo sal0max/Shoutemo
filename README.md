@@ -25,6 +25,7 @@ With it you can use the shoutbox of [autemo.com](autemo.com/forums/)s forums on 
 * This app runs on Android 4.0.3 (API 15) or newer.
 * [JSoup](http://jsoup.org/) (MIT License)
 * [Guava](http://code.google.com/p/guava-libraries/) (Apache License 2.0)
+* [Picasso - Fork by Alessandro Crugnola](https://github.com/sephiroth74/picasso) (Apache License 2.0)
 * Some icons from [Project Icons](http://fav.me/d2ksp9k) by [Mihaiciuc Bogdan](http://bogo-d.deviantart.com) (Creative Commons Attribution 3.0)
 
 ## License
