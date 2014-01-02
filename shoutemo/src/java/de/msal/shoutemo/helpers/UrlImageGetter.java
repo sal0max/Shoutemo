@@ -23,11 +23,13 @@ import com.squareup.picasso.Target;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Html.ImageGetter;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -78,7 +80,7 @@ public class UrlImageGetter implements ImageGetter {
             Log.v(TAG, "now load the image");
             target = new MyTarget();
 
-            /* resize to displayWidth/Height as max */
+            /* limit bitmap size to prevent OOM errors */
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
@@ -90,11 +92,18 @@ public class UrlImageGetter implements ImageGetter {
             if (displayWidth < maxSize) maxSize = displayWidth;
             if (displayHeigt < maxSize) maxSize = displayHeigt;
 
+            /* use proper scaling for different display densities */
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inDensity = DisplayMetrics.DENSITY_MEDIUM;
+            options.inTargetDensity = context.getResources().getDisplayMetrics().densityDpi;
+            options.inScaled = true;
+
             Picasso.with(context)
                     .load(source)
+                    .noFade()
                     .resize(maxSize, maxSize, true)
                     .centerInside()
-                    .noFade()
+                    .withOptions(options)
                     .placeholder(R.drawable.ic_missing_image)
                     .error(R.drawable.ic_missing_image)
                     .into(target);
