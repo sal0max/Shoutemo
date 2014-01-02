@@ -5,9 +5,9 @@
 ## About
 
 _Shoutemo_ is a group chat app.  
-With it you can use the shoutbox of [autemo.com](autemo.com/forums/)s forums on your Android phone much more conveniently and with additional features:
+With it you can use the shoutbox of [autemo.com's](http://autemo.com/forums/) forums on your Android phone much more conveniently and with additional features:
 
-* **Endless storage of the chat history**. (On [autemo.com](autemo.com/forums/) only the 50 newest posts can be seen at any time.)
+* **Endless storage of the chat history**. (On [autemo.com](http://autemo.com/forums/) only the 50 newest posts can be seen at any time.)
 * **Having problems with the wrong timezone settings on autemo.com?** Shoutemo takes care of that once and for all! It sets the right timezone within the app & on autemo.com, all based on the time of your phone. 
 * **Convenient usage**: As beeing a native app all the trouble that comes with using the (non-adapting) website on the mobile browser goes away: No need to resize, no slow performance, no incompability. Simply delighful to use.
 * **No autentication hassle**: Once the user logs in, his credentials get handled by Androids [Account Authentication System](http://developer.android.com/reference/android/accounts/AbstractAccountAuthenticator.html). From there on, just start the app and you're ready to go.
