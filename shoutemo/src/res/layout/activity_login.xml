@@ -106,7 +106,8 @@
                 android:layout_height="wrap_content"
                 android:linksClickable="true"
                 android:text="@string/login_head_to_autemo_com"
-                android:textAppearance="@android:style/TextAppearance.Small" />
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColorLink="@color/autemo_green_primary" />
         </LinearLayout>
     </ScrollView>
 
