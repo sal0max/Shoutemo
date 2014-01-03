@@ -30,7 +30,7 @@ With it you can use the shoutbox of [autemo.com's](http://autemo.com/forums/) fo
 
 ## License
 
-**Copyright 2013 MSal**
+**Copyright 2013-2014 MSal**
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
