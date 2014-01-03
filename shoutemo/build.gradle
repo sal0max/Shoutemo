@@ -32,7 +32,7 @@ repositories {
 dependencies {
     compile 'com.google.guava:guava:16.0-rc1'
     compile 'org.jsoup:jsoup:1.7.+'
-}
+    compile 'it.sephiroth.android.library.picasso:picasso:2.+'}
 
 android {
     compileSdkVersion 19

@@ -190,7 +190,7 @@ public class ChatProvider extends ContentProvider {
         ContentValues values = (initialValues == null) ? new ContentValues()
                 : new ContentValues(initialValues);
         SQLiteDatabase db = mOpenHelper.getWritableDatabase(); // open in WRITE mode
-        long rowId = 0;
+        long rowId;
       /* validates the incoming URI. Only the full provider URI is allowed for inserts */
         switch (mUriMatcher.match(uri)) {
             case URI_MATCH_MESSAGES:
@@ -207,15 +207,15 @@ public class ChatProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-//        if (rowId > 0) { // if the insert succeeded, the row ID exists
-         /* notifies observers registered against this provider that the data changed */
-        getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
-        return uri;
-//        }
+        if (rowId > 0) { // if the insert succeeded, the row ID exists
+             /* notifies observers registered against this provider that the data changed */
+            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
+        }
 //        else { // if the insert didn't succeed, then the rowID is <= 0: throws an exception
 //            throw new SQLException("Failed to insert row into " + uri);
 //        }
+        return uri;
     }
 
     public void insert(List<Post> posts) {
@@ -326,6 +326,7 @@ public class ChatProvider extends ContentProvider {
          * themselves for the provider are notified.
          */
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
 
         // Returns the number of rows deleted.
         return count;
@@ -407,6 +408,7 @@ public class ChatProvider extends ContentProvider {
          * themselves for the provider are notified.
          */
         getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
 
         /* Returns the number of rows updated. */
         return count;
