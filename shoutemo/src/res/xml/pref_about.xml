@@ -45,8 +45,8 @@
         <Preference android:enabled="true"
             android:key="notices"
             android:selectable="true"
-            android:title="Some icons by Mihaiciuc Bogdan"
-            android:summary="from the set 'Project Icons'"/>
+            android:title="@string/pref_about_project_icons_title"
+            android:summary="@string/pref_about_project_icons_summary"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
