@@ -19,12 +19,15 @@ package de.msal.shoutemo;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import de.msal.shoutemo.connector.model.Author;
@@ -62,183 +65,155 @@ public class ListAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = null;
+        View view;
 
-        switch (getItemType(cursor.getPosition())) {
-            case SHOUT:
-                view = inflater.inflate(R.layout.listrow_shout, parent, false);
+        if (getItemType(cursor.getPosition()).equals(Message.Type.SHOUT)) {
+            view = inflater.inflate(R.layout.listrow_shout, parent, false);
 
-                view.setTag(R.id.listrow_shout_message,
-                        view.findViewById(R.id.listrow_shout_message));
-                view.setTag(R.id.listrow_shout_author,
-                        view.findViewById(R.id.listrow_shout_author));
-                view.setTag(R.id.listrow_shout_timestamp,
-                        view.findViewById(R.id.listrow_shout_timestamp));
-                break;
-            case THREAD:
-                view = inflater.inflate(R.layout.listrow_thread, parent, false);
+            view.setTag(R.id.listrow_shout_message, view.findViewById(R.id.listrow_shout_message));
+            view.setTag(R.id.listrow_shout_author, view.findViewById(R.id.listrow_shout_author));
+            view.setTag(R.id.listrow_shout_timestamp,
+                    view.findViewById(R.id.listrow_shout_timestamp));
+        } else {
+            view = inflater.inflate(R.layout.listrow_event, parent, false);
 
-                view.setTag(R.id.listrow_thread_message,
-                        view.findViewById(R.id.listrow_thread_message));
-                view.setTag(R.id.listrow_thread_timestamp,
-                        view.findViewById(R.id.listrow_thread_timestamp));
-                break;
-            case AWARD:
-                view = inflater.inflate(R.layout.listrow_award, parent, false);
-
-                view.setTag(R.id.listrow_award_message,
-                        view.findViewById(R.id.listrow_award_message));
-                view.setTag(R.id.listrow_award_timestamp,
-                        view.findViewById(R.id.listrow_award_timestamp));
-                break;
-            case GLOBAL:
-                view = inflater.inflate(R.layout.listrow_global, parent, false);
-                view.setTag(R.id.listrow_global_message,
-                        view.findViewById(R.id.listrow_global_message));
-                view.setTag(R.id.listrow_global_timestamp,
-                        view.findViewById(R.id.listrow_global_timestamp));
-                break;
-            case COMPETITION:
-                view = inflater.inflate(R.layout.listrow_competition, parent, false);
-                view.setTag(R.id.listrow_competition_message,
-                        view.findViewById(R.id.listrow_competition_message));
-                view.setTag(R.id.listrow_competition_timestamp,
-                        view.findViewById(R.id.listrow_competition_timestamp));
-                break;
-            case PROMOTION:
-                view = inflater.inflate(R.layout.listrow_promotion, parent, false);
-                view.setTag(R.id.listrow_promotion_message,
-                        view.findViewById(R.id.listrow_promotion_message));
-                view.setTag(R.id.listrow_promotion_timestamp,
-                        view.findViewById(R.id.listrow_promotion_timestamp));
-                break;
+            view.setTag(R.id.listrow_event_global_title,
+                    view.findViewById(R.id.listrow_event_global_title));
+            view.setTag(R.id.listrow_event_icon, view.findViewById(R.id.listrow_event_icon));
+            view.setTag(R.id.listrow_event_message, view.findViewById(R.id.listrow_event_message));
+            view.setTag(R.id.listrow_event_timestamp,
+                    view.findViewById(R.id.listrow_event_timestamp));
         }
+
         return view;
     }
 
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-        TextView tvMessage, tvTimestamp, tvAuthor;
-        UrlImageGetter imageGetter;
 
-        String author;
+        TextView tvMessage, tvTimestamp, tvGlobalTitle;
+        ImageView ivIcon;
+
         String message = cursor
                 .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
-        long timestamp = cursor.getLong(
-                cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
+        String author = cursor
+                .getString(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+        long timestamp = cursor
+                .getLong(cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
 
-        switch (getItemType(cursor.getPosition())) {
-            case SHOUT:
-                tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
-                tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
-                imageGetter = new UrlImageGetter(context, tvMessage);
+        /* SHOUTS */
+        if (getItemType(cursor.getPosition()).equals(Message.Type.SHOUT)) {
+            tvMessage = (TextView) view.getTag(R.id.listrow_shout_message);
+            TextView tvAuthor = (TextView) view.getTag(R.id.listrow_shout_author);
+            tvTimestamp = (TextView) view.getTag(R.id.listrow_shout_timestamp);
 
-                // make links clickable (disables click of entire row, too)
-                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            /* set text */
+            tvAuthor.setText(author);
 
-                author = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-
-                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-                tvAuthor.setText(author);
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-                /* show the right tvAuthor color (mod/admin) */
-                Author.Type authorType = Author.Type.valueOf(cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE)));
-                switch (authorType) {
-                    case ADMIN:
-                        tvAuthor.setTextColor(
-                                this.context.getResources().getColor(R.color.autemo_blue));
-                        break;
-                    case MOD:
-                        tvAuthor.setTextColor(
-                                this.context.getResources()
-                                        .getColor(R.color.autemo_green_secondary));
-                        break;
-                    default:
-                        tvAuthor.setTextColor(
-                                this.context.getResources().getColor(R.color.autemo_grey_bright));
-                        break;
-                }
-
-                break;
-            case THREAD:
-                tvMessage = (TextView) view.getTag(R.id.listrow_thread_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_thread_timestamp);
-                imageGetter = new UrlImageGetter(context, tvMessage);
-
-                // make links clickable (disables click of entire row, too)
-                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-
-                author = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-                message = this.context.getResources().getString(R.string.thread_author, author)
-                        + message;
-
-                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-                break;
-            case AWARD:
-                tvMessage = (TextView) view.getTag(R.id.listrow_award_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_award_timestamp);
-                imageGetter = new UrlImageGetter(context, tvMessage);
-
-                // make links clickable (disables click of entire row, too)
-                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-
-                author = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-                message = this.context.getResources().getString(R.string.award_author, author)
-                        + message;
-
-                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-                break;
-            case GLOBAL:
-                tvMessage = (TextView) view.getTag(R.id.listrow_global_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_global_timestamp);
-                imageGetter = new UrlImageGetter(context, tvMessage);
-
-                // make links clickable (disables click of entire row, too)
-                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-
-                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-                break;
-            case COMPETITION:
-                tvMessage = (TextView) view.getTag(R.id.listrow_competition_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_competition_timestamp);
-                imageGetter = new UrlImageGetter(context, tvMessage);
-
-                // make links clickable (disables click of entire row, too)
-                tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-
-                author = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-                message = this.context.getResources().getString(R.string.competition_author, author)
-                        + message;
-
-                tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-
-                break;
-            case PROMOTION:
-                tvMessage = (TextView) view.getTag(R.id.listrow_promotion_message);
-                tvTimestamp = (TextView) view.getTag(R.id.listrow_promotion_timestamp);
-
-                author = cursor.getString(
-                        cursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-                message = this.context.getResources().getString(R.string.promotion, author);
-
-                tvMessage.setText(message);
-                tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
-                break;
+            /* show the right tvAuthor color (mod/admin/member) */
+            switch (Author.Type.valueOf(
+                    cursor.getString(cursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE)))) {
+                case ADMIN:
+                    tvAuthor.setTextColor(
+                            this.context.getResources().getColor(R.color.autemo_blue));
+                    break;
+                case MOD:
+                    tvAuthor.setTextColor(
+                            this.context.getResources().getColor(R.color.autemo_green_secondary));
+                    break;
+                default:
+                    tvAuthor.setTextColor(
+                            this.context.getResources().getColor(R.color.autemo_grey_bright));
+                    break;
+            }
         }
+        /* EVENTS */
+        else {
+            tvMessage = (TextView) view.getTag(R.id.listrow_event_message);
+            tvTimestamp = (TextView) view.getTag(R.id.listrow_event_timestamp);
+            tvGlobalTitle = (TextView) view.getTag(R.id.listrow_event_global_title);
+            tvGlobalTitle.setVisibility(View.GONE);
+            ivIcon = (ImageView) view.getTag(R.id.listrow_event_icon);
+
+            RelativeLayout parent = ((RelativeLayout) tvMessage.getParent());
+
+            switch (getItemType(cursor.getPosition())) {
+                case THREAD:
+                /* styling */
+                    parent.setBackgroundColor(
+                            context.getResources().getColor(R.color.autemo_green_secondary));
+                    tvMessage.setTextColor(context.getResources().getColor(R.color.autemo_grey));
+                    tvTimestamp.setTextColor(
+                            context.getResources().getColor(R.color.autemo_grey_bright));
+                    ivIcon.setImageResource(R.drawable.ic_event_thread);
+                /* alter message */
+                    message = context.getResources().getString(R.string.thread_author, author)
+                            + message;
+                    break;
+                case AWARD:
+                /* styling */
+                    parent.setBackgroundColor(
+                            this.context.getResources().getColor(R.color.autemo_white_dirty));
+                    tvMessage.setTextColor(context.getResources().getColor(R.color.autemo_grey));
+                    tvTimestamp.setTextColor(
+                            context.getResources().getColor(R.color.autemo_grey_bright));
+                    ivIcon.setImageResource(R.drawable.ic_event_award);
+                /* alter message */
+                    message = this.context.getResources().getString(R.string.award_author, author)
+                            + message;
+                    break;
+                case GLOBAL:
+                /* styling */
+                    parent.setBackgroundColor(
+                            this.context.getResources().getColor(R.color.autemo_pink));
+                    tvMessage.setTextAppearance(context, android.R.style.TextAppearance_Medium);
+                    tvMessage.setTypeface(tvMessage.getTypeface(), Typeface.BOLD);
+                    tvMessage.setTextColor(
+                            this.context.getResources().getColor(R.color.autemo_grey));
+                    tvMessage.setLinkTextColor(
+                            this.context.getResources().getColor(R.color.autemo_yellow_dark));
+                    tvTimestamp.setTextColor(
+                            this.context.getResources().getColor(R.color.autemo_trns_white));
+                    ivIcon.setImageResource(R.drawable.ic_event_global);
+                /* show wanted elements */
+                    tvGlobalTitle.setVisibility(View.VISIBLE);
+                    break;
+                case COMPETITION:
+                /* styling */
+                    parent.setBackgroundColor(
+                            this.context.getResources().getColor(R.color.autemo_blue));
+                    tvMessage.setTextColor(context.getResources().getColor(R.color.autemo_grey));
+                    tvMessage.setLinkTextColor(
+                            context.getResources().getColor(R.color.autemo_white_dirty));
+                    tvTimestamp.setTextColor(
+                            context.getResources().getColor(R.color.autemo_grey));
+                    ivIcon.setImageResource(R.drawable.ic_event_competition);
+                /* alter message */
+                    message = this.context.getResources().getString(R.string.competition_author,
+                            author) + message;
+                    break;
+                case PROMOTION:
+                /* styling */
+                    parent.setBackgroundColor(
+                            this.context.getResources().getColor(R.color.autemo_orange));
+                    tvMessage.setTextColor(
+                            context.getResources().getColor(R.color.autemo_white_dirty));
+                    tvTimestamp.setTextColor(
+                            context.getResources().getColor(R.color.autemo_white_dirty));
+                    ivIcon.setImageResource(R.drawable.ic_event_promotion);
+                /* alter message */
+                    message = this.context.getResources().getString(R.string.promotion, author)
+                            + message;
+                    break;
+            }
+        }
+
+        UrlImageGetter imageGetter = new UrlImageGetter(context, tvMessage);
+        tvMessage.setText(Html.fromHtml(message, imageGetter, null));
+
+        // make links clickable (disables click of entire row, too)
+        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        tvTimestamp.setText(TimeUtils.getRelativeTime(context, timestamp));
     }
 
 }

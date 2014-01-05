@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2013 Maximilian Salomon.
+  ~ Copyright 2014 Maximilian Salomon.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -20,42 +20,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/autemo_blue"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
 
+    <TextView
+        android:id="@+id/listrow_event_global_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/global_announcement"
+        android:textAppearance="@style/TextAppearance.Small"
+        android:textColor="@color/autemo_trns_white"
+        android:textStyle="bold" />
+
     <ImageView
-        android:id="@+id/listrow_competition_icon"
+        android:id="@+id/listrow_event_icon"
         android:layout_width="@dimen/land_720dp_left_column"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_event_competition" />
+        android:layout_centerVertical="true" />
 
     <TextView
-        android:id="@+id/listrow_competition_message"
+        android:id="@+id/listrow_event_message"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/listrow_event_global_title"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_toLeftOf="@+id/listrow_competition_timestamp"
-        android:layout_toRightOf="@+id/listrow_competition_icon"
+        android:layout_toLeftOf="@id/listrow_event_timestamp"
+        android:layout_toRightOf="@+id/listrow_event_icon"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/autemo_grey"
-        android:textColorLink="@color/autemo_white_dirty"
-
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/listrow_competition_timestamp"
+        android:id="@+id/listrow_event_timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:textAppearance="@style/TextAppearance.Small"
-        android:textColor="@color/autemo_grey" />
+        android:textAppearance="@style/TextAppearance.Small" />
 
 </RelativeLayout>
