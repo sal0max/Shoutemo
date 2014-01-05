@@ -61,7 +61,7 @@
         \n• Rumänisch - Ștefan Alecu
     </string>
     <string name="pref_about_project_icons_title">Einige Icons von Mihaiciuc Bogdan</string>
-    <string name="pref_about_project_icons_summary">aus dem Set 'Project Icons'</string>
+    <string name="pref_about_project_icons_summary">aus dem Set \'Project Icons\'</string>
 
     <!-- Message filters -->
     <string name="menu_filter_title">Nachrichtenfilter</string>

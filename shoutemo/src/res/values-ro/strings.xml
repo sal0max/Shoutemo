@@ -64,7 +64,7 @@
         \n• Română - Ștefan Alecu
     </string>
     <string name="pref_about_project_icons_title">Niște icoane de Mihaiciuc Bogdan</string>
-    <string name="pref_about_project_icons_summary">din setul 'Project Icons'</string>
+    <string name="pref_about_project_icons_summary">din setul \'Project Icons\'</string>
 
     <!-- Message filters -->
     <string name="menu_filter_title">Filtrează mesajele</string>
