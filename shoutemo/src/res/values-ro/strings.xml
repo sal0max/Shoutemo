@@ -54,8 +54,8 @@
     <string name="pref_clear_chat_history">Șterge istoricul chatului</string>
     <string name="pref_clear_chat_history_deleted">%d mesaje șterse.</string>
     <string name="pref_about_about_summary">
-        Versiunea 1.0
-        \n© 2013-2014 Maximilian Salomon
+        Versiunea %1$s
+        \n© 2013-%2$d Maximilian Salomon
     </string>
     <string name="pref_about_translators_title">Traducătorii</string>
     <string name="pref_about_translators_summary">

@@ -18,10 +18,13 @@
 package de.msal.shoutemo;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.view.MenuItem;
+
+import java.util.Calendar;
 
 public class PreferenceActivity extends android.preference.PreferenceActivity implements
         Preference.OnPreferenceClickListener {
@@ -37,6 +40,13 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
         addPreferencesFromResource(R.xml.pref_about);
 
         findPreference("notices").setOnPreferenceClickListener(this);
+        try { /* show correct version name & copyright year */
+            findPreference("about").setSummary(getString(R.string.pref_about_about_summary,
+                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName,
+                    Calendar.getInstance().get(Calendar.YEAR)));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
