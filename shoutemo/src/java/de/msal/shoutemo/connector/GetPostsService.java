@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.Time;
 import android.util.Log;
 
@@ -51,6 +52,11 @@ import de.msal.shoutemo.db.ChatDb;
 public class GetPostsService extends Service {
 
     private static final String TAG = "Shoutemo|GetPostsService";
+    // everything for showing the udpate status to the user
+    private LocalBroadcastManager broadcaster;
+    public static final String INTENT_UPDATE = "de.msal.shoutemo.GetPostsService.UPDATING";
+    public static final String INTENT_UPDATE_ENABLED
+            = "de.msal.shoutemo.GetPostsService.UPDATING_ENABLED";
     // repeating task (get posts)
     private static long INTERVAL = 2500; // default: 2.5s
     private ScheduledExecutorService worker;
@@ -62,6 +68,8 @@ public class GetPostsService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        broadcaster = LocalBroadcastManager.getInstance(this);
 
         mAccountManager = AccountManager.get(this);
         Account[] acc = mAccountManager.getAccountsByType(AccountAuthenticator.ACCOUNT_TYPE);
@@ -219,6 +227,8 @@ public class GetPostsService extends Service {
 
         @Override
         public void run() {
+            setUpdatingNotification(true);
+
             try {
                 posts = Connection.getPosts(mAuthToken);
             } catch (IOException e) {
@@ -275,6 +285,8 @@ public class GetPostsService extends Service {
             now.setToNow();
             long timeSinceLastPost = now.toMillis(false) - newestPostTimestamp;
             setIntervall(timeSinceLastPost);
+
+            setUpdatingNotification(false);
         }
     }
 
@@ -294,6 +306,19 @@ public class GetPostsService extends Service {
                 Log.e(TAG, "Error setting the timezone. Returned code=" + returnCode);
             }
         }
+    }
+
+    /**
+     * Sends a {@code Intent} with the only data included whether this Service is currently trying
+     * to get new {@code Post}s from the server.
+     *
+     * @param enabled Set to {@code true} when it is currently trying, to false when the Service is
+     *                idling.
+     */
+    private void setUpdatingNotification(boolean enabled) {
+        Intent intent = new Intent(INTENT_UPDATE);
+        intent.putExtra(INTENT_UPDATE_ENABLED, enabled);
+        broadcaster.sendBroadcast(intent);
     }
 
 }

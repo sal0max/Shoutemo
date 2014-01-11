@@ -19,12 +19,16 @@ package de.msal.shoutemo;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -40,6 +44,7 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
@@ -54,6 +59,7 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     private final static int LOADER_ID_MESSAGES = 0;
     private ListAdapter listAdapter;
     //
+    private BroadcastReceiver receiver;
     /* stuff for the smiley selector  */
     private View emoticonsSpacer;
     private PopupWindow emoticonsPopupWindow;
@@ -66,6 +72,22 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        /* everything for showing the udpate status */
+        final ImageView updateStatus = (ImageView) findViewById(R.id.ib_update_indicator);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean enabled = intent
+                        .getBooleanExtra(GetPostsService.INTENT_UPDATE_ENABLED, false);
+                if (enabled) {
+                    updateStatus.setVisibility(View.VISIBLE);
+                } else {
+                    updateStatus.setVisibility(View.INVISIBLE);
+                }
+            }
+        };
+
+        /* find the other views */
         emoticonsSpacer = findViewById(R.id.chat_emoticons_spacer);
         final LinearLayout parentLayout = (LinearLayout) findViewById(R.id.chat_rl_parent);
         final EditText inputField = (EditText) findViewById(R.id.et_input);
@@ -213,6 +235,13 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver((receiver), new IntentFilter(GetPostsService.INTENT_UPDATE));
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         /* retrieve data */
@@ -224,6 +253,12 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         super.onPause();
         /* stop retrieving data */
         stopService(new Intent(this, GetPostsService.class));
+    }
+
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onStop();
     }
 
     @Override
