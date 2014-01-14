@@ -30,7 +30,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:stackFromBottom="true"
-        android:transcriptMode="normal" />
+        android:transcriptMode="normal"
+        android:fastScrollEnabled="true" />
 
     <View
         android:layout_width="fill_parent"
