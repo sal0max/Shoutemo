@@ -1,4 +1,5 @@
 -dontwarn com.google.common.**
+-dontwarn com.squareup.okhttp.internal.http.HttpsURLConnectionImpl$HttpUrlConnectionDelegate
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
