@@ -20,7 +20,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
     }
 }
 apply plugin: 'android'
@@ -30,13 +30,13 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:16.0-rc1'
+    compile 'com.google.guava:guava:16.+'
     compile 'org.jsoup:jsoup:1.7.+'
     compile 'it.sephiroth.android.library.picasso:picasso:2.+'}
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.1'
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
         minSdkVersion 15
