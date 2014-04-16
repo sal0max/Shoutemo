@@ -294,9 +294,13 @@ public class GetPostsService extends Service {
 
         @Override
         public void run() {
-            double offsetinHours = TimeZone.getDefault().getOffset(new Date().getTime()) / 1000.0
-                    / 60 / 60;
-            int returnCode = -1;
+           /* have to add the dst savings, else during dst the time is off by
+              another hour! */
+           double offsetinHours =
+                 (TimeZone.getDefault().getOffset(new Date().getTime())
+                       + TimeZone.getDefault().getDSTSavings()) / 1000.0 / 60
+                       / 60;
+            int returnCode = -2;
             try {
                 returnCode = Connection.setUserTimezone(mAuthToken, offsetinHours);
             } catch (IOException e) {
