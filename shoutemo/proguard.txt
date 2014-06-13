@@ -1,5 +1,7 @@
 -dontwarn com.google.common.**
--dontwarn com.squareup.okhttp.internal.http.HttpsURLConnectionImpl$HttpUrlConnectionDelegate
+-dontwarn com.squareup.okhttp.internal.http.HttpsURLConnectionImpl
+-dontwarn com.squareup.okhttp.internal.http.ResponseCacheAdapter$CacheHttpsURLConnection
+-dontwarn com.squareup.okhttp.internal.okio.DeflaterSink
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
