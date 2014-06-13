@@ -20,6 +20,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:icon="@drawable/ic_action_filter"
+        android:orderInCategory="60"
         android:showAsAction="ifRoom"
         android:title="@string/menu_filter_title"
         android:titleCondensed="@string/menu_filter_title_condensed">
@@ -58,6 +59,13 @@
             </group>
         </menu>
     </item>
+
+    <item
+        android:icon="@drawable/ic_action_users"
+        android:id="@+id/action_usersOnline"
+        android:orderInCategory="80"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_users_online" />
 
     <item
         android:id="@+id/action_prefs"

@@ -21,6 +21,8 @@
 
     <!-- <string name="app_name"></string> -->
     <string name="menu_prefs">Einstellungen</string>
+    <string name="title_users_online">User online</string>
+    <string name="menu_users_online">Wer ist gerade online?</string>
     <string name="input_empty">Hey! Schreibe etwas!</string>
 
     <!-- List rows -->

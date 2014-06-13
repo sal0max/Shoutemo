@@ -40,6 +40,9 @@
             android:name=".PreferenceActivity"
             android:label="@string/menu_prefs" />
         <activity
+            android:name=".OnlineUsersActivity"
+            android:label="@string/title_users_online" />
+        <activity
             android:name=".ChatActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>

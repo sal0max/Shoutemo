@@ -271,12 +271,19 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Bundle args = new Bundle();
+        Intent intent;
 
         switch (item.getItemId()) {
+            /* show online users*/
+            case R.id.action_usersOnline:
+                intent = new Intent(this, OnlineUsersActivity.class);
+                startActivity(intent);
+                break;
             /* settings menu */
             case R.id.action_prefs:
-                Intent intent = new Intent(this, PreferenceActivity.class);
+                intent = new Intent(this, PreferenceActivity.class);
                 startActivity(intent);
+                break;
             /* filters */
             case R.id.menu_filter_all:
                 getLoaderManager().restartLoader(LOADER_ID_MESSAGES, null, this);

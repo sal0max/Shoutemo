@@ -23,6 +23,7 @@ import com.google.common.primitives.Doubles;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import android.util.Log;
 
@@ -31,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.connector.model.Post;
 
 /**
@@ -99,13 +101,42 @@ public class Connection {
 
         List<Post> posts = new LinkedList<Post>();
 
-        Post p;
         for (Element element : document.getElementsByClass("ys-post")) {
-            p = new Post(element);
-            posts.add(p);
+            posts.add(new Post(element));
         }
 
         return posts;
+    }
+
+    /**
+     * Gets the currently online users. Should be about 7KB per call. There is no need to
+     * authenticate here, as the data is publicly viewable.
+     *
+     * @return A {@link java.util.List List} of {@link de.msal.shoutemo.connector.model.Author
+     * Author}s, containting the currently online users.
+     */
+    public static List<Author> getOnlineUsers() throws IOException {
+        List<Author> authors = new LinkedList<Author>();
+
+        Document document = Jsoup
+                .connect("http://www.autemo.com/forums/")
+                .timeout(TIMEOUT)
+                .ignoreHttpErrors(true)
+                .followRedirects(true)
+                .userAgent(USER_AGENT)
+                .get();
+
+        Elements elements = document
+                .getElementsByAttributeValue("style", "width:170px;display:block;float:left;");
+        if (elements == null)
+            return authors;
+        for (Element element : elements) {
+            Element user = element.getElementsByTag("a").first();
+            if (user != null)
+                authors.add(new Author(user));
+        }
+
+        return authors;
     }
 
     /**

@@ -21,6 +21,8 @@
 
     <string name="app_name">Shoutemo</string>
     <string name="menu_prefs">Settings</string>
+    <string name="title_users_online">Users online</string>
+    <string name="menu_users_online">Show currently online users</string>
     <string name="input_empty">Hey! Write a message!</string>
 
     <!-- List rows -->

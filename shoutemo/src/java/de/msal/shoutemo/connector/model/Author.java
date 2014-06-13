@@ -27,17 +27,18 @@ import org.jsoup.nodes.Element;
  */
 public class Author implements Comparable<Author> {
 
-    private String name;
+    private final String name;
 
-    private Type type;
+    private final Type type;
 
     /**
      * Creates a new Authors by parsing the given Element and stripping out the (nick)name and type
      * of it.
      *
-     * @param e needs to be of type getElementsByClass("ys-post-nickname").first()!
+     * @param e needs to look like
+     *          <pre>{@code <a href="profiles/?id=user" [class="autemo_color"]>user</a>}</pre>
      */
-    Author(Element e) {
+    public Author(Element e) {
         this.name = e.text();
         if (e.getAllElements().hasClass("autemo_admin_color")) {
             this.type = Type.ADMIN;
