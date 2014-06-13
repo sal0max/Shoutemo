@@ -20,6 +20,8 @@ package de.msal.shoutemo;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -81,6 +84,7 @@ public class OnlineUsersActivity extends Activity {
 
         mAdapter = new OnlineUsersAdapter(getApplicationContext(), new LinkedList<Author>());
         mListView = (ListView) findViewById(android.R.id.list);
+        mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
         if(savedInstanceState != null) {
             getActionBar().setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
@@ -218,6 +222,21 @@ public class OnlineUsersActivity extends Activity {
             }
 
             return convertView;
+        }
+    }
+
+    /**
+     * open the users profile page in the browser, when clicked
+     */
+    private class OnlineUseresClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            String author = mAdapter.getItem(position).getName();
+            String url = "http://www.autemo.com/profiles/?id=";
+
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url + author));
+            startActivity(i);
         }
     }
 }
