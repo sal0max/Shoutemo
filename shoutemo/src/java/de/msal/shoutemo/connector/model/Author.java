@@ -19,13 +19,16 @@ package de.msal.shoutemo.connector.model;
 
 import org.jsoup.nodes.Element;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * An Authors exists of his (nick)name and his rank (admin, mod or user).
  *
  * @version 1.0
  * @since 22.09.13
  */
-public class Author implements Comparable<Author> {
+public class Author implements Comparable<Author>, Parcelable {
 
     private final String name;
 
@@ -47,6 +50,11 @@ public class Author implements Comparable<Author> {
         } else {
             this.type = Type.USER;
         }
+    }
+
+    public Author(Parcel in) {
+        this.name = in.readString();
+        this.type = (Type) in.readSerializable();
     }
 
     /**
@@ -104,7 +112,28 @@ public class Author implements Comparable<Author> {
         /**
          * * A regular user with no special rights.
          */
-        USER;
-
+        USER
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeSerializable(type);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Author createFromParcel(Parcel in) {
+            return new Author(in);
+        }
+
+        public Author[] newArray(int size) {
+            return new Author[size];
+        }
+    };
+
 }

@@ -28,6 +28,7 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +117,7 @@ public class Connection {
      * Author}s, containting the currently online users.
      */
     public static List<Author> getOnlineUsers() throws IOException {
-        List<Author> authors = new LinkedList<Author>();
+        List<Author> authors = new ArrayList<Author>(25);
 
         Document document = Jsoup
                 .connect("http://www.autemo.com/forums/")

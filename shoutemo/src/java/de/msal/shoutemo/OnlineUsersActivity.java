@@ -17,21 +17,23 @@
 
 package de.msal.shoutemo;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,25 +44,59 @@ import de.msal.shoutemo.db.ChatDb;
 /**
  * @since 13.06.14
  */
-public class OnlineUsersActivity extends ListActivity {
+public class OnlineUsersActivity extends Activity {
+    private final static String INSTANCESTATE_TITLE = "INSTANCE_TITLE";
+    private final static String INSTANCESTATE_AUTHORS = "INSTANCE_AUTHORS";
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private OnlineUsersAdapter mAdapter;
-
     private ListView mListView;
+    private ArrayList<Author> mAuthors;
+    private MenuItem mMenuItemRefresh;
+
+    private static boolean refreshTriggeredBySwipe = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setContentView(R.layout.activity_onlineusers);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setDisplayUseLogoEnabled(false);
         getActionBar().setDisplayShowTitleEnabled(true);
 
-        mAdapter = new OnlineUsersAdapter(getApplicationContext(), new LinkedList<Author>());
-        mListView = getListView();
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.onlineusers_swipe);
+        mSwipeRefreshLayout.setColorScheme(
+                R.color.autemo_Yellow_bright,
+                R.color.autemo_white_dirty,
+                R.color.autemo_pink,
+                R.color.autemo_green_secondary);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshTriggeredBySwipe = true;
+                new GetOnlineUsersTask().execute();
+            }
+        });
 
-        new GetOnlineUsersTask().execute();
+        mAdapter = new OnlineUsersAdapter(getApplicationContext(), new LinkedList<Author>());
+        mListView = (ListView) findViewById(android.R.id.list);
+
+        if(savedInstanceState != null) {
+            getActionBar().setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
+            mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
+            mAdapter.addAll(mAuthors);
+            mListView.setAdapter(mAdapter);
+        } else {
+            new GetOnlineUsersTask().execute();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putCharSequence(INSTANCESTATE_TITLE, getActionBar().getTitle());
+        outState.putParcelableArrayList(INSTANCESTATE_AUTHORS, (mAuthors));
     }
 
     @Override
@@ -74,23 +110,43 @@ public class OnlineUsersActivity extends ListActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.onlineusers, menu);
+        mMenuItemRefresh = menu.findItem(R.id.action_onlineusers_refresh);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_onlineusers_refresh:
+                new GetOnlineUsersTask().execute();
+                break;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
     private class GetOnlineUsersTask extends AsyncTask<Void, Void, List<Author>> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            setProgressBarIndeterminateVisibility(true);
+            if (!refreshTriggeredBySwipe)
+                mSwipeRefreshLayout.setRefreshing(true);
+            if(mMenuItemRefresh != null) {
+                mMenuItemRefresh.setEnabled(false);
+            }
         }
 
         @Override
         protected List<Author> doInBackground(Void... params) {
-            List<Author> authors = null;
             try {
-                authors = Connection.getOnlineUsers();
+                mAuthors = new ArrayList<Author>(Connection.getOnlineUsers());
 
                 // also persist the users in the database, while we're at it...
                 ContentValues values;
-                for (Author author : authors) {
+                for (Author author : mAuthors) {
                     values = new ContentValues();
                     values.put(ChatDb.Authors.COLUMN_NAME_NAME, author.getName());
                     values.put(ChatDb.Authors.COLUMN_NAME_TYPE, author.getType().name());
@@ -98,7 +154,7 @@ public class OnlineUsersActivity extends ListActivity {
                 }
             } catch (IOException ignored) {
             }
-            return authors;
+            return mAuthors;
         }
 
         @Override
@@ -108,9 +164,17 @@ public class OnlineUsersActivity extends ListActivity {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-            getActionBar().setTitle(getActionBar().getTitle() + ": " + authors.size());
+            getActionBar().setTitle(
+                    getResources().getString(R.string.title_users_online)
+                            + ": "
+                            + authors.size()
+            );
 
-            setProgressBarIndeterminateVisibility(false);
+            mSwipeRefreshLayout.setRefreshing(false);
+            if(mMenuItemRefresh != null) {
+                mMenuItemRefresh.setEnabled(true);
+            }
+            refreshTriggeredBySwipe = false;
         }
     }
 
@@ -118,6 +182,16 @@ public class OnlineUsersActivity extends ListActivity {
 
         private OnlineUsersAdapter(Context context, List<Author> objects) {
             super(context, android.R.layout.simple_list_item_1, objects);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return getItem(position).getType().ordinal();
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return Author.Type.values().length;
         }
 
         @Override

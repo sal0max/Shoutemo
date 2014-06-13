@@ -24,6 +24,7 @@
     <string name="title_users_online">User online</string>
     <string name="menu_users_online">Wer ist gerade online?</string>
     <string name="input_empty">Hey! Schreibe etwas!</string>
+    <string name="refresh">Aktualisieren</string>
 
     <!-- List rows -->
     <string name="promotion">%s wurde befördert!</string>
