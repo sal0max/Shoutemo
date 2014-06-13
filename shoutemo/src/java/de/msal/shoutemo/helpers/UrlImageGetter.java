@@ -17,9 +17,6 @@
 
 package de.msal.shoutemo.helpers;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -36,6 +33,8 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import de.msal.shoutemo.R;
+import it.sephiroth.android.library.picasso.Picasso;
+import it.sephiroth.android.library.picasso.Target;
 
 /**
  * @since 30.12.13
