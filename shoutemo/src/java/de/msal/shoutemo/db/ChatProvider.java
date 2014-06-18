@@ -18,16 +18,17 @@
 package de.msal.shoutemo.db;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentValues;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import java.util.List;
-
-import de.msal.shoutemo.connector.model.Post;
+import java.util.ArrayList;
 
 /**
  * Provides access to a database.
@@ -218,22 +219,53 @@ public class ChatProvider extends ContentProvider {
         return uri;
     }
 
-    public void insert(List<Post> posts) {
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values){
+        int numInserted = 0;
+        String table;
 
-        for (Post post : posts) {
-            ContentValues values = new ContentValues();
+        switch (mUriMatcher.match(uri)) {
+            case URI_MATCH_MESSAGES:
+                table = ChatDb.Messages.TABLE_NAME;
+                break;
+            case URI_MATCH_AUTHORS:
+                table = ChatDb.Authors.TABLE_NAME;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues cv : values) {
+                db.insertWithOnConflict(table, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+            }
+            db.setTransactionSuccessful();
+            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
+            numInserted = values.length;
+        } finally {
+            db.endTransaction();
+        }
+        return numInserted;
+    }
 
-            values.put(ChatDb.Authors.COLUMN_NAME_NAME, post.getAuthor().getName());
-            values.put(ChatDb.Authors.COLUMN_NAME_TYPE, post.getAuthor().getType().name());
-            insert(ChatDb.Authors.CONTENT_URI, values);
-
-            values = new ContentValues();
-            values.put(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME, post.getAuthor().getName());
-            values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML, post.getMessage().getHtml());
-            values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT, post.getMessage().getText());
-            values.put(ChatDb.Messages.COLUMN_NAME_TYPE, post.getMessage().getType().name());
-            values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP, post.getDate().getTime());
-            insert(ChatDb.Messages.CONTENT_URI, values);
+    @Override
+    public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
+            throws OperationApplicationException {
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            final int numOperations = operations.size();
+            final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+            for (int i = 0; i < numOperations; i++) {
+                results[i] = operations.get(i).apply(this, results, i);
+            }
+            db.setTransactionSuccessful();
+            getContext().getContentResolver().notifyChange(ChatDb.Posts.CONTENT_URI, null);
+            return results;
+        } finally {
+            db.endTransaction();
         }
     }
 

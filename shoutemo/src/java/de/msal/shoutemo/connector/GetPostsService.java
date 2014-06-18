@@ -24,16 +24,19 @@ import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Service;
-import android.content.ContentValues;
+import android.content.ContentProviderOperation;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.Time;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -244,34 +247,43 @@ public class GetPostsService extends Service {
             }
 
             /* insert into DB */
+            ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
             for (Post post : posts) {
-                ContentValues values;
-
-                /* add a new person to the authors table if one is found */
                 if (post.getAuthor() != null) {
-                    values = new ContentValues();
-                    values.put(ChatDb.Authors.COLUMN_NAME_NAME, post.getAuthor().getName());
-                    values.put(ChatDb.Authors.COLUMN_NAME_TYPE, post.getAuthor().getType().name());
-                    getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
+                    ops.add(
+                            ContentProviderOperation.newInsert(ChatDb.Authors.CONTENT_URI)
+                                    .withValue(ChatDb.Authors.COLUMN_NAME_NAME,
+                                            post.getAuthor().getName())
+                                    .withValue(ChatDb.Authors.COLUMN_NAME_TYPE,
+                                            post.getAuthor().getType().name())
+                                    .withYieldAllowed(true)
+                                    .build()
+                    );
                 }
-
-                /* add a new post to the posts table */
-                values = new ContentValues();
-                values.put(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME,
-                        post.getAuthor() == null ? null : post.getAuthor().getName());
                 if (post.getMessage() != null) {
-                    values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML,
-                            post.getMessage().getHtml());
-                    values.put(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT,
-                            post.getMessage().getText());
-                    values.put(ChatDb.Messages.COLUMN_NAME_TYPE,
-                            post.getMessage().getType().name());
-                    values.put(ChatDb.Messages.COLUMN_NAME_TIMESTAMP, post.getDate().getTime());
+                    ops.add(
+                            ContentProviderOperation.newInsert(ChatDb.Messages.CONTENT_URI)
+                                    .withValue(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME,
+                                            post.getAuthor() == null ? null : post.getAuthor().getName())
+                                    .withValue(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML,
+                                            post.getMessage().getHtml())
+                                    .withValue(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT,
+                                            post.getMessage().getText())
+                                    .withValue(ChatDb.Messages.COLUMN_NAME_TYPE,
+                                            post.getMessage().getType().name())
+                                    .withValue(ChatDb.Messages.COLUMN_NAME_TIMESTAMP,
+                                            post.getDate().getTime())
+                                    .withYieldAllowed(true)
+                                    .build()
+                    );
                 }
-
-                // if (values.size() > 0) {
-                getContentResolver().insert(ChatDb.Messages.CONTENT_URI, values);
-                // }
+            }
+            try {
+                getContentResolver().applyBatch(ChatDb.AUTHORITY, ops);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Error: " + e.getMessage());
+            } catch (OperationApplicationException e) {
+                Log.e(TAG, "Error: " + e.getMessage());
             }
 
             /* dynamically alter the refresh rate */
