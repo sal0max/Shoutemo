@@ -20,10 +20,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.+'
+        classpath 'com.android.tools.build:gradle:0.12.+'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
@@ -33,7 +33,7 @@ dependencies {
     compile 'com.google.guava:guava:17.+'
     compile 'org.jsoup:jsoup:1.7.+'
     compile 'it.sephiroth.android.library.picasso:picasso:2.+'
-    compile 'com.android.support:support-v4:+'
+    compile 'com.android.support:support-v4:20.+'
 }
 
 android {
