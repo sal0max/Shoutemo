@@ -35,6 +35,7 @@ import android.widget.TextView;
 import de.msal.shoutemo.R;
 import it.sephiroth.android.library.picasso.Picasso;
 import it.sephiroth.android.library.picasso.Target;
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * @since 30.12.13
@@ -66,7 +67,7 @@ public class UrlImageGetter implements ImageGetter {
                 int id = context.getResources().getIdentifier("smil_" + smiley,
                         "drawable", context.getPackageName());
 
-                Drawable d = context.getResources().getDrawable(id);
+                GifDrawable d = GifDrawable.createFromResource(context.getResources(), id);
                 if (d != null) {
                     d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
                     return d;
