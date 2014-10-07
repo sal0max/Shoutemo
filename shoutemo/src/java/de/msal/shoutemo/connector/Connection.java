@@ -269,7 +269,7 @@ public class Connection {
         double autemoOffsetInHours = Doubles.indexOf(timezoneMapping, offsetInHours - 1) == -1 ?
                 offsetInHours - 1.5 : offsetInHours - 1;
         // find the mapped code (== index)
-        int offsetCode = Doubles.indexOf(timezoneMapping, autemoOffsetInHours) + 1;
+        int offsetCode = Doubles.indexOf(timezoneMapping, autemoOffsetInHours);
 
         if (offsetCode > 0) {
         /* first get necessary data */
