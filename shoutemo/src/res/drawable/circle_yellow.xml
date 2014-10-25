@@ -20,7 +20,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
 
-    <solid android:color="@color/autemo_Yellow_bright" />
+    <solid android:color="@color/autemo_yellow_bright" />
 
     <size
         android:width="5dp"

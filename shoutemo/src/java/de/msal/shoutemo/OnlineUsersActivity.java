@@ -69,10 +69,9 @@ public class OnlineUsersActivity extends Activity {
         getActionBar().setDisplayShowTitleEnabled(true);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.onlineusers_swipe);
-        mSwipeRefreshLayout.setColorScheme(
-                R.color.autemo_Yellow_bright,
-                R.color.autemo_white_dirty,
+        mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.autemo_pink,
+                R.color.autemo_yellow_bright,
                 R.color.autemo_green_secondary);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
