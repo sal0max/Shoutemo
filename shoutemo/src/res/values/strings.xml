@@ -25,7 +25,7 @@
         <item quantity="other">&lt;b>%d&lt;/b> Users online</item>
     </plurals>
 
-    <string name="app_name">Shoutemo</string>
+    <string name="app_name" translatable="false">Shoutemo</string>
     <string name="menu_prefs">Settings</string>
     <string name="menu_users_online">Show currently online users</string>
     <string name="input_empty">Hey! Write a message!</string>
