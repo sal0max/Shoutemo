@@ -18,10 +18,15 @@
   -->
 
 <resources>
+    
+    <plurals name="title_users_online">
+        <item quantity="zero">No User online</item>
+        <item quantity="one">&lt;b>1&lt;/b> User online</item>
+        <item quantity="other">&lt;b>%d&lt;/b> Users online</item>
+    </plurals>
 
     <string name="app_name">Shoutemo</string>
     <string name="menu_prefs">Settings</string>
-    <string name="title_users_online">Users online</string>
     <string name="menu_users_online">Show currently online users</string>
     <string name="input_empty">Hey! Write a message!</string>
     <string name="refresh">Refresh</string>

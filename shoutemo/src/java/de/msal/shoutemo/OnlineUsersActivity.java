@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -167,10 +168,10 @@ public class OnlineUsersActivity extends Activity {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-            getActionBar().setTitle(
-                    getResources().getString(R.string.title_users_online)
-                            + ": "
-                            + authors.size()
+            getActionBar().setTitle(Html.fromHtml(getResources().getQuantityString(
+                            R.plurals.title_users_online,
+                            authors.size(),
+                            authors.size()))
             );
 
             mSwipeRefreshLayout.setRefreshing(false);
