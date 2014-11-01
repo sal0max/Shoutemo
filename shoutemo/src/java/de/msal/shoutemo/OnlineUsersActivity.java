@@ -73,7 +73,8 @@ public class OnlineUsersActivity extends Activity {
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.autemo_pink,
                 R.color.autemo_yellow_bright,
-                R.color.autemo_green_secondary);
+                R.color.autemo_green_secondary,
+                R.color.autemo_blue);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
