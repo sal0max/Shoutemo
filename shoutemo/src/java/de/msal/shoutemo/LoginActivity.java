@@ -57,7 +57,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     private static final String TAG = "Shoutemo|LoginActivity";
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private String mEmail, mPassword;
-    private EditText mEmailView, mPasswordView;
+    private AutoCompleteTextView mEmailView;
+    private EditText mPasswordView;
     private View mLoginFormView, mLoginStatusView;
     private UserLoginTask mAuthTask;
 
@@ -67,13 +68,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         setContentView(R.layout.activity_login);
 
-        mEmailView = (EditText) findViewById(R.id.email);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusView = findViewById(R.id.login_status);
 
         /* Auto complete for email */
-        AutoCompleteTextView editTextLogin = (AutoCompleteTextView) findViewById(R.id.email);
         Account[] accounts = AccountManager.get(this).getAccounts();
         Set<String> emailSet = new HashSet<String>();
         for (Account account : accounts) {
@@ -81,7 +81,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 emailSet.add(account.name);
             }
         }
-        editTextLogin.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+        mEmailView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
 
         /* link description to autemo.com/signup */
         ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com))
@@ -100,7 +100,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 /* Hides keyboard when login button is clicked */
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
-
                 inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
@@ -171,7 +170,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      * (invalid email, missing fields, etc.), the errors are presented and no actual login attempt
      * is made.
      */
-    public void attemptLogin() {
+    private void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
