@@ -146,6 +146,7 @@ public class OnlineUsersActivity extends Activity {
         @Override
         protected List<Author> doInBackground(Void... params) {
             try {
+                long start = System.nanoTime();
                 mAuthors = new ArrayList<Author>(Connection.getOnlineUsers());
 
                 // also persist the users in the database, while we're at it...
@@ -156,7 +157,16 @@ public class OnlineUsersActivity extends Activity {
                     values.put(ChatDb.Authors.COLUMN_NAME_TYPE, author.getType().name());
                     getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
                 }
+                // if refreshing is fastern than 1s, then sleep for 2s
+                if (System.nanoTime() - start < 1L * 1000 * 1000 * 1000) {
+                    Thread.sleep(2000);
+                }
+                // else if refreshing is fastern than 2s, then sleep for 1s
+                else if (System.nanoTime() - start < 2L * 1000 * 1000 * 1000) {
+                    Thread.sleep(1000);
+                }
             } catch (IOException ignored) {
+            } catch (InterruptedException ignored) {
             }
             return mAuthors;
         }
