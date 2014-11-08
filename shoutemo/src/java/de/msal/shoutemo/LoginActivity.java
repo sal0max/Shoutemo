@@ -18,10 +18,10 @@
 package de.msal.shoutemo;
 
 import android.accounts.Account;
-import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -49,7 +49,7 @@ import de.msal.shoutemo.connector.Connection;
 /**
  * Activity which displays a login screen to the user
  */
-public class LoginActivity extends AccountAuthenticatorActivity {
+public class LoginActivity extends Activity {
 
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
@@ -110,60 +110,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             mEmailView.setText(mEmail);
         }
     }
-
-//    private void login() {
-//        mEmail = mEmailView.getText().toString();
-//        mPassword = mPasswordView.getText().toString();
-//
-//        if (TextUtils.isEmpty(mEmail)) { // Email empty?
-//            mEmailView.setError(getString(R.string.error_field_required));
-//            return;
-//        }
-//        if (TextUtils.isEmpty(mPassword)) { // Password empty?
-//            mEmailView.setError(getString(R.string.error_field_required));
-//            return;
-//        }
-//
-//        showProgress(true);
-//
-//        Handler loginHandler = new Handler() {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                if (msg.what == 0) { //NetworkUtil.ERR) {
-//                    showProgress(false);
-//                    Log.d(TAG, "Login Failed");
-//                } else if (msg.what == 1) { //NetworkUtil.OK) {
-//                    handleLoginResponse();
-//                }
-//            }
-//        };
-//
-//        // NetworkUtil.login(getString(R.string.baseurl), mEmail, mPassword, loginHandler);
-//        Message m = new Message();
-//        m.what = 1;
-//        loginHandler.dispatchMessage(m);
-//
-//    }
-//
-//    private void handleLoginResponse() {
-//        showProgress(false);
-//
-//        final Account account = new Account(mEmail, AccountAuthenticator.ACCOUNT_TYPE);
-//        if (getIntent().getStringExtra(PARAM_USERNAME) == null) {
-//            AccountManager.get(this).addAccountExplicitly(account, mPassword, null);
-//        } else {
-//            AccountManager.get(this).setPassword(account, mPassword);
-//        }
-//
-//        Intent intent = new Intent();
-//        intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, mEmail);
-//        intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
-//        intent.putExtra(AccountManager.KEY_AUTHTOKEN, mPassword);
-//
-//        setAccountAuthenticatorResult(intent.getExtras());
-//        setResult(RESULT_OK, intent);
-//        finish();
-//    }
 
     /**
      * Attempts to sign in the account specified by the login form. If there are form errors
@@ -277,7 +223,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, AccountAuthenticator.ACCOUNT_TYPE);
                 intent.putExtra(AccountManager.KEY_AUTHTOKEN, mPassword);
 
-                setAccountAuthenticatorResult(intent.getExtras());
+                // setAccountAuthenticatorResult(intent.getExtras());
                 setResult(RESULT_OK, intent);
                 finish();
             } else {
