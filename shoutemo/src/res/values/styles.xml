@@ -20,21 +20,14 @@
 <resources>
 
     <!-- ActionBar, window background -->
-    <style name="AppTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/AppTheme.ActionBar</item>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/autemo_grey</item>
-    </style>
-
-    <!-- ActionBar: green background -->
-    <style name="AppTheme.ActionBar" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@drawable/actionbar</item>
-        <item name="android:titleTextStyle">@style/AppTheme.ActionBar.TitleTextStyle</item>
-        <item name="android:displayOptions">useLogo|showHome</item>
-    </style>
-
-    <!-- ActionBar: dark grey title text -->
-    <style name="AppTheme.ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/autemo_grey</item>
+        <!--   the app branding color for the app bar -->
+        <item name="colorPrimary">@color/primary</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="colorAccent">@color/accent</item>
     </style>
 
     <!-- Misc stuff -->

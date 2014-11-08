@@ -18,6 +18,12 @@
   -->
 
 <resources>
+
+    <string-array name="fragments">
+        <item>Chat</item>
+        <item>Current online users</item>
+        <item>Settings</item>
+    </string-array>
     
     <plurals name="title_users_online">
         <item quantity="zero">No User online</item>

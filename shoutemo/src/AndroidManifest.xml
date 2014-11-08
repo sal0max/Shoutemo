@@ -37,12 +37,7 @@
             android:name=".LoginActivity"
             android:label="@string/app_title_login" />
         <activity
-            android:name=".PreferenceActivity"
-            android:label="@string/menu_prefs" />
-        <activity
-            android:name=".OnlineUsersActivity" />
-        <activity
-            android:name=".ChatActivity"
+            android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

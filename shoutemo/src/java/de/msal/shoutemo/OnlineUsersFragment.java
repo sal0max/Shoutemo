@@ -17,17 +17,18 @@
 
 package de.msal.shoutemo;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,8 @@ import de.msal.shoutemo.db.ChatDb;
 /**
  * @since 13.06.14
  */
-public class OnlineUsersActivity extends Activity {
+public class OnlineUsersFragment extends Fragment {
+
     private final static String INSTANCESTATE_TITLE = "INSTANCE_TITLE";
     private final static String INSTANCESTATE_AUTHORS = "INSTANCE_AUTHORS";
 
@@ -60,16 +62,33 @@ public class OnlineUsersActivity extends Activity {
 
     private static boolean refreshTriggeredBySwipe = false;
 
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment LightMeterFragment.
+     */
+    public static OnlineUsersFragment newInstance() {
+        OnlineUsersFragment fragment = new OnlineUsersFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public OnlineUsersFragment() {}
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_onlineusers);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayUseLogoEnabled(false);
-        getActionBar().setDisplayShowTitleEnabled(true);
+    }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.onlineusers_swipe);
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_onlineusers, container, false);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.onlineusers_swipe);
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.autemo_pink,
                 R.color.autemo_yellow_bright,
@@ -83,53 +102,43 @@ public class OnlineUsersActivity extends Activity {
             }
         });
 
-        mAdapter = new OnlineUsersAdapter(getApplicationContext(), new LinkedList<Author>());
-        mListView = (ListView) findViewById(android.R.id.list);
+        mAdapter = new OnlineUsersAdapter(getActivity(), new LinkedList<Author>());
+        mListView = (ListView) view.findViewById(android.R.id.list);
         mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
         if(savedInstanceState != null) {
-            getActionBar().setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
+//            getActionBar().setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE)); TODO
             mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
             mAdapter.addAll(mAuthors);
             mListView.setAdapter(mAdapter);
         } else {
             new GetOnlineUsersTask().execute();
         }
+
+        return view;
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putCharSequence(INSTANCESTATE_TITLE, getActionBar().getTitle());
+//        outState.putCharSequence(INSTANCESTATE_TITLE, getActionBar().getTitle()); //TODO
         outState.putParcelableArrayList(INSTANCESTATE_AUTHORS, (mAuthors));
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.onlineusers, menu);
+        mMenuItemRefresh = menu.findItem(R.id.action_onlineusers_refresh);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.onlineusers, menu);
-        mMenuItemRefresh = menu.findItem(R.id.action_onlineusers_refresh);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        switch (item.getItemId()) {
             case R.id.action_onlineusers_refresh:
                 new GetOnlineUsersTask().execute();
                 break;
         }
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
     private class GetOnlineUsersTask extends AsyncTask<Void, Void, List<Author>> {
@@ -156,7 +165,7 @@ public class OnlineUsersActivity extends Activity {
                     values = new ContentValues();
                     values.put(ChatDb.Authors.COLUMN_NAME_NAME, author.getName());
                     values.put(ChatDb.Authors.COLUMN_NAME_TYPE, author.getType().name());
-                    getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
+                    getActivity().getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
                 }
                 // if refreshing is fastern than 1s, then sleep for 2s
                 if (System.nanoTime() - start < 1L * 1000 * 1000 * 1000) {
@@ -179,11 +188,11 @@ public class OnlineUsersActivity extends Activity {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-            getActionBar().setTitle(Html.fromHtml(getResources().getQuantityString(
-                            R.plurals.title_users_online,
-                            authors.size(),
-                            authors.size()))
-            );
+//            getActionBar().setTitle(Html.fromHtml(getResources().getQuantityString(
+//                            R.plurals.title_users_online,
+//                            authors.size(),
+//                            authors.size()))
+//            ); TODO
 
             mSwipeRefreshLayout.setRefreshing(false);
             if(mMenuItemRefresh != null) {

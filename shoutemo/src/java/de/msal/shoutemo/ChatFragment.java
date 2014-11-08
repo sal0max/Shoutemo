@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Maximilian Salomon.
+ * Copyright 2014 Maximilian Salomon.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package de.msal.shoutemo;
 
-import android.app.Activity;
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,6 +28,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -35,10 +36,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -54,7 +57,7 @@ import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
 
-public class ChatActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /*  */
     private final static int LOADER_ID_MESSAGES = 0;
@@ -70,20 +73,44 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
     private int previousHeightDifference = 0, keyboardHeight;
     private boolean isKeyBoardVisible;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment LightMeterFragment.
+     */
+    public static ChatFragment newInstance() {
+        ChatFragment fragment = new ChatFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        mListAdapter = new RecyclerAdapter(this, null);
+    public ChatFragment() {}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+
+        /* find the other views */
+        keyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
+        emoticonsSpacer = view.findViewById(R.id.chat_emoticons_spacer);
+        final LinearLayout parentLayout = (LinearLayout) view.findViewById(R.id.chat_rl_parent);
+        final EditText inputField = (EditText) view.findViewById(R.id.et_input);
+        final ImageButton sendButton = (ImageButton) view.findViewById(R.id.ib_send);
 
         /* everything for showing the udpate status */
-        final ImageView updateStatus = (ImageView) findViewById(R.id.ib_update_indicator);
+        final ImageView updateStatus = (ImageView) view.findViewById(R.id.ib_update_indicator);
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                boolean enabled = intent
-                        .getBooleanExtra(GetPostsService.INTENT_UPDATE_ENABLED, false);
+                boolean enabled = intent.getBooleanExtra(GetPostsService.INTENT_UPDATE_ENABLED,
+                        false);
                 if (enabled) {
                     updateStatus.setVisibility(View.VISIBLE);
                 } else {
@@ -92,11 +119,7 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
             }
         };
 
-        /* find the other views */
-        emoticonsSpacer = findViewById(R.id.chat_emoticons_spacer);
-        final LinearLayout parentLayout = (LinearLayout) findViewById(R.id.chat_rl_parent);
-        final EditText inputField = (EditText) findViewById(R.id.et_input);
-        final ImageButton sendButton = (ImageButton) findViewById(R.id.ib_send);
+
         /* initially the inputField is empty, so disable the send button */
         sendButton.setVisibility(View.GONE);
 
@@ -105,8 +128,7 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
             @Override
             public void onClick(View v) {
                 if (inputField.getText() != null && !TextUtils.isEmpty(inputField.getText())) {
-                    new SendPostTask(getApplicationContext())
-                            .execute(inputField.getText().toString());
+                    new SendPostTask(getActivity()).execute(inputField.getText().toString());
                     inputField.setText("");
                 }
             }
@@ -120,8 +142,31 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
             }
         });
 
+        /* hide send-button, if no text is entered */
+        inputField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (sendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
+                    Animation pushOut = AnimationUtils.loadAnimation(getActivity(), R.anim.push_out);
+                    sendButton.startAnimation(pushOut);
+                    sendButton.setVisibility(View.GONE);
+                } else if (sendButton.getVisibility() == View.GONE && s.length() >= 1) {
+                    Animation pushIn = AnimationUtils.loadAnimation(getActivity(), R.anim.push_in);
+                    sendButton.startAnimation(pushIn);
+                    sendButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
-        keyboardButton = (ImageButton) findViewById(R.id.ib_emoticons);
         keyboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,31 +188,6 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
             }
         });
 
-        /* hide send-button, if no text is entered */
-        inputField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (sendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
-                    Animation pushOut = AnimationUtils.loadAnimation(getApplicationContext(),
-                            R.anim.push_out);
-                    sendButton.startAnimation(pushOut);
-                    sendButton.setVisibility(View.GONE);
-                } else if (sendButton.getVisibility() == View.GONE && s.length() >= 1) {
-                    Animation pushIn = AnimationUtils
-                            .loadAnimation(getApplicationContext(), R.anim.push_in);
-                    sendButton.startAnimation(pushIn);
-                    sendButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
 
         /* listen for layout changes */
         parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -197,9 +217,9 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         );
 
         /* set the adapter for the emoticons */
-        final View emoticonsGrid = getLayoutInflater().inflate(R.layout.emoticons_grid, null);
+        final View emoticonsGrid = inflater.inflate(R.layout.emoticons_grid, null);
         ((GridView) emoticonsGrid.findViewById(R.id.emoticons_gridview)).setAdapter(
-                new EmoticonsAdapter(this, new EmoticonsAdapter.OnEmoticonClickListener() {
+                new EmoticonsAdapter(getActivity(), new EmoticonsAdapter.OnEmoticonClickListener() {
                     @Override
                     public void onEmoticonClick(String bbcode) {
                         inputField.getText().replace(inputField.getSelectionStart(),
@@ -207,8 +227,7 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
                     }
                 }));
         // create a pop window that works as the emoticons keyboard
-        emoticonsPopupWindow = new PopupWindow(emoticonsGrid,
-                LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight, false);
+        emoticonsPopupWindow = new PopupWindow(emoticonsGrid, LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight, false);
         // hide the spacer if the popup gets hidden
         emoticonsPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
@@ -221,7 +240,7 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         setEmoticonsKeyboardHeight((int) getResources().getDimension(R.dimen.keyboard_height));
 
         /* receive and handle share intent */
-        Intent intent = getIntent();
+        Intent intent = getActivity().getIntent();
         String type = intent.getType();
         if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
             if (type.equals("text/plain")) {
@@ -233,8 +252,9 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         }
 
         /* list stuff */
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        RecyclerView recyclerView = (RecyclerView) findViewById(android.R.id.list);
+        mListAdapter = new RecyclerAdapter(getActivity(), null);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
 //        RecyclerView.ItemDecoration dividerItemDecoration = new SpacingItemDecoration(12, 12);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
@@ -245,40 +265,41 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         recyclerView.setAdapter(mListAdapter);
 
         this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
+
+        return view;
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver((receiver), new IntentFilter(GetPostsService.INTENT_UPDATE));
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((receiver),
+                new IntentFilter(GetPostsService.INTENT_UPDATE));
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         /* retrieve data */
-        startService(new Intent(this, GetPostsService.class));
+        getActivity().startService(new Intent(getActivity(), GetPostsService.class));
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         /* stop retrieving data */
-        stopService(new Intent(this, GetPostsService.class));
+        getActivity().stopService(new Intent(getActivity(), GetPostsService.class));
     }
 
     @Override
-    protected void onStop() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+    public void onStop() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
         super.onStop();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.chat, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.chat, menu);
     }
 
     @Override
@@ -287,16 +308,6 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         Intent intent;
 
         switch (item.getItemId()) {
-            /* show online users*/
-            case R.id.action_usersOnline:
-                intent = new Intent(this, OnlineUsersActivity.class);
-                startActivity(intent);
-                break;
-            /* settings menu */
-            case R.id.action_prefs:
-                intent = new Intent(this, PreferenceActivity.class);
-                startActivity(intent);
-                break;
             /* filters */
             case R.id.menu_filter_all:
                 getLoaderManager().restartLoader(LOADER_ID_MESSAGES, null, this);
@@ -349,19 +360,20 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * override onKeyDown for dismissing the emoticons keyboard on key down
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (emoticonsPopupWindow.isShowing()) {
-            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-            emoticonsPopupWindow.dismiss();
-            return false;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
+    //TODO
+//    /**
+//     * override onKeyDown for dismissing the emoticons keyboard on key down
+//     */
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (emoticonsPopupWindow.isShowing()) {
+//            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+//            emoticonsPopupWindow.dismiss();
+//            return false;
+//        } else {
+//            return super.onKeyDown(keyCode, event);
+//        }
+//    }
 
     /**
      * change the height of the emoticons keyboard matching to height of actual keyboard
@@ -385,7 +397,7 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
                 if (args != null) {
                     where = args.getString("WHERE");
                 }
-                return new CursorLoader(this, ChatDb.Posts.CONTENT_URI, null, where, null, null);
+                return new CursorLoader(getActivity(), ChatDb.Posts.CONTENT_URI, null, where, null, null);
             default:
                 return null;
         }
@@ -393,12 +405,12 @@ public class ChatActivity extends Activity implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> objectLoader, Cursor data) {
         mListAdapter.swapCursor(data);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mListAdapter.swapCursor(null);
     }
 

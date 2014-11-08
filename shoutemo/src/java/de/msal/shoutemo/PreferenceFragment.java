@@ -22,41 +22,40 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.view.MenuItem;
 
 import java.util.Calendar;
 
-public class PreferenceActivity extends android.preference.PreferenceActivity implements
+public class PreferenceFragment extends android.preference.PreferenceFragment implements
         Preference.OnPreferenceClickListener {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    /**
+     * Use this factory method to create a new instance of this fragment using the provided
+     * parameters.
+     *
+     * @return A new instance of fragment LightMeterFragment.
+     */
+    public static PreferenceFragment newInstance() {
+        PreferenceFragment fragment = new PreferenceFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayUseLogoEnabled(false);
-        getActionBar().setDisplayShowTitleEnabled(true);
+    public PreferenceFragment() {}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.pref_about);
 
         findPreference("notices").setOnPreferenceClickListener(this);
         try { /* show correct version name & copyright year */
             findPreference("about").setSummary(getString(R.string.pref_about_about_summary,
-                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName,
+                    getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName,
                     Calendar.getInstance().get(Calendar.YEAR)));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
