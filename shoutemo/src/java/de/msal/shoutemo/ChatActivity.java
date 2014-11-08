@@ -17,7 +17,7 @@
 
 package de.msal.shoutemo;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +29,8 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -40,7 +42,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -53,11 +54,13 @@ import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
 
-public class ChatActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /*  */
     private final static int LOADER_ID_MESSAGES = 0;
-    private ListAdapter listAdapter;
+
+    private RecyclerAdapter mListAdapter;
+
     //
     private BroadcastReceiver receiver;
     /* stuff for the smiley selector  */
@@ -71,6 +74,8 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        mListAdapter = new RecyclerAdapter(this, null);
 
         /* everything for showing the udpate status */
         final ImageView updateStatus = (ImageView) findViewById(R.id.ib_update_indicator);
@@ -94,8 +99,6 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         final ImageButton sendButton = (ImageButton) findViewById(R.id.ib_send);
         /* initially the inputField is empty, so disable the send button */
         sendButton.setVisibility(View.GONE);
-
-        listAdapter = new ListAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
         /* Send message when clicked on SEND-BUTTON */
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +233,17 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
         }
 
         /* list stuff */
-        this.setListAdapter(this.listAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        RecyclerView recyclerView = (RecyclerView) findViewById(android.R.id.list);
+//        RecyclerView.ItemDecoration dividerItemDecoration = new SpacingItemDecoration(12, 12);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        layoutManager.setStackFromEnd(true);
+//        mRecyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setVerticalScrollBarEnabled(true);
+        recyclerView.setAdapter(mListAdapter);
+
         this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
     }
 
@@ -381,12 +394,12 @@ public class ChatActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        listAdapter.swapCursor(data);
+        mListAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        listAdapter.swapCursor(null);
+        mListAdapter.swapCursor(null);
     }
 
 }
