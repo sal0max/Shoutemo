@@ -174,13 +174,9 @@ public class OnlineUsersFragment extends Fragment {
                     values.put(ChatDb.Authors.COLUMN_NAME_TYPE, author.getType().name());
                     getActivity().getContentResolver().insert(ChatDb.Authors.CONTENT_URI, values);
                 }
-                // if refreshing is fastern than 1s, then sleep for 2s
+                // if refreshing is fastern than 1s, then sleep for 500ms
                 if (System.nanoTime() - start < 1L * 1000 * 1000 * 1000) {
-                    Thread.sleep(2000);
-                }
-                // else if refreshing is fastern than 2s, then sleep for 1s
-                else if (System.nanoTime() - start < 2L * 1000 * 1000 * 1000) {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 }
             } catch (IOException ignored) {
             } catch (InterruptedException ignored) {
