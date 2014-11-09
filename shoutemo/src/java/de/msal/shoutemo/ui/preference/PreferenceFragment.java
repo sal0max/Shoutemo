@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo;
+package de.msal.shoutemo.ui.preference;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 
 import java.util.Calendar;
+
+import de.msal.shoutemo.R;
 
 public class PreferenceFragment extends android.preference.PreferenceFragment implements
         Preference.OnPreferenceClickListener {

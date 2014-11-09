@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo;
+package de.msal.shoutemo.ui.login;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import de.msal.shoutemo.R;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 import de.msal.shoutemo.connector.Connection;
 

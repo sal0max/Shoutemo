@@ -44,10 +44,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 import de.msal.shoutemo.connector.model.Post;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  *

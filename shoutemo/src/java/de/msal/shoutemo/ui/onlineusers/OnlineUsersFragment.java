@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo;
+package de.msal.shoutemo.ui.onlineusers;
 
 import android.app.Fragment;
 import android.content.ContentValues;
@@ -26,6 +26,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +46,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.Connection;
 import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.db.ChatDb;
@@ -60,6 +64,7 @@ public class OnlineUsersFragment extends Fragment {
     private ListView mListView;
     private ArrayList<Author> mAuthors;
     private MenuItem mMenuItemRefresh;
+    private ActionBar mActionBar;
 
     private static boolean refreshTriggeredBySwipe = false;
 
@@ -82,7 +87,7 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
     @Override
@@ -107,7 +112,7 @@ public class OnlineUsersFragment extends Fragment {
         mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
         if(savedInstanceState != null) {
-//            getActionBar().setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE)); TODO
+            mActionBar.setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
             mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
             mAdapter.addAll(mAuthors);
             mListView.setAdapter(mAdapter);
@@ -121,7 +126,7 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putCharSequence(INSTANCESTATE_TITLE, getActionBar().getTitle()); //TODO
+        outState.putCharSequence(INSTANCESTATE_TITLE, mActionBar.getTitle());
         outState.putParcelableArrayList(INSTANCESTATE_AUTHORS, (mAuthors));
     }
 
@@ -190,11 +195,11 @@ public class OnlineUsersFragment extends Fragment {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-//            getActionBar().setTitle(Html.fromHtml(getResources().getQuantityString(
-//                            R.plurals.title_users_online,
-//                            authors.size(),
-//                            authors.size()))
-//            ); TODO
+           mActionBar.setTitle(Html.fromHtml(getResources().getQuantityString(
+                        R.plurals.title_users_online,
+                        authors.size(),
+                        authors.size()))
+            );
 
             mSwipeRefreshLayout.setRefreshing(false);
             if(mMenuItemRefresh != null) {

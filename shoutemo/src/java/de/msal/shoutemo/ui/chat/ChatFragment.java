@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo;
+package de.msal.shoutemo.ui.chat;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -52,6 +52,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
+import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.GetPostsService;
 import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.connector.model.Message;
@@ -259,6 +260,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
 //        mRecyclerView.addItemDecoration(dividerItemDecoration);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(android.R.drawable.divider_horizontal_dark)));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setVerticalScrollBarEnabled(true);
@@ -305,7 +307,6 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Bundle args = new Bundle();
-        Intent intent;
 
         switch (item.getItemId()) {
             /* filters */

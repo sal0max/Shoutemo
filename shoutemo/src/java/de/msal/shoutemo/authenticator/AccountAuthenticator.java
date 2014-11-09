@@ -28,8 +28,8 @@ import android.os.Bundle;
 
 import java.io.IOException;
 
-import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.connector.Connection;
+import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  * @since 03.10.13

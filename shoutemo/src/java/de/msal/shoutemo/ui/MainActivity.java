@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo;
+package de.msal.shoutemo.ui;
 
 import android.app.FragmentManager;
 import android.content.res.Configuration;
@@ -29,35 +29,37 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import de.msal.shoutemo.R;
+import de.msal.shoutemo.ui.chat.ChatFragment;
+import de.msal.shoutemo.ui.onlineusers.OnlineUsersFragment;
+import de.msal.shoutemo.ui.preference.PreferenceFragment;
+
 
 public class MainActivity extends ActionBarActivity {
 
    private DrawerLayout mDrawerLayout;
    private ListView mDrawerList;
-   private String mTitle;
    private ActionBarDrawerToggle mDrawerToggle;
 
    private static boolean drawerOpen = false; // start with an closed drawer
+   private Toolbar mToolbar;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(toolbar);
+      mToolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(mToolbar);
 
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
       mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
-      mTitle = getResources().getString(R.string.app_name);
-      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, 0, 0) {
+      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
          public void onDrawerClosed(View view) {
-            setTitle(mTitle);
             drawerOpen = false;
          }
 
          public void onDrawerOpened(View drawerView) {
-            setTitle(getResources().getString(R.string.app_name));
             drawerOpen = true;
          }
       };
@@ -98,28 +100,34 @@ public class MainActivity extends ActionBarActivity {
    private class DrawerItemClickListener implements ListView.OnItemClickListener {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+         String title = getResources().getStringArray(R.array.fragments)[position];
          // update the main content by replacing fragments
          FragmentManager fragmentManager = getFragmentManager();
          switch (position) {
             case 0: // Chat
+               mToolbar.setLogo(R.drawable.ic_logo);
+               mToolbar.setTitle(null);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, ChatFragment.newInstance())
                      .commit();
                break;
             case 1: // UsersOnline
+               mToolbar.setLogo(null);
+               mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, OnlineUsersFragment.newInstance())
                      .commit();
                break;
             case 2: // Settings
+               mToolbar.setLogo(null);
+               mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, PreferenceFragment.newInstance())
                      .commit();
                break;
          }
-         // Highlight the selected item, update the title, and close the drawer
+         // Highlight the selected item and close the drawer
          mDrawerList.setItemChecked(position, true);
-         mTitle = getResources().getStringArray(R.array.fragments)[position];
          mDrawerLayout.closeDrawer(mDrawerList);
       }
    }
