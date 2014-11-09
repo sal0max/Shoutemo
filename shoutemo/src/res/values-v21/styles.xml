@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  ~ Copyright 2013 Maximilian Salomon.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see http://www.gnu.org/licenses/.
+  -->
+
+<resources>
+
+    <!-- ActionBar, window background -->
+    <style name="AppTheme" parent="android:Theme.Material">
+        <item name="android:windowBackground">@color/autemo_grey</item>
+        <item name="android:colorPrimary">@color/autemo_green_tertiary</item>
+        <item name="android:colorPrimaryDark">@color/autemo_green_primary</item>
+        <item name="android:colorAccent">@color/autemo_green_secondary</item>
+    </style>
+
+    <!-- Misc stuff -->
+    <style name="TextAppearance.Small" parent="@android:style/TextAppearance.Small">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="LoginFormContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+</resources>
