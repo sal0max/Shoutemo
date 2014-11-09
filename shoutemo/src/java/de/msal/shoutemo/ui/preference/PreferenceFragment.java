@@ -22,6 +22,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 
 import java.util.Calendar;
 
@@ -29,6 +31,8 @@ import de.msal.shoutemo.R;
 
 public class PreferenceFragment extends android.preference.PreferenceFragment implements
         Preference.OnPreferenceClickListener {
+
+    private ActionBar mToolBar;
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided
@@ -48,6 +52,9 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setLogo(null);
 
         addPreferencesFromResource(R.xml.pref_about);
 

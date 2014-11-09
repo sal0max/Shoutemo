@@ -64,7 +64,7 @@ public class OnlineUsersFragment extends Fragment {
     private ListView mListView;
     private ArrayList<Author> mAuthors;
     private MenuItem mMenuItemRefresh;
-    private ActionBar mActionBar;
+    private ActionBar mToolBar;
 
     private static boolean refreshTriggeredBySwipe = false;
 
@@ -87,7 +87,8 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setLogo(null);
     }
 
     @Override
@@ -112,7 +113,7 @@ public class OnlineUsersFragment extends Fragment {
         mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
         if(savedInstanceState != null) {
-            mActionBar.setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
+            mToolBar.setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
             mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
             mAdapter.addAll(mAuthors);
             mListView.setAdapter(mAdapter);
@@ -126,7 +127,7 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putCharSequence(INSTANCESTATE_TITLE, mActionBar.getTitle());
+        outState.putCharSequence(INSTANCESTATE_TITLE, mToolBar.getTitle());
         outState.putParcelableArrayList(INSTANCESTATE_AUTHORS, (mAuthors));
     }
 
@@ -191,11 +192,11 @@ public class OnlineUsersFragment extends Fragment {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-           mActionBar.setTitle(Html.fromHtml(getResources().getQuantityString(
-                        R.plurals.title_users_online,
-                        authors.size(),
-                        authors.size()))
-            );
+           mToolBar.setTitle(Html.fromHtml(getResources().getQuantityString(
+                       R.plurals.title_users_online,
+                       authors.size(),
+                       authors.size()))
+           );
 
             mSwipeRefreshLayout.setRefreshing(false);
             if(mMenuItemRefresh != null) {

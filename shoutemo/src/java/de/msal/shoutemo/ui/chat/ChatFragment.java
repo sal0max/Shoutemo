@@ -30,6 +30,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -73,6 +75,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     private ImageButton keyboardButton;
     private int previousHeightDifference = 0, keyboardHeight;
     private boolean isKeyBoardVisible;
+    private ActionBar mToolBar;
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided
@@ -92,6 +95,9 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setTitle(null);
+        mToolBar.setLogo(R.drawable.ic_logo);
     }
 
     @Override
@@ -257,9 +263,9 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
 //        RecyclerView.ItemDecoration dividerItemDecoration = new SpacingItemDecoration(12, 12);
+//        mRecyclerView.addItemDecoration(dividerItemDecoration);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
-//        mRecyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(android.R.drawable.divider_horizontal_dark)));
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);

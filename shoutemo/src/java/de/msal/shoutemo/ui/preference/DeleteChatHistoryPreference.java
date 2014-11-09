@@ -15,7 +15,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 
-package de.msal.shoutemo.helpers;
+package de.msal.shoutemo.ui.preference;
 
 import android.content.Context;
 import android.content.DialogInterface;

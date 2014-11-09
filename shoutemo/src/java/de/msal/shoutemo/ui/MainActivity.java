@@ -105,21 +105,17 @@ public class MainActivity extends ActionBarActivity {
          FragmentManager fragmentManager = getFragmentManager();
          switch (position) {
             case 0: // Chat
-               mToolbar.setLogo(R.drawable.ic_logo);
-               mToolbar.setTitle(null);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, ChatFragment.newInstance())
                      .commit();
                break;
             case 1: // UsersOnline
-               mToolbar.setLogo(null);
                mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, OnlineUsersFragment.newInstance())
                      .commit();
                break;
             case 2: // Settings
-               mToolbar.setLogo(null);
                mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, PreferenceFragment.newInstance())
