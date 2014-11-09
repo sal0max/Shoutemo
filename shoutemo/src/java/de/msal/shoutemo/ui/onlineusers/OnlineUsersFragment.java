@@ -87,6 +87,7 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         mToolBar.setLogo(null);
     }
@@ -133,6 +134,7 @@ public class OnlineUsersFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.onlineusers, menu);
         mMenuItemRefresh = menu.findItem(R.id.action_onlineusers_refresh);
     }

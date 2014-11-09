@@ -95,6 +95,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         mToolBar.setTitle(null);
         mToolBar.setLogo(R.drawable.ic_logo);

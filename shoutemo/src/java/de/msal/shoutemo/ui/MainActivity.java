@@ -66,9 +66,6 @@ public class MainActivity extends ActionBarActivity {
 
       mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setHomeButtonEnabled(true);
-
       mDrawerList.setAdapter(new ArrayAdapter<String>(
             this,
             android.R.layout.simple_list_item_activated_1,
@@ -77,7 +74,6 @@ public class MainActivity extends ActionBarActivity {
       ));
       DrawerItemClickListener itemClickListener = new DrawerItemClickListener();
       mDrawerList.setOnItemClickListener(itemClickListener);
-      // mDrawerList.performItemClick(mDrawerList, 0, mDrawerList.getAdapter().getItemId(0)); // preselect
       if (drawerOpen)
          mDrawerLayout.openDrawer(mDrawerList);
 
