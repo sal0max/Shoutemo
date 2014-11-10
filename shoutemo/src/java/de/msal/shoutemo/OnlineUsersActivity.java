@@ -35,6 +35,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.util.TypedValue;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,8 +75,7 @@ public class OnlineUsersActivity extends Activity {
         mSwipeRefreshLayout.setColorSchemeResources(
                 R.color.autemo_pink,
                 R.color.autemo_yellow_bright,
-                R.color.autemo_green_secondary,
-                R.color.autemo_blue);
+                R.color.autemo_green_secondary);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -138,6 +139,8 @@ public class OnlineUsersActivity extends Activity {
         protected void onPreExecute() {
             super.onPreExecute();
             if (!refreshTriggeredBySwipe)
+                mSwipeRefreshLayout.setProgressViewOffset(false, 0,
+                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics()));
                 mSwipeRefreshLayout.setRefreshing(true);
             if(mMenuItemRefresh != null) {
                 mMenuItemRefresh.setEnabled(false);
