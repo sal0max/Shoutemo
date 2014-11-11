@@ -32,7 +32,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -96,14 +96,15 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setTitle(null);
-        mToolBar.setLogo(R.drawable.ic_logo);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
+
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setDisplayShowTitleEnabled(false);//setTitle(null);
+        mToolBar.setLogo(R.drawable.ic_logo);
 
         /* find the other views */
         keyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
@@ -261,15 +262,12 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
 
         /* list stuff */
         mListAdapter = new RecyclerAdapter(getActivity(), null);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        ListLayoutManager layoutManager = new ListLayoutManager(getActivity());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
-//        RecyclerView.ItemDecoration dividerItemDecoration = new SpacingItemDecoration(12, 12);
-//        mRecyclerView.addItemDecoration(dividerItemDecoration);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setStackFromEnd(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(android.R.drawable.divider_horizontal_dark)));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
+//        recyclerView.setHasFixedSize(true);
         recyclerView.setVerticalScrollBarEnabled(true);
         recyclerView.setAdapter(mListAdapter);
 

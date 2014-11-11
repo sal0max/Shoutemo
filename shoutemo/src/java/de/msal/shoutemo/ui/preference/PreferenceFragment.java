@@ -24,6 +24,9 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.Calendar;
 
@@ -53,9 +56,6 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setLogo(null);
-
         addPreferencesFromResource(R.xml.pref_about);
 
         findPreference("notices").setOnPreferenceClickListener(this);
@@ -69,6 +69,14 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setLogo(null);
+        mToolBar.setTitle(R.string.menu_prefs);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+   @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals("notices")) {
             Intent i = new Intent(Intent.ACTION_VIEW);

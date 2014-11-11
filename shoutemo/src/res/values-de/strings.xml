@@ -21,7 +21,7 @@
 
     <plurals name="title_users_online" tools:ignore="MissingQuantity">
         <item quantity="zero">Kein User online</item>
-        <item quantity="other">&lt;b>%d&lt;/b> User online</item>
+        <item quantity="other">&lt;b>%d&lt;w/b> User online</item>
     </plurals>
 
     <!-- <string name="app_name"></string> -->

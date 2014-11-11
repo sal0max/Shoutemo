@@ -42,19 +42,18 @@ public class MainActivity extends ActionBarActivity {
    private ActionBarDrawerToggle mDrawerToggle;
 
    private static boolean drawerOpen = false; // start with an closed drawer
-   private Toolbar mToolbar;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      mToolbar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(mToolbar);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
 
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
       mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
-      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
+      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, 0, 0) {
          public void onDrawerClosed(View view) {
             drawerOpen = false;
          }
@@ -70,15 +69,18 @@ public class MainActivity extends ActionBarActivity {
             this,
             android.R.layout.simple_list_item_activated_1,
             android.R.id.text1,
-            getResources().getStringArray(R.array.fragments)
-      ));
-      DrawerItemClickListener itemClickListener = new DrawerItemClickListener();
-      mDrawerList.setOnItemClickListener(itemClickListener);
-      if (drawerOpen)
+            new String[] {"Chat",
+                  getString(R.string.menu_users_online),
+                  getString(R.string.menu_prefs)
+            })
+      );
+      mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+      if (savedInstanceState == null) {
+         mDrawerList.performItemClick(mDrawerList, 0, mDrawerList.getAdapter().getItemId(0)); //preselect on start
+      }
+      if (drawerOpen) {
          mDrawerLayout.openDrawer(mDrawerList);
-
-      // start the chat fragment
-      itemClickListener.onItemClick(null, null, 0, 0);
+      }
    }
 
    @Override
@@ -96,7 +98,6 @@ public class MainActivity extends ActionBarActivity {
    private class DrawerItemClickListener implements ListView.OnItemClickListener {
       @Override
       public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-         String title = getResources().getStringArray(R.array.fragments)[position];
          // update the main content by replacing fragments
          FragmentManager fragmentManager = getFragmentManager();
          switch (position) {
@@ -106,13 +107,11 @@ public class MainActivity extends ActionBarActivity {
                      .commit();
                break;
             case 1: // UsersOnline
-               mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, OnlineUsersFragment.newInstance())
                      .commit();
                break;
             case 2: // Settings
-               mToolbar.setTitle(title);
                fragmentManager.beginTransaction()
                      .replace(R.id.container, PreferenceFragment.newInstance())
                      .commit();

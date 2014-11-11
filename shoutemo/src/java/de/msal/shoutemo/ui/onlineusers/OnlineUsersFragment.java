@@ -83,18 +83,19 @@ public class OnlineUsersFragment extends Fragment {
 
     public OnlineUsersFragment() {}
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setLogo(null);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_onlineusers, container, false);
+        View view = inflater.inflate(R.layout.fragment_onlineusers, container, false);
+
+        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        mToolBar.setLogo(null);
+        mToolBar.setTitle("...");
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.onlineusers_swipe);
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -194,11 +195,11 @@ public class OnlineUsersFragment extends Fragment {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-           mToolBar.setTitle(Html.fromHtml(getResources().getQuantityString(
-                       R.plurals.title_users_online,
-                       authors.size(),
-                       authors.size()))
-           );
+            mToolBar.setTitle(Html.fromHtml(getResources().getQuantityString(
+                        R.plurals.title_users_online,
+                        authors.size(),
+                        authors.size()))
+            );
 
             mSwipeRefreshLayout.setRefreshing(false);
             if(mMenuItemRefresh != null) {

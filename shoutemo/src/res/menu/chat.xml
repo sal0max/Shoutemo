@@ -22,7 +22,7 @@
     <item
         android:icon="@drawable/ic_action_filter"
         android:orderInCategory="60"
-        app:showAsAction="always"
+        app:showAsAction="never"
         android:title="@string/menu_filter_title"
         android:titleCondensed="@string/menu_filter_title_condensed">
         <menu>

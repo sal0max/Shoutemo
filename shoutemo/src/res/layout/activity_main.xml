@@ -23,7 +23,7 @@
    android:layout_width="match_parent"
    android:layout_height="match_parent"
    android:fitsSystemWindows="true"
-   tools:context=".MainActivity">
+   tools:context=".ui.MainActivity">
 
    <!-- The main content view -->
    <LinearLayout
@@ -49,7 +49,6 @@
       android:layout_gravity="start"
       android:choiceMode="singleChoice"
       android:background="#444"
-      tools:context=".NavigationDrawerFragment"
       android:dividerHeight="0dp"
       android:divider="@android:color/transparent"
       android:fitsSystemWindows="true" />
