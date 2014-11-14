@@ -18,9 +18,9 @@
   -->
 
 <resources>
-    <color name="primary">@color/autemo_green_primary</color>
+    <color name="primary">@color/autemo_green_tertiary</color>
     <color name="primaryDark">@color/autemo_green_quaternary</color>
-    <color name="accent">@color/autemo_pink</color>
+    <color name="accent">@color/autemo_blue</color>
 
     <color name="autemo_blue">#28aab2</color>
     <color name="autemo_grey">#1b1b1b</color>
@@ -29,7 +29,7 @@
     <color name="autemo_green_primary">#508221</color>
     <color name="autemo_green_secondary">#c5f22c</color>
     <color name="autemo_green_tertiary">#669900</color>
-    <color name="autemo_green_quaternary">#ff304d14</color>
+    <color name="autemo_green_quaternary">#ff497320</color>
     <color name="autemo_orange">#ff4800</color>
     <color name="autemo_pink">#ff264a</color>
     <color name="autemo_yellow_bright">#ffffe033</color>
