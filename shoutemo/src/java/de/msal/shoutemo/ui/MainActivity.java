@@ -40,7 +40,6 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
    private DrawerLayout mDrawerLayout;
    private ListView mDrawerList;
    private ActionBarDrawerToggle mDrawerToggle;
-   private Toolbar mToolBar;
 
    private static boolean drawerOpen = false; // start with an closed drawer
 
@@ -49,12 +48,12 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      mToolBar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(mToolBar);
+      Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
       mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
-      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolBar, 0, 0) {
+      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
          public void onDrawerClosed(View view) {
             drawerOpen = false;
          }
@@ -98,7 +97,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
 
    @Override
    public void setTitle(CharSequence title) {
-      mToolBar.setTitle(title);
+      getSupportActionBar().setTitle(title);
    }
 
    private class DrawerItemClickListener implements ListView.OnItemClickListener {

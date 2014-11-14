@@ -113,7 +113,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        mCallback.setTitle("Shoutemo");
+        mCallback.setTitle(getString(R.string.app_name));
 
         /* find the other views */
         keyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
