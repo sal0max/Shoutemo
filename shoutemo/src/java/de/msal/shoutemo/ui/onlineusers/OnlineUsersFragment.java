@@ -20,7 +20,6 @@ package de.msal.shoutemo.ui.onlineusers;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,9 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -216,49 +213,6 @@ public class OnlineUsersFragment extends Fragment {
                 mMenuItemRefresh.setEnabled(true);
             }
             refreshTriggeredBySwipe = false;
-        }
-    }
-
-    private class OnlineUsersAdapter extends ArrayAdapter<Author> {
-
-        private OnlineUsersAdapter(Context context, List<Author> objects) {
-            super(context, android.R.layout.simple_list_item_1, objects);
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return getItem(position).getType().ordinal();
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return Author.Type.values().length;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            Author author = getItem(position);
-
-            if (convertView == null) {
-                convertView = LayoutInflater.from(getContext())
-                        .inflate(android.R.layout.simple_list_item_1, parent, false);
-            }
-
-            TextView tvAuthor = (TextView) convertView.findViewById(android.R.id.text1);
-            tvAuthor.setText(author.getName());
-            /* show the right tvAuthor color (mod/admin/member) */
-            switch (author.getType()) {
-                case ADMIN:
-                    tvAuthor.setTextColor(
-                            getContext().getResources().getColor(R.color.autemo_blue));
-                    break;
-                case MOD:
-                    tvAuthor.setTextColor(
-                            getContext().getResources().getColor(R.color.autemo_green_secondary));
-                    break;
-            }
-
-            return convertView;
         }
     }
 
