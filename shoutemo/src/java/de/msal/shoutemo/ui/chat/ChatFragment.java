@@ -17,6 +17,7 @@
 
 package de.msal.shoutemo.ui.chat;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
@@ -30,8 +31,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -59,6 +58,7 @@ import de.msal.shoutemo.connector.GetPostsService;
 import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.ui.TitleSetListener;
 
 public class ChatFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -69,13 +69,13 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
 
     //
     private BroadcastReceiver receiver;
+    private TitleSetListener mCallback;
     /* stuff for the smiley selector  */
     private View emoticonsSpacer;
     private PopupWindow emoticonsPopupWindow;
     private ImageButton keyboardButton;
     private int previousHeightDifference = 0, keyboardHeight;
     private boolean isKeyBoardVisible;
-    private ActionBar mToolBar;
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided
@@ -93,6 +93,17 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public ChatFragment() {}
 
     @Override
+    public void onAttach(Activity activity) {
+       super.onAttach(activity);
+       try {
+          mCallback = (TitleSetListener) activity;
+       } catch (ClassCastException e) {
+          throw new ClassCastException(activity.toString()
+                + " must implement OnHeadlineSelectedListener");
+       }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -102,9 +113,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setDisplayShowTitleEnabled(false);//setTitle(null);
-        mToolBar.setLogo(R.drawable.ic_logo);
+        mCallback.setTitle("Shoutemo");
 
         /* find the other views */
         keyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);

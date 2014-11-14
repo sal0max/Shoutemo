@@ -35,11 +35,12 @@ import de.msal.shoutemo.ui.onlineusers.OnlineUsersFragment;
 import de.msal.shoutemo.ui.preference.PreferenceFragment;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements TitleSetListener {
 
    private DrawerLayout mDrawerLayout;
    private ListView mDrawerList;
    private ActionBarDrawerToggle mDrawerToggle;
+   private Toolbar mToolBar;
 
    private static boolean drawerOpen = false; // start with an closed drawer
 
@@ -48,12 +49,12 @@ public class MainActivity extends ActionBarActivity {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_main);
 
-      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar(toolbar);
+      mToolBar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(mToolBar);
 
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
       mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
-      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, 0, 0) {
+      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolBar, 0, 0) {
          public void onDrawerClosed(View view) {
             drawerOpen = false;
          }
@@ -93,6 +94,11 @@ public class MainActivity extends ActionBarActivity {
    public void onConfigurationChanged(Configuration newConfig) {
       super.onConfigurationChanged(newConfig);
       mDrawerToggle.onConfigurationChanged(newConfig);
+   }
+
+   @Override
+   public void setTitle(CharSequence title) {
+      mToolBar.setTitle(title);
    }
 
    private class DrawerItemClickListener implements ListView.OnItemClickListener {

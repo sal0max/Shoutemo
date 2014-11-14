@@ -17,13 +17,12 @@
 
 package de.msal.shoutemo.ui.preference;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +30,14 @@ import android.view.ViewGroup;
 import java.util.Calendar;
 
 import de.msal.shoutemo.R;
+import de.msal.shoutemo.ui.TitleSetListener;
 
 public class PreferenceFragment extends android.preference.PreferenceFragment implements
         Preference.OnPreferenceClickListener {
 
-    private ActionBar mToolBar;
+    private TitleSetListener mCallback;
 
-    /**
+   /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
      *
@@ -51,6 +51,17 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
     }
 
     public PreferenceFragment() {}
+
+    @Override
+    public void onAttach(Activity activity) {
+       super.onAttach(activity);
+       try {
+          mCallback = (TitleSetListener) activity;
+       } catch (ClassCastException e) {
+          throw new ClassCastException(activity.toString()
+                + " must implement OnHeadlineSelectedListener");
+       }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,9 +81,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setLogo(null);
-        mToolBar.setTitle(R.string.menu_prefs);
+        mCallback.setTitle(getString(R.string.menu_prefs));
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

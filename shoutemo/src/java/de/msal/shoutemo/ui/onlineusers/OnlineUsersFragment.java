@@ -17,6 +17,7 @@
 
 package de.msal.shoutemo.ui.onlineusers;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,9 +27,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,6 +50,7 @@ import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.Connection;
 import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.ui.TitleSetListener;
 
 /**
  * @since 13.06.14
@@ -64,11 +65,12 @@ public class OnlineUsersFragment extends Fragment {
     private ListView mListView;
     private ArrayList<Author> mAuthors;
     private MenuItem mMenuItemRefresh;
-    private ActionBar mToolBar;
+    private CharSequence mTitle = new SpannableStringBuilder("...");
+    private TitleSetListener mCallback;
 
     private static boolean refreshTriggeredBySwipe = false;
 
-    /**
+   /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
      *
@@ -84,6 +86,17 @@ public class OnlineUsersFragment extends Fragment {
     public OnlineUsersFragment() {}
 
     @Override
+    public void onAttach(Activity activity) {
+       super.onAttach(activity);
+       try {
+          mCallback = (TitleSetListener) activity;
+       } catch (ClassCastException e) {
+          throw new ClassCastException(activity.toString()
+                + " must implement OnHeadlineSelectedListener");
+       }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -92,10 +105,6 @@ public class OnlineUsersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_onlineusers, container, false);
-
-        mToolBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
-        mToolBar.setLogo(null);
-        mToolBar.setTitle("...");
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.onlineusers_swipe);
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -115,7 +124,7 @@ public class OnlineUsersFragment extends Fragment {
         mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
         if(savedInstanceState != null) {
-            mToolBar.setTitle(savedInstanceState.getCharSequence(INSTANCESTATE_TITLE));
+            mTitle = savedInstanceState.getCharSequence(INSTANCESTATE_TITLE);
             mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
             mAdapter.addAll(mAuthors);
             mListView.setAdapter(mAdapter);
@@ -123,13 +132,14 @@ public class OnlineUsersFragment extends Fragment {
             new GetOnlineUsersTask().execute();
         }
 
+        mCallback.setTitle(mTitle);
         return view;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putCharSequence(INSTANCESTATE_TITLE, mToolBar.getTitle());
+        outState.putCharSequence(INSTANCESTATE_TITLE, mTitle);
         outState.putParcelableArrayList(INSTANCESTATE_AUTHORS, (mAuthors));
     }
 
@@ -195,11 +205,11 @@ public class OnlineUsersFragment extends Fragment {
             mAdapter.addAll(authors);
             mListView.setAdapter(mAdapter);
 
-            mToolBar.setTitle(Html.fromHtml(getResources().getQuantityString(
+            mTitle = Html.fromHtml(getResources().getQuantityString(
                         R.plurals.title_users_online,
                         authors.size(),
-                        authors.size()))
-            );
+                        authors.size()));
+            mCallback.setTitle(mTitle);
 
             mSwipeRefreshLayout.setRefreshing(false);
             if(mMenuItemRefresh != null) {
