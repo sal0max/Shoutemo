@@ -94,8 +94,8 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/chat_emoticons_spacer"
+    <include layout="@layout/emoticons_grid"
+        android:id="@+id/emoticons_grid"
         android:layout_width="match_parent"
         android:layout_height="@dimen/keyboard_height"
         android:visibility="gone" />

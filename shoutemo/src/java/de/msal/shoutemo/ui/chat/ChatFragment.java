@@ -27,30 +27,26 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 
 import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.GetPostsService;
@@ -61,20 +57,14 @@ import de.msal.shoutemo.ui.TitleSetListener;
 
 public class ChatFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /*  */
     private final static int LOADER_ID_MESSAGES = 0;
-
     private ListAdapter mListAdapter;
-
-    //
-    private BroadcastReceiver receiver;
+    private BroadcastReceiver mReceiver;
     private TitleSetListener mCallback;
-    /* stuff for the smiley selector  */
-    private View emoticonsSpacer;
-    private PopupWindow emoticonsPopupWindow;
-    private ImageButton keyboardButton;
-    private int previousHeightDifference = 0, keyboardHeight;
-    private boolean isKeyBoardVisible;
+    private GridView mEmoticonGrid;
+    private ImageButton mKeyboardButton;
+    private EditText mInputField;
+    private ImageButton mSendButton;
 
     /**
      * Use this factory method to create a new instance of this fragment using the provided
@@ -112,18 +102,15 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        /* set the fragment title of the toolbar */
         mCallback.setTitle(getString(R.string.app_name));
 
-        /* find the other views */
-        keyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
-        emoticonsSpacer = view.findViewById(R.id.chat_emoticons_spacer);
-        final LinearLayout parentLayout = (LinearLayout) view.findViewById(R.id.chat_rl_parent);
-        final EditText inputField = (EditText) view.findViewById(R.id.et_input);
-        final ImageButton sendButton = (ImageButton) view.findViewById(R.id.ib_send);
+        /* INPUT FIELD WHERE THE MESSAGE IS COMPOSED */
+        mInputField = (EditText) view.findViewById(R.id.et_input);
 
-        /* everything for showing the udpate status */
+        /* display a blinking dot to show the refresh status */
         final ImageView updateStatus = (ImageView) view.findViewById(R.id.ib_update_indicator);
-        receiver = new BroadcastReceiver() {
+        mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean enabled = intent.getBooleanExtra(GetPostsService.INTENT_UPDATE_ENABLED,
@@ -136,153 +123,111 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         };
 
-
-        /* initially the inputField is empty, so disable the send button */
-        sendButton.setVisibility(View.GONE);
-
-        /* Send message when clicked on SEND-BUTTON */
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (inputField.getText() != null && !TextUtils.isEmpty(inputField.getText())) {
-                    new SendPostTask(getActivity()).execute(inputField.getText().toString());
-                    inputField.setText("");
-                }
-            }
+        /* SEND MESSAGE BUTTON */
+        mSendButton = (ImageButton) view.findViewById(R.id.ib_send);
+        // initially the mInputField is empty, so disable the send button
+        mSendButton.setVisibility(View.GONE);
+        // Send message when clicked on SEND-BUTTON
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+              if (mInputField.getText() != null && !TextUtils.isEmpty(mInputField.getText())) {
+                 new SendPostTask(getActivity()).execute(mInputField.getText().toString());
+                 mInputField.setText("");
+              }
+           }
         });
 
-        inputField.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-                emoticonsPopupWindow.dismiss();
-            }
-        });
-
-        /* hide send-button, if no text is entered */
-        inputField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (sendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
-                    Animation pushOut = AnimationUtils.loadAnimation(getActivity(), R.anim.push_out);
-                    sendButton.startAnimation(pushOut);
-                    sendButton.setVisibility(View.GONE);
-                } else if (sendButton.getVisibility() == View.GONE && s.length() >= 1) {
-                    Animation pushIn = AnimationUtils.loadAnimation(getActivity(), R.anim.push_in);
-                    sendButton.startAnimation(pushIn);
-                    sendButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
-        keyboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (emoticonsPopupWindow.isShowing()) {
-                    keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-                    emoticonsPopupWindow.dismiss();
-                } else {
-                    emoticonsPopupWindow.setHeight(keyboardHeight);
-
-                    if (isKeyBoardVisible) {
-                        keyboardButton.setImageResource(R.drawable.ic_action_keyboard);
-                        emoticonsSpacer.setVisibility(View.GONE);
-                    } else {
-                        keyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
-                        emoticonsSpacer.setVisibility(View.VISIBLE);
-                    }
-                    emoticonsPopupWindow.showAtLocation(parentLayout, Gravity.BOTTOM, 0, 0);
-                }
-            }
-        });
-
-
-        /* listen for layout changes */
-        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        Rect r = new Rect();
-                        parentLayout.getWindowVisibleDisplayFrame(r);
-
-                        int screenHeight = parentLayout.getRootView().getHeight();
-                        int heightDifference = screenHeight - (r.bottom);
-
-                        if (previousHeightDifference - heightDifference > 50) {
-                            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-                            emoticonsPopupWindow.dismiss();
-                        }
-
-                        previousHeightDifference = heightDifference;
-                        if (heightDifference > 100) {
-                            isKeyBoardVisible = true;
-                            setEmoticonsKeyboardHeight(heightDifference);
-                        } else {
-                            isKeyBoardVisible = false;
-                        }
-                    }
-                }
-        );
-
+        mEmoticonGrid = (GridView) view.findViewById(R.id.emoticons_grid);
         /* set the adapter for the emoticons */
-        final View emoticonsGrid = inflater.inflate(R.layout.emoticons_grid, null);
-        ((GridView) emoticonsGrid.findViewById(R.id.emoticons_gridview)).setAdapter(
-                new EmoticonsAdapter(getActivity(), new EmoticonsAdapter.OnEmoticonClickListener() {
-                    @Override
-                    public void onEmoticonClick(String bbcode) {
-                        inputField.getText().replace(inputField.getSelectionStart(),
-                                inputField.getSelectionEnd(), " " + bbcode + " ");
-                    }
-                }));
-        // create a pop window that works as the emoticons keyboard
-        emoticonsPopupWindow = new PopupWindow(emoticonsGrid, LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight, false);
-        // hide the spacer if the popup gets hidden
-        emoticonsPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                emoticonsSpacer.setVisibility(View.GONE);
-            }
+        mEmoticonGrid.setAdapter(
+              new EmoticonsAdapter(getActivity(), new EmoticonsAdapter.OnEmoticonClickListener() {
+                 @Override
+                 public void onEmoticonClick(String bbcode) {
+                    mInputField.getText().replace(mInputField.getSelectionStart(),
+                          mInputField.getSelectionEnd(), " " + bbcode + " ");
+                 }
+              }));
+
+        /* A BUTTON WHICH SWITCHES BETWEEN SOFT KEYBOARD AND EMOTICON SELECTOR */
+        mKeyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
+        /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
+        mKeyboardButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+              if (mEmoticonGrid.getVisibility() == View.VISIBLE) {
+                 mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+                 mEmoticonGrid.setVisibility(View.GONE);
+              } else {
+                 mKeyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
+                 mEmoticonGrid.setVisibility(View.VISIBLE);
+                 hideKeyboard();
+              }
+           }
         });
 
-        // default: 230dp
-        setEmoticonsKeyboardHeight((int) getResources().getDimension(R.dimen.keyboard_height));
-
-        /* receive and handle share intent */
-        Intent intent = getActivity().getIntent();
-        String type = intent.getType();
-        if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
-            if (type.equals("text/plain")) {
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    inputField.setText(sharedText);
-                }
-            }
-        }
-
-        /* list stuff */
+        /* LIST STUFF */
         mListAdapter = new ListAdapter(getActivity(), null, 0);
         ListView listView = (ListView) view.findViewById(android.R.id.list);
         listView.setVerticalScrollBarEnabled(true);
         listView.setAdapter(mListAdapter);
-
         this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
 
         return view;
     }
 
    @Override
+   public void onViewCreated(View view, Bundle savedInstanceState) {
+      super.onViewCreated(view, savedInstanceState);
+
+       /* receive and handle share intent */
+       Intent intent = getActivity().getIntent();
+       String type = intent.getType();
+       if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
+          if (type.equals("text/plain")) {
+             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+             if (sharedText != null) {
+                mInputField.setText(sharedText);
+             }
+          }
+       }
+
+       /* hide send-button, if no text is entered */
+       mInputField.addTextChangedListener(new TextWatcher() {
+          @Override
+          public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+          @Override
+          public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+          @Override
+          public void afterTextChanged(Editable s) {
+             if (mSendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
+                Animation pushOut = AnimationUtils.loadAnimation(getActivity(), R.anim.push_out);
+                mSendButton.startAnimation(pushOut);
+                mSendButton.setVisibility(View.GONE);
+             } else if (mSendButton.getVisibility() == View.GONE && s.length() >= 1) {
+                Animation pushIn = AnimationUtils.loadAnimation(getActivity(), R.anim.push_in);
+                mSendButton.startAnimation(pushIn);
+                mSendButton.setVisibility(View.VISIBLE);
+             }
+          }
+       });
+
+       /*  */
+       mInputField.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+             mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+             mEmoticonGrid.setVisibility(View.GONE);
+          }
+       });
+   }
+
+   @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((receiver),
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((mReceiver),
                 new IntentFilter(GetPostsService.INTENT_UPDATE));
     }
 
@@ -302,7 +247,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onStop() {
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mReceiver);
         super.onStop();
     }
 
@@ -369,33 +314,14 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO
-//    /**
-//     * override onKeyDown for dismissing the emoticons keyboard on key down
-//     */
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (emoticonsPopupWindow.isShowing()) {
-//            keyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-//            emoticonsPopupWindow.dismiss();
-//            return false;
-//        } else {
-//            return super.onKeyDown(keyCode, event);
-//        }
-//    }
+    private void hideKeyboard() {
+       InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-    /**
-     * change the height of the emoticons keyboard matching to height of actual keyboard
-     *
-     * @param height minimum height by which we can make sure actual keyboard is open or not
-     */
-    private void setEmoticonsKeyboardHeight(int height) {
-        if (height > 100) {
-            keyboardHeight = height;
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, keyboardHeight);
-            emoticonsSpacer.setLayoutParams(params);
-        }
+       // check if no view has focus:
+       View view = getActivity().getCurrentFocus();
+       if (view != null) {
+          inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+       }
     }
 
     @Override
