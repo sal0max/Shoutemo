@@ -50,7 +50,7 @@
             android:id="@+id/ib_update_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/circle_yellow"
+            android:src="@drawable/circle_accent"
             android:visibility="gone"
             android:layout_gravity="start|top"
             android:layout_marginRight="-9dp"
