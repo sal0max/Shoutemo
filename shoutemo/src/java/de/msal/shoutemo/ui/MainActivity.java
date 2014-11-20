@@ -24,6 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -110,7 +111,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
          switch (position) {
             case 0: // Chat
                fragmentManager.beginTransaction()
-                     .replace(R.id.container, ChatFragment.newInstance())
+                     .replace(R.id.container, ChatFragment.newInstance(), "CHAT")
                      .commit();
                break;
             case 1: // UsersOnline
@@ -128,6 +129,17 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
          mDrawerList.setItemChecked(position, true);
          mDrawerLayout.closeDrawer(mNavigationDrawer);
       }
+   }
+
+   @Override
+   public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if (keyCode == KeyEvent.KEYCODE_BACK) {
+         if (mDrawerLayout.isDrawerOpen(mNavigationDrawer)) {
+            mDrawerLayout.closeDrawer(mNavigationDrawer);
+            return true;
+         }
+      }
+      return super.onKeyDown(keyCode, event);
    }
 
 }
