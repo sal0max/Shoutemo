@@ -29,6 +29,7 @@ public class ListLayoutManager extends LinearLayoutManager {
    public ListLayoutManager(Context context) {
       super(context, VERTICAL, false);
       setStackFromEnd(true);
+      setSmoothScrollbarEnabled(true);
    }
 
    @Override

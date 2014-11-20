@@ -24,14 +24,14 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+    <ListView
         android:id="@android:id/list"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:transcriptMode="alwaysScroll"
-        android:fastScrollEnabled="true"
-        android:scrollbarStyle="insideOverlay" />
+        android:stackFromBottom="true"
+        android:transcriptMode="normal"
+        android:fastScrollEnabled="true" />
 
     <View
         android:layout_width="fill_parent"
@@ -52,8 +52,9 @@
             android:layout_height="wrap_content"
             android:src="@drawable/circle_yellow"
             android:visibility="gone"
-            android:layout_gravity="left|top"
+            android:layout_gravity="start|top"
             android:layout_marginRight="-9dp"
+            android:layout_marginEnd="-9dp"
             android:padding="2dp" />
 
         <ImageButton
@@ -70,7 +71,7 @@
 
         <EditText
             android:id="@+id/et_input"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"

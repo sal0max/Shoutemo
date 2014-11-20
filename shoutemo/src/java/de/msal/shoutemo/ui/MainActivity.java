@@ -38,6 +38,7 @@ import de.msal.shoutemo.ui.preference.PreferenceFragment;
 public class MainActivity extends ActionBarActivity implements TitleSetListener {
 
    private DrawerLayout mDrawerLayout;
+   private View mNavigationDrawer;
    private ListView mDrawerList;
    private ActionBarDrawerToggle mDrawerToggle;
 
@@ -52,7 +53,8 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
       setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
       mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-      mDrawerList = (ListView) findViewById(R.id.navigation_drawer);
+      mNavigationDrawer = findViewById(R.id.navigation_drawer);
+      mDrawerList = (ListView) mNavigationDrawer.findViewById(android.R.id.list);
       mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
          public void onDrawerClosed(View view) {
             drawerOpen = false;
@@ -79,7 +81,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
          mDrawerList.performItemClick(mDrawerList, 0, mDrawerList.getAdapter().getItemId(0)); //preselect on start
       }
       if (drawerOpen) {
-         mDrawerLayout.openDrawer(mDrawerList);
+         mDrawerLayout.openDrawer(mNavigationDrawer);
       }
    }
 
@@ -124,7 +126,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
          }
          // Highlight the selected item and close the drawer
          mDrawerList.setItemChecked(position, true);
-         mDrawerLayout.closeDrawer(mDrawerList);
+         mDrawerLayout.closeDrawer(mNavigationDrawer);
       }
    }
 

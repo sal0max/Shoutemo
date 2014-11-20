@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2013 Maximilian Salomon.
+  ~ Copyright 2014 Maximilian Salomon.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -17,12 +17,20 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">8dp</dimen>
-    <dimen name="edittext_padding">10dp</dimen>
-    <dimen name="emoticon_area">48dp</dimen>
-    <dimen name="keyboard_height">230dp</dimen>
-    <dimen name="land_720dp_left_column">85dp</dimen>
-    <integer name="fade_in_out_time">250</integer>
-</resources>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+   android:layout_height="match_parent"
+   android:background="@color/autemo_grey"
+   android:orientation="vertical">
+
+   <Space
+      android:layout_width="match_parent"
+      android:layout_height="100dp" />
+
+   <ListView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@android:id/list"
+      android:choiceMode="singleChoice" />
+
+</LinearLayout>

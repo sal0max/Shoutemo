@@ -42,15 +42,12 @@
    </LinearLayout>
 
    <!-- The navigation drawer -->
-   <ListView
+   <include
+      layout="@layout/navigationdrawer"
       android:id="@+id/navigation_drawer"
       android:layout_width="304dp"
       android:layout_height="match_parent"
       android:layout_gravity="start"
-      android:choiceMode="singleChoice"
-      android:background="#444"
-      android:dividerHeight="0dp"
-      android:divider="@android:color/transparent"
       android:fitsSystemWindows="true" />
 
 </android.support.v4.widget.DrawerLayout>

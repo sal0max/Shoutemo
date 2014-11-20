@@ -18,9 +18,11 @@
 package de.msal.shoutemo.ui.chat;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -49,7 +51,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
    private static Cursor mCursor;
    private static boolean mDataValid;
    private int mRowIdColumn;
-   private NotifyingDataSetObserver mDataSetObserver;
+   private ChangeObserver mChangeObserver;
+   private final DataSetObserver mDataSetObserver;
 
    public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -82,18 +85,26 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
       mDataValid = (c != null);
       mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
-      mDataSetObserver = new NotifyingDataSetObserver();
+      mChangeObserver = new ChangeObserver();
+      mDataSetObserver = new MyDataSetObserver();
+
       if (mCursor != null) {
-         mCursor.registerDataSetObserver(mDataSetObserver);
+         if (mChangeObserver != null) c.registerContentObserver(mChangeObserver);
+         if (mDataSetObserver != null) c.registerDataSetObserver(mDataSetObserver);
       }
    }
 
    @Override
    public long getItemId(int position) {
-      if (mDataValid && mCursor != null && mCursor.moveToPosition(position)) {
-         return mCursor.getLong(mRowIdColumn);
+      if (mDataValid && mCursor != null) {
+         if (mCursor.moveToPosition(position)) {
+            return mCursor.getLong(mRowIdColumn);
+         } else {
+            return 0;
+         }
+      } else {
+         return 0;
       }
-      return 0;
    }
 
    @Override
@@ -128,6 +139,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
    @Override
    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+      if (!mDataValid) {
+         throw new IllegalStateException("this should only be called when the cursor is valid");
+      }
+      if (!mCursor.moveToPosition(i)) {
+         throw new IllegalStateException("couldn't move cursor to position " + i);
+      }
 
       String message = mCursor.getString(
             mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
@@ -258,49 +275,79 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
    }
 
    /**
-    * Swap in a new Cursor, returning the old Cursor. Unlike {@link #changeCursor(Cursor)}, the
-    * returned old Cursor is <em>not</em> closed.
+    * Swap in a new Cursor, returning the old Cursor. Unlike
+    * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
+    * closed.
+    *
+    * @param newCursor The new cursor to be used.
+    * @return Returns the previously set Cursor, or null if there wasa not one.
+    * If the given new Cursor is the same instance is the previously set
+    * Cursor, null is also returned.
     */
    public Cursor swapCursor(Cursor newCursor) {
       if (newCursor == mCursor) {
          return null;
       }
-      final Cursor oldCursor = mCursor;
-      if (oldCursor != null && mDataSetObserver != null) {
-         oldCursor.unregisterDataSetObserver(mDataSetObserver);
+      Cursor oldCursor = mCursor;
+      if (oldCursor != null) {
+         if (mChangeObserver != null) oldCursor.unregisterContentObserver(mChangeObserver);
+         if (mDataSetObserver != null) oldCursor.unregisterDataSetObserver(mDataSetObserver);
       }
       mCursor = newCursor;
-      if (mCursor != null) {
-         if (mDataSetObserver != null) {
-            mCursor.registerDataSetObserver(mDataSetObserver);
-         }
+      if (newCursor != null) {
+         if (mChangeObserver != null) newCursor.registerContentObserver(mChangeObserver);
+         if (mDataSetObserver != null) newCursor.registerDataSetObserver(mDataSetObserver);
          mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
          mDataValid = true;
+         // notify the observers about the new cursor
          notifyDataSetChanged();
       } else {
          mRowIdColumn = -1;
          mDataValid = false;
-         notifyDataSetChanged();
-         //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
+         // notify the observers about the lack of a data set
+         // notifyDataSetInvalidated();
+         notifyItemRangeRemoved(0, getItemCount());
       }
       return oldCursor;
    }
 
-   private class NotifyingDataSetObserver extends DataSetObserver {
+   /**
+    * Called when the {@link ContentObserver} on the cursor receives a change notification.
+    * Can be implemented by sub-class.
+    *
+    * @see ContentObserver#onChange(boolean)
+    */
+   protected void onContentChanged() {}
+
+   private class ChangeObserver extends ContentObserver {
+
+      public ChangeObserver() {
+         super(new Handler());
+      }
 
       @Override
+      public boolean deliverSelfNotifications() {
+         return true;
+      }
+
+      @Override
+      public void onChange(boolean selfChange) {
+         onContentChanged();
+      }
+   }
+
+   private class MyDataSetObserver extends DataSetObserver {
+      @Override
       public void onChanged() {
-         super.onChanged();
          mDataValid = true;
          notifyDataSetChanged();
       }
 
       @Override
       public void onInvalidated() {
-         super.onInvalidated();
          mDataValid = false;
-         notifyDataSetChanged();
-         //There is no notifyDataSetInvalidated() method in RecyclerView.Adapter
+         // notifyDataSetInvalidated();
+         notifyItemRangeRemoved(0, getItemCount());
       }
    }
 }

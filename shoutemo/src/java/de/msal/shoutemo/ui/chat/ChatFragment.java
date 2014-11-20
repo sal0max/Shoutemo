@@ -31,8 +31,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -51,6 +49,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import de.msal.shoutemo.R;
@@ -65,7 +64,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     /*  */
     private final static int LOADER_ID_MESSAGES = 0;
 
-    private RecyclerAdapter mListAdapter;
+    private ListAdapter mListAdapter;
 
     //
     private BroadcastReceiver receiver;
@@ -270,22 +269,17 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         }
 
         /* list stuff */
-        mListAdapter = new RecyclerAdapter(getActivity(), null);
-        ListLayoutManager layoutManager = new ListLayoutManager(getActivity());
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity().getResources().getDrawable(android.R.drawable.divider_horizontal_dark)));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setHasFixedSize(true);
-        recyclerView.setVerticalScrollBarEnabled(true);
-        recyclerView.setAdapter(mListAdapter);
+        mListAdapter = new ListAdapter(getActivity(), null, 0);
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        listView.setVerticalScrollBarEnabled(true);
+        listView.setAdapter(mListAdapter);
 
         this.getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
 
         return view;
     }
 
-    @Override
+   @Override
     public void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver((receiver),
