@@ -83,13 +83,13 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onAttach(Activity activity) {
-       super.onAttach(activity);
-       try {
-          mCallback = (TitleSetListener) activity;
-       } catch (ClassCastException e) {
-          throw new ClassCastException(activity.toString()
-                + " must implement OnHeadlineSelectedListener");
-       }
+        super.onAttach(activity);
+        try {
+            mCallback = (TitleSetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
     @Override
@@ -99,7 +99,8 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         /* set the fragment title of the toolbar */
@@ -129,41 +130,41 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         mSendButton.setVisibility(View.GONE);
         // Send message when clicked on SEND-BUTTON
         mSendButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-              if (mInputField.getText() != null && !TextUtils.isEmpty(mInputField.getText())) {
-                 new SendPostTask(getActivity()).execute(mInputField.getText().toString());
-                 mInputField.setText("");
-              }
-           }
+            @Override
+            public void onClick(View v) {
+                if (mInputField.getText() != null && !TextUtils.isEmpty(mInputField.getText())) {
+                    new SendPostTask(getActivity()).execute(mInputField.getText().toString());
+                    mInputField.setText("");
+                }
+            }
         });
 
         mEmoticonGrid = (GridView) view.findViewById(R.id.emoticons_grid);
         /* set the adapter for the emoticons */
         mEmoticonGrid.setAdapter(
-              new EmoticonsAdapter(getActivity(), new EmoticonsAdapter.OnEmoticonClickListener() {
-                 @Override
-                 public void onEmoticonClick(String bbcode) {
-                    mInputField.getText().replace(mInputField.getSelectionStart(),
-                          mInputField.getSelectionEnd(), " " + bbcode + " ");
-                 }
-              }));
+                new EmoticonsAdapter(getActivity(), new EmoticonsAdapter.OnEmoticonClickListener() {
+                    @Override
+                    public void onEmoticonClick(String bbcode) {
+                        mInputField.getText().replace(mInputField.getSelectionStart(),
+                                mInputField.getSelectionEnd(), " " + bbcode + " ");
+                    }
+                }));
 
         /* A BUTTON WHICH SWITCHES BETWEEN SOFT KEYBOARD AND EMOTICON SELECTOR */
         mKeyboardButton = (ImageButton) view.findViewById(R.id.ib_emoticons);
         /* Showing and dismissing popup on clicking EMOTICONS-BUTTON */
         mKeyboardButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-              if (mEmoticonGrid.getVisibility() == View.VISIBLE) {
-                 mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-                 mEmoticonGrid.setVisibility(View.GONE);
-              } else {
-                 mKeyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
-                 mEmoticonGrid.setVisibility(View.VISIBLE);
-                 hideKeyboard();
-              }
-           }
+            @Override
+            public void onClick(View v) {
+                if (mEmoticonGrid.getVisibility() == View.VISIBLE) {
+                    mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+                    mEmoticonGrid.setVisibility(View.GONE);
+                } else {
+                    mKeyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
+                    mEmoticonGrid.setVisibility(View.VISIBLE);
+                    hideKeyboard();
+                }
+            }
         });
 
         /* LIST STUFF */
@@ -176,55 +177,56 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         return view;
     }
 
-   @Override
-   public void onViewCreated(View view, Bundle savedInstanceState) {
-      super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
        /* receive and handle share intent */
-       Intent intent = getActivity().getIntent();
-       String type = intent.getType();
-       if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
-          if (type.equals("text/plain")) {
-             String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-             if (sharedText != null) {
-                mInputField.setText(sharedText);
-             }
-          }
-       }
+        Intent intent = getActivity().getIntent();
+        String type = intent.getType();
+        if (intent.getAction().equals(Intent.ACTION_SEND) && type != null) {
+            if (type.equals("text/plain")) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    mInputField.setText(sharedText);
+                }
+            }
+        }
 
        /* hide send-button, if no text is entered */
-       mInputField.addTextChangedListener(new TextWatcher() {
-          @Override
-          public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        mInputField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-          @Override
-          public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-          @Override
-          public void afterTextChanged(Editable s) {
-             if (mSendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
-                Animation pushOut = AnimationUtils.loadAnimation(getActivity(), R.anim.push_out);
-                mSendButton.startAnimation(pushOut);
-                mSendButton.setVisibility(View.GONE);
-             } else if (mSendButton.getVisibility() == View.GONE && s.length() >= 1) {
-                Animation pushIn = AnimationUtils.loadAnimation(getActivity(), R.anim.push_in);
-                mSendButton.startAnimation(pushIn);
-                mSendButton.setVisibility(View.VISIBLE);
-             }
-          }
-       });
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (mSendButton.getVisibility() == View.VISIBLE && s.length() == 0) {
+                    Animation pushOut = AnimationUtils
+                            .loadAnimation(getActivity(), R.anim.push_out);
+                    mSendButton.startAnimation(pushOut);
+                    mSendButton.setVisibility(View.GONE);
+                } else if (mSendButton.getVisibility() == View.GONE && s.length() >= 1) {
+                    Animation pushIn = AnimationUtils.loadAnimation(getActivity(), R.anim.push_in);
+                    mSendButton.startAnimation(pushIn);
+                    mSendButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
        /*  */
-       mInputField.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-             mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
-             mEmoticonGrid.setVisibility(View.GONE);
-          }
-       });
-   }
+        mInputField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+                mEmoticonGrid.setVisibility(View.GONE);
+            }
+        });
+    }
 
-   @Override
+    @Override
     public void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver((mReceiver),
@@ -315,13 +317,15 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void hideKeyboard() {
-       InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
 
-       // check if no view has focus:
-       View view = getActivity().getCurrentFocus();
-       if (view != null) {
-          inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-       }
+        // check if no view has focus:
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     @Override

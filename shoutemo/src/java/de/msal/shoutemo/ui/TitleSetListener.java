@@ -22,5 +22,5 @@ package de.msal.shoutemo.ui;
  */
 public interface TitleSetListener {
 
-   public void setTitle(CharSequence title);
+    public void setTitle(CharSequence title);
 }

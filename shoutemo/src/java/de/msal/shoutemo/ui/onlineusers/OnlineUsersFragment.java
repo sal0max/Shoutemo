@@ -67,7 +67,7 @@ public class OnlineUsersFragment extends Fragment {
 
     private static boolean refreshTriggeredBySwipe = false;
 
-   /**
+    /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
      *
@@ -84,13 +84,13 @@ public class OnlineUsersFragment extends Fragment {
 
     @Override
     public void onAttach(Activity activity) {
-       super.onAttach(activity);
-       try {
-          mCallback = (TitleSetListener) activity;
-       } catch (ClassCastException e) {
-          throw new ClassCastException(activity.toString()
-                + " must implement OnHeadlineSelectedListener");
-       }
+        super.onAttach(activity);
+        try {
+            mCallback = (TitleSetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
     @Override
@@ -120,7 +120,7 @@ public class OnlineUsersFragment extends Fragment {
         mListView = (ListView) view.findViewById(android.R.id.list);
         mListView.setOnItemClickListener(new OnlineUseresClickListener());
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mTitle = savedInstanceState.getCharSequence(INSTANCESTATE_TITLE);
             mAuthors = savedInstanceState.getParcelableArrayList(INSTANCESTATE_AUTHORS);
             mAdapter.addAll(mAuthors);
@@ -162,11 +162,13 @@ public class OnlineUsersFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (!refreshTriggeredBySwipe)
+            if (!refreshTriggeredBySwipe) {
                 mSwipeRefreshLayout.setProgressViewOffset(false, 0,
-                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics()));
-                mSwipeRefreshLayout.setRefreshing(true);
-            if(mMenuItemRefresh != null) {
+                        (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24,
+                                getResources().getDisplayMetrics()));
+            }
+            mSwipeRefreshLayout.setRefreshing(true);
+            if (mMenuItemRefresh != null) {
                 mMenuItemRefresh.setEnabled(false);
             }
         }
@@ -203,13 +205,13 @@ public class OnlineUsersFragment extends Fragment {
             mListView.setAdapter(mAdapter);
 
             mTitle = Html.fromHtml(getResources().getQuantityString(
-                        R.plurals.title_users_online,
-                        authors.size(),
-                        authors.size()));
+                    R.plurals.title_users_online,
+                    authors.size(),
+                    authors.size()));
             mCallback.setTitle(mTitle);
 
             mSwipeRefreshLayout.setRefreshing(false);
-            if(mMenuItemRefresh != null) {
+            if (mMenuItemRefresh != null) {
                 mMenuItemRefresh.setEnabled(true);
             }
             refreshTriggeredBySwipe = false;
@@ -220,6 +222,7 @@ public class OnlineUsersFragment extends Fragment {
      * open the users profile page in the browser, when clicked
      */
     private class OnlineUseresClickListener implements AdapterView.OnItemClickListener {
+
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String author = mAdapter.getItem(position).getName();

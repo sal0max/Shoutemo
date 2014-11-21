@@ -94,7 +94,8 @@
 
     </LinearLayout>
 
-    <include layout="@layout/emoticons_grid"
+    <include
+        layout="@layout/emoticons_grid"
         android:id="@+id/emoticons_grid"
         android:layout_width="match_parent"
         android:layout_height="@dimen/keyboard_height"

@@ -43,11 +43,12 @@
             android:summary="@string/pref_about_translators_summary"
             android:title="@string/pref_about_translators_title" />
 
-        <Preference android:enabled="true"
+        <Preference
+            android:enabled="true"
             android:key="notices"
             android:selectable="true"
             android:title="@string/pref_about_project_icons_title"
-            android:summary="@string/pref_about_project_icons_summary"/>
+            android:summary="@string/pref_about_project_icons_summary" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -45,309 +45,334 @@ import de.msal.shoutemo.helpers.UrlImageGetter;
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
-   private static final String TAG = "Shoutemo|MyAdapter";
+    private static final String TAG = "Shoutemo|MyAdapter";
 
-   private Context mContext;
-   private static Cursor mCursor;
-   private static boolean mDataValid;
-   private int mRowIdColumn;
-   private ChangeObserver mChangeObserver;
-   private final DataSetObserver mDataSetObserver;
+    private Context mContext;
+    private static Cursor mCursor;
+    private static boolean mDataValid;
+    private int mRowIdColumn;
+    private ChangeObserver mChangeObserver;
+    private final DataSetObserver mDataSetObserver;
 
-   public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
-      private TextView mTvMessage, mTvTimestamp, mTvAuthor, mTvGlobalTitle;
-      private ImageView mIvIcon;
+        private TextView mTvMessage, mTvTimestamp, mTvAuthor, mTvGlobalTitle;
+        private ImageView mIvIcon;
 
-      public ViewHolder(View itemView) {
-         super(itemView);
+        public ViewHolder(View itemView) {
+            super(itemView);
 
             /* SHOUTS */
-         if (mDataValid && getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
-            mTvMessage = (TextView) itemView.findViewById(R.id.listrow_shout_message);
-            mTvTimestamp = (TextView) itemView.findViewById(R.id.listrow_shout_timestamp);
-            mTvAuthor = (TextView) itemView.findViewById(R.id.listrow_shout_author);
-         }
+            if (mDataValid && getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
+                mTvMessage = (TextView) itemView.findViewById(R.id.listrow_shout_message);
+                mTvTimestamp = (TextView) itemView.findViewById(R.id.listrow_shout_timestamp);
+                mTvAuthor = (TextView) itemView.findViewById(R.id.listrow_shout_author);
+            }
             /* EVENTS */
-         else if (mDataValid) {
-            mTvMessage = (TextView) itemView.findViewById(R.id.listrow_event_message);
-            mTvTimestamp = (TextView) itemView.findViewById(R.id.listrow_event_timestamp);
-            mTvGlobalTitle = (TextView) itemView.findViewById(R.id.listrow_event_global_title);
-            mTvGlobalTitle.setVisibility(View.GONE);
-            mIvIcon = (ImageView) itemView.findViewById(R.id.listrow_event_icon);
-         }
-      }
-   }
+            else if (mDataValid) {
+                mTvMessage = (TextView) itemView.findViewById(R.id.listrow_event_message);
+                mTvTimestamp = (TextView) itemView.findViewById(R.id.listrow_event_timestamp);
+                mTvGlobalTitle = (TextView) itemView.findViewById(R.id.listrow_event_global_title);
+                mTvGlobalTitle.setVisibility(View.GONE);
+                mIvIcon = (ImageView) itemView.findViewById(R.id.listrow_event_icon);
+            }
+        }
+    }
 
-   public RecyclerAdapter(Context context, Cursor c) {
-      mContext = context;
-      mCursor = c;
+    public RecyclerAdapter(Context context, Cursor c) {
+        mContext = context;
+        mCursor = c;
 
-      mDataValid = (c != null);
-      mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
-      mChangeObserver = new ChangeObserver();
-      mDataSetObserver = new MyDataSetObserver();
+        mDataValid = (c != null);
+        mRowIdColumn = mDataValid ? mCursor.getColumnIndex("_id") : -1;
+        mChangeObserver = new ChangeObserver();
+        mDataSetObserver = new MyDataSetObserver();
 
-      if (mCursor != null) {
-         if (mChangeObserver != null) c.registerContentObserver(mChangeObserver);
-         if (mDataSetObserver != null) c.registerDataSetObserver(mDataSetObserver);
-      }
-   }
+        if (mCursor != null) {
+            if (mChangeObserver != null) {
+                c.registerContentObserver(mChangeObserver);
+            }
+            if (mDataSetObserver != null) {
+                c.registerDataSetObserver(mDataSetObserver);
+            }
+        }
+    }
 
-   @Override
-   public long getItemId(int position) {
-      if (mDataValid && mCursor != null) {
-         if (mCursor.moveToPosition(position)) {
-            return mCursor.getLong(mRowIdColumn);
-         } else {
+    @Override
+    public long getItemId(int position) {
+        if (mDataValid && mCursor != null) {
+            if (mCursor.moveToPosition(position)) {
+                return mCursor.getLong(mRowIdColumn);
+            } else {
+                return 0;
+            }
+        } else {
             return 0;
-         }
-      } else {
-         return 0;
-      }
-   }
+        }
+    }
 
-   @Override
-   public void setHasStableIds(boolean hasStableIds) {
-      super.setHasStableIds(true);
-   }
+    @Override
+    public void setHasStableIds(boolean hasStableIds) {
+        super.setHasStableIds(true);
+    }
 
-   @Override
-   public int getItemViewType(int position) {
-      return getItemType(position).ordinal();
-   }
+    @Override
+    public int getItemViewType(int position) {
+        return getItemType(position).ordinal();
+    }
 
-   private static Message.Type getItemType(int position) {
-      mCursor.moveToPosition(position);
-      String message = mCursor.getString(mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TYPE));
-      return Message.Type.valueOf(message);
-   }
+    private static Message.Type getItemType(int position) {
+        mCursor.moveToPosition(position);
+        String message = mCursor
+                .getString(mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TYPE));
+        return Message.Type.valueOf(message);
+    }
 
-   @Override
-   public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-      LayoutInflater inflater = LayoutInflater.from(mContext);
-      View view;
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view;
 
-      if (getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
-         view = inflater.inflate(R.layout.listrow_shout, viewGroup, false);
-      } else {
-         view = inflater.inflate(R.layout.listrow_event, viewGroup, false);
-      }
+        if (getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
+            view = inflater.inflate(R.layout.listrow_shout, viewGroup, false);
+        } else {
+            view = inflater.inflate(R.layout.listrow_event, viewGroup, false);
+        }
 
-      return new ViewHolder(view);
-   }
+        return new ViewHolder(view);
+    }
 
-   @Override
-   public void onBindViewHolder(ViewHolder viewHolder, int i) {
-      if (!mDataValid) {
-         throw new IllegalStateException("this should only be called when the cursor is valid");
-      }
-      if (!mCursor.moveToPosition(i)) {
-         throw new IllegalStateException("couldn't move cursor to position " + i);
-      }
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        if (!mDataValid) {
+            throw new IllegalStateException("this should only be called when the cursor is valid");
+        }
+        if (!mCursor.moveToPosition(i)) {
+            throw new IllegalStateException("couldn't move cursor to position " + i);
+        }
 
-      String message = mCursor.getString(
-            mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
-      String author = mCursor.getString(
-            mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
-      long timestamp = mCursor.getLong(
-            mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
+        String message = mCursor.getString(
+                mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
+        String author = mCursor.getString(
+                mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME));
+        long timestamp = mCursor.getLong(
+                mCursor.getColumnIndex(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
 
         /* SHOUTS */
-      if (getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
+        if (getItemType(mCursor.getPosition()).equals(Message.Type.SHOUT)) {
 
             /* set text */
-         viewHolder.mTvAuthor.setText(author);
+            viewHolder.mTvAuthor.setText(author);
 
             /* show the right tvAuthor color (mod/admin/member) */
-         switch (Author.Type.valueOf(
-               mCursor.getString(mCursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE)))) {
-            case ADMIN:
-               viewHolder.mTvAuthor.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_blue));
-               break;
-            case MOD:
-               viewHolder.mTvAuthor.setTextColor(mContext.getResources().getColor(R.color.autemo_green_secondary));
-               break;
-            default:
-               viewHolder.mTvAuthor.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey_bright));
-               break;
-         }
-      }
+            switch (Author.Type.valueOf(
+                    mCursor.getString(mCursor.getColumnIndex(ChatDb.Authors.COLUMN_NAME_TYPE)))) {
+                case ADMIN:
+                    viewHolder.mTvAuthor.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_blue));
+                    break;
+                case MOD:
+                    viewHolder.mTvAuthor.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_green_secondary));
+                    break;
+                default:
+                    viewHolder.mTvAuthor.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey_bright));
+                    break;
+            }
+        }
         /* EVENTS */
-      else {
-         RelativeLayout parent = ((RelativeLayout) viewHolder.mTvMessage.getParent());
+        else {
+            RelativeLayout parent = ((RelativeLayout) viewHolder.mTvMessage.getParent());
 
-         switch (getItemType(mCursor.getPosition())) {
-            case THREAD:
+            switch (getItemType(mCursor.getPosition())) {
+                case THREAD:
                 /* styling */
-               parent.setBackgroundColor(mContext.getResources().getColor(R.color.autemo_green_secondary));
-               viewHolder.mTvMessage.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey));
-               viewHolder.mTvTimestamp.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey_bright));
-               viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_thread);
+                    parent.setBackgroundColor(
+                            mContext.getResources().getColor(R.color.autemo_green_secondary));
+                    viewHolder.mTvMessage.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey));
+                    viewHolder.mTvTimestamp.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey_bright));
+                    viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_thread);
                 /* alter message */
-               message = mContext.getResources().getString(R.string.thread_author, author) + message;
-               break;
-            case AWARD:
+                    message = mContext.getResources().getString(R.string.thread_author, author)
+                            + message;
+                    break;
+                case AWARD:
                 /* styling */
-               parent.setBackgroundColor(mContext.getResources().getColor(R.color.autemo_white_dirty));
-               viewHolder.mTvMessage.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey));
-               viewHolder.mTvTimestamp.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey_bright));
-               viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_award);
+                    parent.setBackgroundColor(
+                            mContext.getResources().getColor(R.color.autemo_white_dirty));
+                    viewHolder.mTvMessage.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey));
+                    viewHolder.mTvTimestamp.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey_bright));
+                    viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_award);
                 /* alter message */
-               message = mContext.getResources().getString(R.string.award_author, author) + message;
-               break;
-            case GLOBAL:
+                    message = mContext.getResources().getString(R.string.award_author, author)
+                            + message;
+                    break;
+                case GLOBAL:
                 /* styling */
-               parent.setBackgroundColor(mContext.getResources().getColor(R.color.autemo_pink));
-               viewHolder.mTvMessage.setTextAppearance(mContext,
-                     android.R.style.TextAppearance_Medium);
-               viewHolder.mTvMessage.setTypeface(viewHolder.mTvMessage.getTypeface(), Typeface.BOLD);
-               viewHolder.mTvMessage.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey));
-               viewHolder.mTvMessage.setLinkTextColor(mContext.getResources().getColor(R.color.autemo_yellow_dark));
-               viewHolder.mTvTimestamp.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_trns_white));
-               viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_global);
+                    parent.setBackgroundColor(
+                            mContext.getResources().getColor(R.color.autemo_pink));
+                    viewHolder.mTvMessage.setTextAppearance(mContext,
+                            android.R.style.TextAppearance_Medium);
+                    viewHolder.mTvMessage
+                            .setTypeface(viewHolder.mTvMessage.getTypeface(), Typeface.BOLD);
+                    viewHolder.mTvMessage.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey));
+                    viewHolder.mTvMessage.setLinkTextColor(
+                            mContext.getResources().getColor(R.color.autemo_yellow_dark));
+                    viewHolder.mTvTimestamp.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_trns_white));
+                    viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_global);
                 /* show wanted elements */
-               viewHolder.mTvGlobalTitle.setVisibility(View.VISIBLE);
-               break;
-            case COMPETITION:
+                    viewHolder.mTvGlobalTitle.setVisibility(View.VISIBLE);
+                    break;
+                case COMPETITION:
                 /* styling */
-               parent.setBackgroundColor(mContext.getResources().getColor(R.color.autemo_blue));
-               viewHolder.mTvMessage.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey));
-               viewHolder.mTvMessage.setLinkTextColor(mContext.getResources().getColor(R.color.autemo_white_dirty));
-               viewHolder.mTvTimestamp.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_grey));
-               viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_competition);
+                    parent.setBackgroundColor(
+                            mContext.getResources().getColor(R.color.autemo_blue));
+                    viewHolder.mTvMessage.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey));
+                    viewHolder.mTvMessage.setLinkTextColor(
+                            mContext.getResources().getColor(R.color.autemo_white_dirty));
+                    viewHolder.mTvTimestamp.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_grey));
+                    viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_competition);
                 /* alter message */
-               message = mContext.getResources().getString(R.string.competition_author, author) + message;
-               break;
-            case PROMOTION:
+                    message = mContext.getResources().getString(R.string.competition_author, author)
+                            + message;
+                    break;
+                case PROMOTION:
                 /* styling */
-               parent.setBackgroundColor(mContext.getResources().getColor(R.color.autemo_orange));
-               viewHolder.mTvMessage.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_white_dirty));
-               viewHolder.mTvTimestamp.setTextColor(
-                     mContext.getResources().getColor(R.color.autemo_white_dirty));
-               viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_promotion);
+                    parent.setBackgroundColor(
+                            mContext.getResources().getColor(R.color.autemo_orange));
+                    viewHolder.mTvMessage.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_white_dirty));
+                    viewHolder.mTvTimestamp.setTextColor(
+                            mContext.getResources().getColor(R.color.autemo_white_dirty));
+                    viewHolder.mIvIcon.setImageResource(R.drawable.ic_event_promotion);
                 /* alter message */
-               message = mContext.getResources().getString(R.string.promotion, author) + message;
-               break;
-         }
-      }
+                    message = mContext.getResources().getString(R.string.promotion, author)
+                            + message;
+                    break;
+            }
+        }
 
-      UrlImageGetter imageGetter = new UrlImageGetter(mContext, viewHolder.mTvMessage);
-      viewHolder.mTvMessage.setText(Html.fromHtml(message, imageGetter, null));
+        UrlImageGetter imageGetter = new UrlImageGetter(mContext, viewHolder.mTvMessage);
+        viewHolder.mTvMessage.setText(Html.fromHtml(message, imageGetter, null));
 
-      // make links clickable (disables click of entire row, too)
-      viewHolder.mTvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-      viewHolder.mTvTimestamp.setText(TimeUtils.getRelativeTime(mContext, timestamp));
-   }
+        // make links clickable (disables click of entire row, too)
+        viewHolder.mTvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        viewHolder.mTvTimestamp.setText(TimeUtils.getRelativeTime(mContext, timestamp));
+    }
 
-   @Override
-   public int getItemCount() {
-      if (mDataValid && mCursor != null) {
-         return mCursor.getCount();
-      }
-      return 0;
-   }
+    @Override
+    public int getItemCount() {
+        if (mDataValid && mCursor != null) {
+            return mCursor.getCount();
+        }
+        return 0;
+    }
 
-   public Cursor getCursor() {
-      return mCursor;
-   }
+    public Cursor getCursor() {
+        return mCursor;
+    }
 
-   /**
-    * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
-    * closed.
-    */
-   public void changeCursor(Cursor cursor) {
-      Cursor old = swapCursor(cursor);
-      if (old != null) {
-         old.close();
-      }
-   }
+    /**
+     * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
+     * closed.
+     */
+    public void changeCursor(Cursor cursor) {
+        Cursor old = swapCursor(cursor);
+        if (old != null) {
+            old.close();
+        }
+    }
 
-   /**
-    * Swap in a new Cursor, returning the old Cursor. Unlike
-    * {@link #changeCursor(Cursor)}, the returned old Cursor is <em>not</em>
-    * closed.
-    *
-    * @param newCursor The new cursor to be used.
-    * @return Returns the previously set Cursor, or null if there wasa not one.
-    * If the given new Cursor is the same instance is the previously set
-    * Cursor, null is also returned.
-    */
-   public Cursor swapCursor(Cursor newCursor) {
-      if (newCursor == mCursor) {
-         return null;
-      }
-      Cursor oldCursor = mCursor;
-      if (oldCursor != null) {
-         if (mChangeObserver != null) oldCursor.unregisterContentObserver(mChangeObserver);
-         if (mDataSetObserver != null) oldCursor.unregisterDataSetObserver(mDataSetObserver);
-      }
-      mCursor = newCursor;
-      if (newCursor != null) {
-         if (mChangeObserver != null) newCursor.registerContentObserver(mChangeObserver);
-         if (mDataSetObserver != null) newCursor.registerDataSetObserver(mDataSetObserver);
-         mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
-         mDataValid = true;
-         // notify the observers about the new cursor
-         notifyDataSetChanged();
-      } else {
-         mRowIdColumn = -1;
-         mDataValid = false;
-         // notify the observers about the lack of a data set
-         // notifyDataSetInvalidated();
-         notifyItemRangeRemoved(0, getItemCount());
-      }
-      return oldCursor;
-   }
+    /**
+     * Swap in a new Cursor, returning the old Cursor. Unlike {@link #changeCursor(Cursor)}, the
+     * returned old Cursor is <em>not</em> closed.
+     *
+     * @param newCursor The new cursor to be used.
+     * @return Returns the previously set Cursor, or null if there wasa not one. If the given new
+     * Cursor is the same instance is the previously set Cursor, null is also returned.
+     */
+    public Cursor swapCursor(Cursor newCursor) {
+        if (newCursor == mCursor) {
+            return null;
+        }
+        Cursor oldCursor = mCursor;
+        if (oldCursor != null) {
+            if (mChangeObserver != null) {
+                oldCursor.unregisterContentObserver(mChangeObserver);
+            }
+            if (mDataSetObserver != null) {
+                oldCursor.unregisterDataSetObserver(mDataSetObserver);
+            }
+        }
+        mCursor = newCursor;
+        if (newCursor != null) {
+            if (mChangeObserver != null) {
+                newCursor.registerContentObserver(mChangeObserver);
+            }
+            if (mDataSetObserver != null) {
+                newCursor.registerDataSetObserver(mDataSetObserver);
+            }
+            mRowIdColumn = newCursor.getColumnIndexOrThrow("_id");
+            mDataValid = true;
+            // notify the observers about the new cursor
+            notifyDataSetChanged();
+        } else {
+            mRowIdColumn = -1;
+            mDataValid = false;
+            // notify the observers about the lack of a data set
+            // notifyDataSetInvalidated();
+            notifyItemRangeRemoved(0, getItemCount());
+        }
+        return oldCursor;
+    }
 
-   /**
-    * Called when the {@link ContentObserver} on the cursor receives a change notification.
-    * Can be implemented by sub-class.
-    *
-    * @see ContentObserver#onChange(boolean)
-    */
-   protected void onContentChanged() {}
+    /**
+     * Called when the {@link ContentObserver} on the cursor receives a change notification. Can be
+     * implemented by sub-class.
+     *
+     * @see ContentObserver#onChange(boolean)
+     */
+    protected void onContentChanged() {}
 
-   private class ChangeObserver extends ContentObserver {
+    private class ChangeObserver extends ContentObserver {
 
-      public ChangeObserver() {
-         super(new Handler());
-      }
+        public ChangeObserver() {
+            super(new Handler());
+        }
 
-      @Override
-      public boolean deliverSelfNotifications() {
-         return true;
-      }
+        @Override
+        public boolean deliverSelfNotifications() {
+            return true;
+        }
 
-      @Override
-      public void onChange(boolean selfChange) {
-         onContentChanged();
-      }
-   }
+        @Override
+        public void onChange(boolean selfChange) {
+            onContentChanged();
+        }
+    }
 
-   private class MyDataSetObserver extends DataSetObserver {
-      @Override
-      public void onChanged() {
-         mDataValid = true;
-         notifyDataSetChanged();
-      }
+    private class MyDataSetObserver extends DataSetObserver {
 
-      @Override
-      public void onInvalidated() {
-         mDataValid = false;
-         // notifyDataSetInvalidated();
-         notifyItemRangeRemoved(0, getItemCount());
-      }
-   }
+        @Override
+        public void onChanged() {
+            mDataValid = true;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onInvalidated() {
+            mDataValid = false;
+            // notifyDataSetInvalidated();
+            notifyItemRangeRemoved(0, getItemCount());
+        }
+    }
 }

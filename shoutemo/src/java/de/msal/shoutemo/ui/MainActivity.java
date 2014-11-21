@@ -38,108 +38,110 @@ import de.msal.shoutemo.ui.preference.PreferenceFragment;
 
 public class MainActivity extends ActionBarActivity implements TitleSetListener {
 
-   private DrawerLayout mDrawerLayout;
-   private View mNavigationDrawer;
-   private ListView mDrawerList;
-   private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private View mNavigationDrawer;
+    private ListView mDrawerList;
+    private ActionBarDrawerToggle mDrawerToggle;
 
-   private static boolean drawerOpen = false; // start with an closed drawer
+    private static boolean drawerOpen = false; // start with an closed drawer
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-      Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
-      setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-      mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-      mNavigationDrawer = findViewById(R.id.navigation_drawer);
-      mDrawerList = (ListView) mNavigationDrawer.findViewById(android.R.id.list);
-      mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
-         public void onDrawerClosed(View view) {
-            drawerOpen = false;
-         }
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavigationDrawer = findViewById(R.id.navigation_drawer);
+        mDrawerList = (ListView) mNavigationDrawer.findViewById(android.R.id.list);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
+            public void onDrawerClosed(View view) {
+                drawerOpen = false;
+            }
 
-         public void onDrawerOpened(View drawerView) {
-            drawerOpen = true;
-         }
-      };
+            public void onDrawerOpened(View drawerView) {
+                drawerOpen = true;
+            }
+        };
 
-      mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-      mDrawerList.setAdapter(new ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_list_item_activated_1,
-            android.R.id.text1,
-            new String[] {"Chat",
-                  getString(R.string.menu_users_online),
-                  getString(R.string.menu_prefs)
-            })
-      );
-      mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-      if (savedInstanceState == null) {
-         mDrawerList.performItemClick(mDrawerList, 0, mDrawerList.getAdapter().getItemId(0)); //preselect on start
-      }
-      if (drawerOpen) {
-         mDrawerLayout.openDrawer(mNavigationDrawer);
-      }
-   }
+        mDrawerList.setAdapter(new ArrayAdapter<String>(
+                        this,
+                        android.R.layout.simple_list_item_activated_1,
+                        android.R.id.text1,
+                        new String[]{"Chat",
+                                getString(R.string.menu_users_online),
+                                getString(R.string.menu_prefs)
+                        })
+        );
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        if (savedInstanceState == null) {
+            mDrawerList.performItemClick(mDrawerList, 0,
+                    mDrawerList.getAdapter().getItemId(0)); //preselect on start
+        }
+        if (drawerOpen) {
+            mDrawerLayout.openDrawer(mNavigationDrawer);
+        }
+    }
 
-   @Override
-   protected void onPostCreate(Bundle savedInstanceState) {
-      super.onPostCreate(savedInstanceState);
-      mDrawerToggle.syncState();
-   }
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
 
-   @Override
-   public void onConfigurationChanged(Configuration newConfig) {
-      super.onConfigurationChanged(newConfig);
-      mDrawerToggle.onConfigurationChanged(newConfig);
-   }
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 
-   @Override
-   public void setTitle(CharSequence title) {
-      getSupportActionBar().setTitle(title);
-   }
+    @Override
+    public void setTitle(CharSequence title) {
+        getSupportActionBar().setTitle(title);
+    }
 
-   private class DrawerItemClickListener implements ListView.OnItemClickListener {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-         // update the main content by replacing fragments
-         FragmentManager fragmentManager = getFragmentManager();
-         switch (position) {
-            case 0: // Chat
-               fragmentManager.beginTransaction()
-                     .replace(R.id.container, ChatFragment.newInstance(), "CHAT")
-                     .commit();
-               break;
-            case 1: // UsersOnline
-               fragmentManager.beginTransaction()
-                     .replace(R.id.container, OnlineUsersFragment.newInstance())
-                     .commit();
-               break;
-            case 2: // Settings
-               fragmentManager.beginTransaction()
-                     .replace(R.id.container, PreferenceFragment.newInstance())
-                     .commit();
-               break;
-         }
-         // Highlight the selected item and close the drawer
-         mDrawerList.setItemChecked(position, true);
-         mDrawerLayout.closeDrawer(mNavigationDrawer);
-      }
-   }
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
-   @Override
-   public boolean onKeyDown(int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_BACK) {
-         if (mDrawerLayout.isDrawerOpen(mNavigationDrawer)) {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // update the main content by replacing fragments
+            FragmentManager fragmentManager = getFragmentManager();
+            switch (position) {
+                case 0: // Chat
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, ChatFragment.newInstance(), "CHAT")
+                            .commit();
+                    break;
+                case 1: // UsersOnline
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, OnlineUsersFragment.newInstance())
+                            .commit();
+                    break;
+                case 2: // Settings
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, PreferenceFragment.newInstance())
+                            .commit();
+                    break;
+            }
+            // Highlight the selected item and close the drawer
+            mDrawerList.setItemChecked(position, true);
             mDrawerLayout.closeDrawer(mNavigationDrawer);
-            return true;
-         }
-      }
-      return super.onKeyDown(keyCode, event);
-   }
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mDrawerLayout.isDrawerOpen(mNavigationDrawer)) {
+                mDrawerLayout.closeDrawer(mNavigationDrawer);
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
 }

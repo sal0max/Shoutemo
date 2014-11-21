@@ -26,15 +26,15 @@ import android.support.v7.widget.RecyclerView;
  */
 public class ListLayoutManager extends LinearLayoutManager {
 
-   public ListLayoutManager(Context context) {
-      super(context, VERTICAL, false);
-      setStackFromEnd(true);
-      setSmoothScrollbarEnabled(true);
-   }
+    public ListLayoutManager(Context context) {
+        super(context, VERTICAL, false);
+        setStackFromEnd(true);
+        setSmoothScrollbarEnabled(true);
+    }
 
-   @Override
-   public void onItemsChanged(RecyclerView recyclerView) {
-      super.onItemsChanged(recyclerView);
-   }
+    @Override
+    public void onItemsChanged(RecyclerView recyclerView) {
+        super.onItemsChanged(recyclerView);
+    }
 
 }

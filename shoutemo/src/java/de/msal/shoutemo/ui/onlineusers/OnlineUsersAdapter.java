@@ -39,59 +39,58 @@ import it.sephiroth.android.library.picasso.Transformation;
  */
 class OnlineUsersAdapter extends ArrayAdapter<Author> {
 
-   private Transformation mRoundedTransformation;
+    private Transformation mRoundedTransformation;
 
-   OnlineUsersAdapter(Context context, List<Author> objects) {
-      super(context, android.R.layout.simple_list_item_1, objects);
-      mRoundedTransformation = new RoundedTransformationBuilder()
-            .oval(true)
+    OnlineUsersAdapter(Context context, List<Author> objects) {
+        super(context, android.R.layout.simple_list_item_1, objects);
+        mRoundedTransformation = new RoundedTransformationBuilder()
+                .oval(true)
 //            .borderWidthDp(1)
 //            .borderColor(getContext().getResources().getColor(R.color.accent))
-            .build();
-   }
+                .build();
+    }
 
-   @Override
-   public int getItemViewType(int position) {
-      return getItem(position).getType().ordinal();
-   }
+    @Override
+    public int getItemViewType(int position) {
+        return getItem(position).getType().ordinal();
+    }
 
-   @Override
-   public int getViewTypeCount() {
-      return Author.Type.values().length;
-   }
+    @Override
+    public int getViewTypeCount() {
+        return Author.Type.values().length;
+    }
 
-   @Override
-   public View getView(int position, View convertView, ViewGroup parent) {
-      Author author = getItem(position);
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        Author author = getItem(position);
 
-      if (convertView == null) {
-         convertView = LayoutInflater.from(getContext())
-               .inflate(R.layout.listrow_users, parent, false);
-      }
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.listrow_users, parent,
+                    false);
+        }
 
-      TextView tvAuthor = (TextView) convertView.findViewById(R.id.listrow_users__text);
-      ImageView ivAuthor = (ImageView) convertView.findViewById(R.id.listrow_users__avatar);
+        TextView tvAuthor = (TextView) convertView.findViewById(R.id.listrow_users__text);
+        ImageView ivAuthor = (ImageView) convertView.findViewById(R.id.listrow_users__avatar);
 
-      tvAuthor.setText(author.getName());
-      if (author.getAvatar() != null)
-         Picasso.with(getContext())
-               .load(author.getAvatar())
-               .fade(800)
-               .resizeDimen(R.dimen.avatar_size, R.dimen.avatar_size)
-               .transform(mRoundedTransformation)
-               .into(ivAuthor);
+        tvAuthor.setText(author.getName());
+        if (author.getAvatar() != null) {
+            Picasso.with(getContext())
+                    .load(author.getAvatar())
+                    .fade(800)
+                    .resizeDimen(R.dimen.avatar_size, R.dimen.avatar_size)
+                    .transform(mRoundedTransformation)
+                    .into(ivAuthor);
+        }
       /* show the right tvAuthor color (mod/admin/member) */
-      switch (author.getType()) {
-         case ADMIN:
-            tvAuthor.setTextColor(
-                  getContext().getResources().getColor(R.color.autemo_blue));
-            break;
-         case MOD:
-            tvAuthor.setTextColor(
-                  getContext().getResources().getColor(R.color.autemo_green_secondary));
-            break;
-      }
+        switch (author.getType()) {
+            case ADMIN:
+                tvAuthor.setTextColor(getContext().getResources().getColor(R.color.autemo_blue));
+                break;
+            case MOD:
+                tvAuthor.setTextColor(getContext().getResources().getColor(R.color.autemo_green_secondary));
+                break;
+        }
 
-      return convertView;
-   }
+        return convertView;
+    }
 }

@@ -37,7 +37,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
     private TitleSetListener mCallback;
 
-   /**
+    /**
      * Use this factory method to create a new instance of this fragment using the provided
      * parameters.
      *
@@ -54,13 +54,13 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
 
     @Override
     public void onAttach(Activity activity) {
-       super.onAttach(activity);
-       try {
-          mCallback = (TitleSetListener) activity;
-       } catch (ClassCastException e) {
-          throw new ClassCastException(activity.toString()
-                + " must implement OnHeadlineSelectedListener");
-       }
+        super.onAttach(activity);
+        try {
+            mCallback = (TitleSetListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
+        }
     }
 
     @Override
@@ -72,7 +72,8 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         findPreference("notices").setOnPreferenceClickListener(this);
         try { /* show correct version name & copyright year */
             findPreference("about").setSummary(getString(R.string.pref_about_about_summary,
-                    getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName,
+                    getActivity().getPackageManager()
+                            .getPackageInfo(getActivity().getPackageName(), 0).versionName,
                     Calendar.getInstance().get(Calendar.YEAR)));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -85,7 +86,7 @@ public class PreferenceFragment extends android.preference.PreferenceFragment im
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-   @Override
+    @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals("notices")) {
             Intent i = new Intent(Intent.ACTION_VIEW);

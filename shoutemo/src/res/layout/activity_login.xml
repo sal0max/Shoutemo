@@ -21,9 +21,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".LoginActivity">
 
-   <include
-      layout="@layout/toolbar"
-      android:id="@+id/toolbar" />
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/toolbar" />
 
     <!-- Login progress -->
     <LinearLayout

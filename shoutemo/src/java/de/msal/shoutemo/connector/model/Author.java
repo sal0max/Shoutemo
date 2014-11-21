@@ -40,8 +40,8 @@ public class Author implements Comparable<Author>, Parcelable {
      * Creates a new Authors by parsing the given Element and stripping out the (nick)name and type
      * of it.
      *
-     * @param e1 needs to look like
-     *          <pre>{@code <a href="profiles/?id=user" [class="autemo_color"]>user</a>}</pre>
+     * @param e1        needs to look like
+     *                  <pre>{@code <a href="profiles/?id=user" [class="autemo_color"]>user</a>}</pre>
      * @param avatarUrl url to the users avatar, or null
      */
     public Author(Element e1, String avatarUrl) {
@@ -76,14 +76,14 @@ public class Author implements Comparable<Author>, Parcelable {
         return this.type;
     }
 
-   /**
-    * @return the link to the users avatar.
-    */
+    /**
+     * @return the link to the users avatar.
+     */
     public String getAvatar() {
         return avatar;
     }
 
-   @Override
+    @Override
     public String toString() {
         String s = this.name;
         if (this.type == Type.ADMIN) {
