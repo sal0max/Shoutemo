@@ -20,7 +20,7 @@
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/autemo_grey_dark"
+    android:background="@color/autemo_grey"
     android:columnWidth="@dimen/emoticon_area"
     android:gravity="center"
     android:numColumns="auto_fit" />
