@@ -22,14 +22,14 @@ dependencies {
     compile 'org.jsoup:jsoup:1.7.1'
     compile 'it.sephiroth.android.library.picasso:picasso:2.2.2.2'
     compile 'com.android.support:recyclerview-v7:21.0.0'
-    compile "com.android.support:appcompat-v7:21.0.0"
-    compile 'com.android.support:support-v4:21.0.0'
+    compile "com.android.support:appcompat-v7:21.0.2"
+    compile 'com.android.support:support-v4:21.0.2'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.9'
 }
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '21.1'
+    buildToolsVersion '21.1.1'
 
     defaultConfig {
         applicationId "de.msal.shoutemo"
