@@ -23,7 +23,8 @@
     <color name="accent">@color/autemo_blue</color>
 
     <color name="autemo_blue">#28aab2</color>
-    <color name="autemo_grey">#1b1b1b</color>
+    <color name="autemo_grey">#252525</color>
+    <color name="autemo_grey_old">#1b1b1b</color>
     <color name="autemo_grey_dark">#0d0d0d</color>
     <color name="autemo_grey_bright">#777777</color>
     <color name="autemo_green_primary">#508221</color>
