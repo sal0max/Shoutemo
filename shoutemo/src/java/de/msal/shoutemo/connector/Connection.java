@@ -133,8 +133,11 @@ public class Connection {
             return authors;
         for (Element element : elements) {
             Element user = element.getElementsByTag("a").first();
-            if (user != null)
-                authors.add(new Author(user));
+            Element avatar = element.getElementsByTag("img").first();
+            if (user != null) {
+               String url = "http://www.autemo.com/" + avatar.attr("src");
+               authors.add(new Author(user, url.replace("_th.", ".")));
+            }
         }
 
         return authors;
