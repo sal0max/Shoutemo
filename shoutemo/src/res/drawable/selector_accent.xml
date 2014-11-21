@@ -17,22 +17,7 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/autemo_grey"
-    android:orientation="vertical">
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="100dp" />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null"
-        android:id="@android:id/list"
-        android:choiceMode="singleChoice" />
-
-</LinearLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_activated="true" android:drawable="@color/accent" />
+    <item android:drawable="@android:color/transparent" />
+</selector>

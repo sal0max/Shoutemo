@@ -27,7 +27,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import de.msal.shoutemo.R;
@@ -68,15 +67,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(
-                        this,
-                        android.R.layout.simple_list_item_activated_1,
-                        android.R.id.text1,
-                        new String[]{"Chat",
-                                getString(R.string.menu_users_online),
-                                getString(R.string.menu_prefs)
-                        })
-        );
+        mDrawerList.setAdapter(new NavigationDrawerAdapter(getApplicationContext(), 0));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         if (savedInstanceState == null) {
             mDrawerList.performItemClick(mDrawerList, 0,
@@ -110,6 +101,9 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // update the main content by replacing fragments
             FragmentManager fragmentManager = getFragmentManager();
+            /**
+             * @see de.msal.shoutemo.ui.NavigationDrawerAdapter.mEntries
+             */
             switch (position) {
                 case 0: // Chat
                     fragmentManager.beginTransaction()
@@ -121,7 +115,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
                             .replace(R.id.container, OnlineUsersFragment.newInstance())
                             .commit();
                     break;
-                case 2: // Settings
+                case 3: // Settings
                     fragmentManager.beginTransaction()
                             .replace(R.id.container, PreferenceFragment.newInstance())
                             .commit();
