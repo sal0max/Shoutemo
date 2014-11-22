@@ -24,8 +24,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -48,34 +50,7 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationDrawer = findViewById(R.id.navigation_drawer);
-        mDrawerList = (ListView) mNavigationDrawer.findViewById(android.R.id.list);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
-            public void onDrawerClosed(View view) {
-                drawerOpen = false;
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                drawerOpen = true;
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        mDrawerList.setAdapter(new NavigationDrawerAdapter(getApplicationContext(), 0));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        if (savedInstanceState == null) {
-            mDrawerList.performItemClick(mDrawerList, 0,
-                    mDrawerList.getAdapter().getItemId(0)); //preselect on start
-        }
-        if (drawerOpen) {
-            mDrawerLayout.openDrawer(mNavigationDrawer);
-        }
+        setupToolbar(savedInstanceState);
     }
 
     @Override
@@ -136,6 +111,56 @@ public class MainActivity extends ActionBarActivity implements TitleSetListener 
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * Setup Navigation Drawer width as per Material Design guidelines: calculate the Toolbar height.
+     */
+    private void setupToolbar(Bundle savedInstanceState) {
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolBar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolBar, 0, 0) {
+            public void onDrawerClosed(View view) {
+                drawerOpen = false;
+            }
+            public void onDrawerOpened(View drawerView) {
+                drawerOpen = true;
+            }
+        };
+        mNavigationDrawer = findViewById(R.id.navigation_drawer);
+
+        TypedValue tv = new TypedValue();
+        int toolbarHeight;
+        if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+            toolbarHeight = (int) (tv.getDimension(getResources().getDisplayMetrics()) / getResources().getDisplayMetrics().density);
+            if (toolbarHeight > 0) {
+                int drawerMaxWidth = (int) (getResources().getDimension(R.dimen.navigation_drawer_max_width) / getResources().getDisplayMetrics().density);
+                Configuration configuration = getResources().getConfiguration();
+                int screenWidthDp = configuration.screenWidthDp;
+                int drawerWidth = screenWidthDp - toolbarHeight;
+
+                ViewGroup.LayoutParams layout_description = mNavigationDrawer.getLayoutParams();
+                layout_description.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                        drawerWidth < drawerMaxWidth ? drawerWidth : drawerMaxWidth ,
+                        getResources().getDisplayMetrics());
+                mNavigationDrawer.setLayoutParams(layout_description);
+            }
+        }
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mDrawerList = (ListView) mNavigationDrawer.findViewById(android.R.id.list);
+        mDrawerList.setAdapter(new NavigationDrawerAdapter(getApplicationContext(), 0));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        if (savedInstanceState == null) {
+            mDrawerList.performItemClick(mDrawerList, 0,
+                    mDrawerList.getAdapter().getItemId(0)); //preselect on start
+        }
+        if (drawerOpen) {
+            mDrawerLayout.openDrawer(mNavigationDrawer);
+        }
     }
 
 }

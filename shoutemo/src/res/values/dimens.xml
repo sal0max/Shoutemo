@@ -26,4 +26,5 @@
     <dimen name="land_720dp_left_column">85dp</dimen>
     <dimen name="avatar_size">40dp</dimen>
     <integer name="fade_in_out_time">250</integer>
+    <dimen name="navigation_drawer_max_width">304dp</dimen>
 </resources>
