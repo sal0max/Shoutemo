@@ -21,11 +21,12 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -50,7 +51,7 @@ import de.msal.shoutemo.connector.Connection;
 /**
  * Activity which displays a login screen to the user
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends ActionBarActivity {
 
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
@@ -68,6 +69,9 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
+
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolBar);
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -89,10 +93,6 @@ public class LoginActivity extends Activity {
                 .setMovementMethod(LinkMovementMethod.getInstance());
         ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com)).setText(
                 Html.fromHtml(getResources().getString(R.string.login_head_to_autemo_com)));
-
-        /* show title */
-        getActionBar().setDisplayUseLogoEnabled(false);
-        getActionBar().setDisplayShowTitleEnabled(true);
 
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
