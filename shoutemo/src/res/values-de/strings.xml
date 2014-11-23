@@ -27,6 +27,7 @@
     <string name="menu_chat">Chat</string>
     <string name="menu_prefs">Einstellungen</string>
     <string name="menu_users_online">Wer ist gerade online?</string>
+    <string name="sidebar_timezone">Brisbane/Autemo-Zeit</string>
     <string name="input_empty">Hey! Schreibe etwas!</string>
     <string name="refresh">Aktualisieren</string>
 
