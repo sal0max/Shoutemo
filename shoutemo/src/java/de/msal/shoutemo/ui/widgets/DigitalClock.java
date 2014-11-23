@@ -63,8 +63,10 @@ public class DigitalClock extends TextView {
 
         mWeekDayFormat = new SimpleDateFormat("EE", Locale.getDefault());
 
-        Typeface myTypeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/VCR_OSD_MONO.ttf");
-        setTypeface(myTypeface);
+        if (!isInEditMode()) {
+            Typeface myTypeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/VCR_OSD_MONO.ttf");
+            setTypeface(myTypeface);
+        }
     }
 
     @Override
