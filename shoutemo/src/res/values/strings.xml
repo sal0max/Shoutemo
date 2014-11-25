@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    
+
     <plurals name="title_users_online">
         <item quantity="zero">No User online</item>
         <item quantity="one">&lt;b>1&lt;/b> User online</item>
@@ -26,8 +26,10 @@
     </plurals>
 
     <string name="app_name" translatable="false">Shoutemo</string>
+    <string name="menu_chat">Chat</string>
     <string name="menu_prefs">Settings</string>
     <string name="menu_users_online">Show currently online users</string>
+    <string name="sidebar_timezone">Brisbane/Autemo Time</string>
     <string name="input_empty">Hey! Write a message!</string>
     <string name="refresh">Refresh</string>
 

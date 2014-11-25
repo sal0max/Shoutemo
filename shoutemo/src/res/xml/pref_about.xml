@@ -20,8 +20,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/pref_header_general">
-        <de.msal.shoutemo.helpers.DeleteChatHistoryPreference
-            android:dialogIcon="@drawable/ic_dialog_alert"
+        <de.msal.shoutemo.ui.preference.DeleteChatHistoryPreference
+            android:dialogIcon="@drawable/ic_dialog_warning_white_24dp"
             android:dialogMessage="@string/pref_clear_chat_history_dialog_message"
             android:dialogTitle="@string/pref_clear_chat_history_dialog_title"
             android:persistent="false"
@@ -43,11 +43,12 @@
             android:summary="@string/pref_about_translators_summary"
             android:title="@string/pref_about_translators_title" />
 
-        <Preference android:enabled="true"
+        <Preference
+            android:enabled="true"
             android:key="notices"
             android:selectable="true"
             android:title="@string/pref_about_project_icons_title"
-            android:summary="@string/pref_about_project_icons_summary"/>
+            android:summary="@string/pref_about_project_icons_summary" />
     </PreferenceCategory>
 
 </PreferenceScreen>

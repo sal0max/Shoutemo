@@ -47,7 +47,7 @@ public class Post implements Comparable<Post> {
      */
     public Post(Element e) {
         if (e.getAllElements().hasClass("ys-post-nickname")) {
-            this.author = new Author(e.getElementsByClass("ys-post-nickname").first());
+            this.author = new Author(e.getElementsByClass("ys-post-nickname").first(), null);
         }
         this.message = new Message(e);
         this.date = toDate(e.getElementsByClass("ys-post-info").text());

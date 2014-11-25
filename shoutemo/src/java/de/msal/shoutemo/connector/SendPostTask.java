@@ -30,8 +30,8 @@ import android.util.Log;
 
 import java.io.IOException;
 
-import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
+import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b>Needs a

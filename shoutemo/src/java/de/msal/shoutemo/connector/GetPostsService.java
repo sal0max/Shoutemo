@@ -44,10 +44,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import de.msal.shoutemo.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 import de.msal.shoutemo.connector.model.Post;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  *
@@ -306,12 +306,9 @@ public class GetPostsService extends Service {
 
         @Override
         public void run() {
-           /* have to add the dst savings, else during dst the time is off by
-              another hour! */
-           double offsetinHours =
-                 (TimeZone.getDefault().getOffset(new Date().getTime())
-                       + TimeZone.getDefault().getDSTSavings()) / 1000.0 / 60
-                       / 60;
+            /* have to add the dst savings, else during dst the time is off by another hour! */
+            double offsetinHours = (TimeZone.getDefault().getOffset(new Date().getTime())
+                    + TimeZone.getDefault().getDSTSavings()) / 1000.0 / 60 / 60;
             int returnCode = -2;
             try {
                 returnCode = Connection.setUserTimezone(mAuthToken, offsetinHours);

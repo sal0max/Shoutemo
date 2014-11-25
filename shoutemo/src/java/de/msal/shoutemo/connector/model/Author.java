@@ -34,27 +34,32 @@ public class Author implements Comparable<Author>, Parcelable {
 
     private final Type type;
 
+    private final String avatar;
+
     /**
      * Creates a new Authors by parsing the given Element and stripping out the (nick)name and type
      * of it.
      *
-     * @param e needs to look like
-     *          <pre>{@code <a href="profiles/?id=user" [class="autemo_color"]>user</a>}</pre>
+     * @param e1        needs to look like
+     *                  <pre>{@code <a href="profiles/?id=user" [class="autemo_color"]>user</a>}</pre>
+     * @param avatarUrl url to the users avatar, or null
      */
-    public Author(Element e) {
-        this.name = e.text();
-        if (e.getAllElements().hasClass("autemo_admin_color")) {
+    public Author(Element e1, String avatarUrl) {
+        this.name = e1.text();
+        if (e1.getAllElements().hasClass("autemo_admin_color")) {
             this.type = Type.ADMIN;
-        } else if (e.getAllElements().hasClass("autemo_color")) {
+        } else if (e1.getAllElements().hasClass("autemo_color")) {
             this.type = Type.MOD;
         } else {
             this.type = Type.USER;
         }
+        this.avatar = avatarUrl;
     }
 
     public Author(Parcel in) {
         this.name = in.readString();
         this.type = (Type) in.readSerializable();
+        this.avatar = in.readString();
     }
 
     /**
@@ -69,6 +74,13 @@ public class Author implements Comparable<Author>, Parcelable {
      */
     public Type getType() {
         return this.type;
+    }
+
+    /**
+     * @return the link to the users avatar.
+     */
+    public String getAvatar() {
+        return avatar;
     }
 
     @Override
@@ -124,6 +136,7 @@ public class Author implements Comparable<Author>, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeSerializable(type);
+        dest.writeString(avatar);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

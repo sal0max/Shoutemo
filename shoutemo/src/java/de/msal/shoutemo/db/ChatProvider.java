@@ -220,7 +220,7 @@ public class ChatProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values){
+    public int bulkInsert(Uri uri, ContentValues[] values) {
         int numInserted = 0;
         String table;
 

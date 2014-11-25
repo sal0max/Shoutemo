@@ -17,11 +17,12 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:icon="@drawable/ic_action_filter"
+        android:icon="@drawable/ic_action_filter_list_white_24dp"
         android:orderInCategory="60"
-        android:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="@string/menu_filter_title"
         android:titleCondensed="@string/menu_filter_title_condensed">
         <menu>
@@ -59,17 +60,4 @@
             </group>
         </menu>
     </item>
-
-    <item
-        android:icon="@drawable/ic_action_users"
-        android:id="@+id/action_usersOnline"
-        android:orderInCategory="80"
-        android:showAsAction="ifRoom"
-        android:title="@string/menu_users_online" />
-
-    <item
-        android:id="@+id/action_prefs"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_prefs" />
 </menu>
