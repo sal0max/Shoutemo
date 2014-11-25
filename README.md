@@ -9,10 +9,10 @@ With it you can use the shoutbox of [autemo.com's](http://autemo.com/forums/) fo
 
 * **Endless storage of the chat history**. (On [autemo.com](http://autemo.com/forums/) only the 50 newest posts can be seen at any time.)
 * **Having problems with the wrong timezone settings on autemo.com?** Shoutemo takes care of that once and for all! It sets the right timezone within the app & on autemo.com, all based on the time of your phone. 
-* **Convenient usage**: As beeing a native app all the trouble that comes with using the (non-adapting) website on the mobile browser goes away: No need to resize, no slow performance, no incompability. Simply delighful to use.
-* **No autentication hassle**: Once the user logs in, his credentials get handled by Androids [Account Authentication System](http://developer.android.com/reference/android/accounts/AbstractAccountAuthenticator.html). From there on, just start the app and you're ready to go.
+* **Convenient usage**: As being a native app all the trouble that comes with using the (non-adapting) website on the mobile browser goes away: No need to resize, no slow performance, no incompatibility. Simply delightful to use.
+* **No authentication hassle**: Once the user logs in, his credentials get handled by Androids [Account Authentication System](http://developer.android.com/reference/android/accounts/AbstractAccountAuthenticator.html). From there on, just start the app and you're ready to go.
 * **Smiley selector**: No weird bbcode any more.. just tap the smiley. It's as easy as that!
-* **Filters**: Looking for that one competition announcement? Fear no more! Shoutemo provieds filters to get back control over your chat history.
+* **Filters**: Looking for that one competition announcement? Fear no more! Shoutemo provides filters to get back control over your chat history.
 * See who is currently online and ready to chat!
 * Many more additional features coming soon...
 * **New in Version 2.0**: Brand new Material Design!
