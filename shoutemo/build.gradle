@@ -35,8 +35,8 @@ android {
         applicationId "de.msal.shoutemo"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 8
-        versionName '1.3.3'
+        versionCode 9
+        versionName '2.0.0'
     }
 
     sourceSets {
