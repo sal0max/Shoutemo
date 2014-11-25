@@ -62,6 +62,7 @@ public class DigitalClock extends TextView {
         mTimeFormat.setTimeZone(targetTimeZone);
 
         mWeekDayFormat = new SimpleDateFormat("EE", Locale.getDefault());
+        mWeekDayFormat.setTimeZone(targetTimeZone);
 
         if (!isInEditMode()) {
             Typeface myTypeface = Typeface.createFromAsset(getContext().getAssets(), "fonts/VCR_OSD_MONO.ttf");
