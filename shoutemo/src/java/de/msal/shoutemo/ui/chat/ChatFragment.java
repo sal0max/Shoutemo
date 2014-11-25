@@ -157,10 +157,10 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
             @Override
             public void onClick(View v) {
                 if (mEmoticonGrid.getVisibility() == View.VISIBLE) {
-                    mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+                    mKeyboardButton.setImageResource(R.drawable.ic_action_keyboard_alt_white_24dp);
                     mEmoticonGrid.setVisibility(View.GONE);
                 } else {
-                    mKeyboardButton.setImageResource(R.drawable.ic_action_emoji_down);
+                    mKeyboardButton.setImageResource(R.drawable.ic_action_keyboard_arrow_down_white_24dp);
                     mEmoticonGrid.setVisibility(View.VISIBLE);
                     hideKeyboard();
                 }
@@ -220,7 +220,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         mInputField.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mKeyboardButton.setImageResource(R.drawable.ic_action_emoticon);
+                mKeyboardButton.setImageResource(R.drawable.ic_action_keyboard_alt_white_24dp);
                 mEmoticonGrid.setVisibility(View.GONE);
             }
         });

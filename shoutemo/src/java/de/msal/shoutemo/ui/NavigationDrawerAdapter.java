@@ -45,10 +45,10 @@ public class NavigationDrawerAdapter extends ArrayAdapter {
                 context.getString(R.string.menu_prefs)
         };
         mDrawables = new int[]{
-                R.drawable.ic_whatshot_white_24dp,
-                R.drawable.ic_people_white_24dp,
+                R.drawable.ic_action_whatshot_white_24dp,
+                R.drawable.ic_action_people_white_24dp,
                 0,
-                R.drawable.ic_settings_white_24dp
+                R.drawable.ic_action_settings_white_24dp
         };
     }
 
