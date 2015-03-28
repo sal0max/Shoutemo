@@ -34,8 +34,8 @@ import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.model.Author;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.helpers.GlideImageGetter;
 import de.msal.shoutemo.helpers.TimeUtils;
-import de.msal.shoutemo.helpers.UrlImageGetter;
 
 public class ListAdapter extends CursorAdapter {
 
@@ -189,7 +189,7 @@ public class ListAdapter extends CursorAdapter {
             }
         }
 
-        UrlImageGetter imageGetter = new UrlImageGetter(context, tvMessage);
+        GlideImageGetter imageGetter = new GlideImageGetter(context, tvMessage);
         tvMessage.setText(Html.fromHtml(message, imageGetter, null));
 
         // make links clickable (disables click of entire row, too)

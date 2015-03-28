@@ -17,7 +17,7 @@
 
 package de.msal.shoutemo.ui.onlineusers;
 
-import com.makeramen.RoundedTransformationBuilder;
+import com.bumptech.glide.Glide;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -31,23 +31,14 @@ import java.util.List;
 
 import de.msal.shoutemo.R;
 import de.msal.shoutemo.connector.model.Author;
-import it.sephiroth.android.library.picasso.Picasso;
-import it.sephiroth.android.library.picasso.Transformation;
+import de.msal.shoutemo.helpers.CircleTransformation;
 
 /**
  * @since 14.11.14
  */
 class OnlineUsersAdapter extends ArrayAdapter<Author> {
-
-    private Transformation mRoundedTransformation;
-
     OnlineUsersAdapter(Context context, List<Author> objects) {
         super(context, android.R.layout.simple_list_item_1, objects);
-        mRoundedTransformation = new RoundedTransformationBuilder()
-                .oval(true)
-//            .borderWidthDp(1)
-//            .borderColor(getContext().getResources().getColor(R.color.accent))
-                .build();
     }
 
     @Override
@@ -74,11 +65,10 @@ class OnlineUsersAdapter extends ArrayAdapter<Author> {
 
         tvAuthor.setText(author.getName());
         if (author.getAvatar() != null) {
-            Picasso.with(getContext())
+            Glide.with(getContext())
                     .load(author.getAvatar())
-                    .fade(800)
-                    .resizeDimen(R.dimen.avatar_size, R.dimen.avatar_size)
-                    .transform(mRoundedTransformation)
+                    .asBitmap()
+                    .transform(new CircleTransformation(Glide.get(getContext()).getBitmapPool()))
                     .into(ivAuthor);
         }
       /* show the right tvAuthor color (mod/admin/member) */
