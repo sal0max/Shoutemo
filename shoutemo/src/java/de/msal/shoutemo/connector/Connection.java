@@ -270,8 +270,8 @@ public class Connection {
          *      however, as only two uninhabited islands (Baker Island and Howland Island) use
          *      UTC-12.
          */
-        double autemoOffsetInHours = Doubles.indexOf(timezoneMapping, offsetInHours - 1) == -1 ?
-                offsetInHours - 1.5 : offsetInHours - 1;
+        double autemoOffsetInHours = Doubles.indexOf(timezoneMapping, offsetInHours) == -1 ?
+                offsetInHours - 0.5 : offsetInHours;
         // find the mapped code (== index)
         int offsetCode = Doubles.indexOf(timezoneMapping, autemoOffsetInHours);
 
