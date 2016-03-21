@@ -18,31 +18,34 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_accent"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/activity_horizontal_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_horizontal_margin"
-    android:background="@drawable/selector_accent">
+    android:paddingTop="@dimen/activity_horizontal_margin">
 
     <ImageView
         android:id="@+id/listrow_navigationdrawer__icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_gravity="center"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+        android:gravity="center"
+        tools:src="@drawable/ic_action_whatshot_white_24dp" />
 
     <TextView
         android:id="@+id/listrow_navigationdrawer__text"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:drawablePadding="@dimen/activity_horizontal_margin"
         android:gravity="center_vertical"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:drawablePadding="@dimen/activity_horizontal_margin" />
+        tools:text="Chat" />
 
 </LinearLayout>

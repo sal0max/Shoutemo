@@ -106,6 +106,16 @@ public class ChatProvider extends ContentProvider {
                 builder.setTables(ChatDb.Messages.TABLE_NAME);
                 break;
             case URI_MATCH_POSTS:
+                projection = new String[]{
+                        ChatDb.Messages.TABLE_NAME + "." + ChatDb.Messages._ID,
+                        ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME,
+                        ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML,
+                        ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT,
+                        ChatDb.Messages.COLUMN_NAME_TIMESTAMP,
+                        ChatDb.Messages.COLUMN_NAME_TYPE,
+                        ChatDb.Authors.COLUMN_NAME_NAME,
+                        ChatDb.Authors.COLUMN_NAME_TYPE
+                };
                 builder.setTables(ChatDb.Messages.TABLE_NAME
                         + " LEFT OUTER JOIN "
                         + ChatDb.Authors.TABLE_NAME

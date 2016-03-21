@@ -48,17 +48,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + ChatDb.Authors.TABLE_NAME + " ("
                 + ChatDb.Authors._ID + " INTEGER PRIMARY KEY,"
-                + ChatDb.Authors.COLUMN_NAME_NAME + " STRING UNIQUE NOT NULL,"
-                + ChatDb.Authors.COLUMN_NAME_TYPE + " STRING NOT NULL"
+                + ChatDb.Authors.COLUMN_NAME_NAME + " TEXT UNIQUE NOT NULL,"
+                + ChatDb.Authors.COLUMN_NAME_TYPE + " TEXT NOT NULL"
                 + ");");
 
         db.execSQL("CREATE TABLE " + ChatDb.Messages.TABLE_NAME + " ("
                 + ChatDb.Messages._ID + " INTEGER PRIMARY KEY,"
                 + ChatDb.Messages.COLUMN_NAME_TIMESTAMP + " INTEGER NOT NULL,"
-                + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML + " STRING,"
-                + ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT + " STRING,"
-                + ChatDb.Messages.COLUMN_NAME_TYPE + " STRING NOT NULL,"
-                + ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME + " STRING,"
+                + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML + " TEXT,"
+                + ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT + " TEXT,"
+                + ChatDb.Messages.COLUMN_NAME_TYPE + " TEXT NOT NULL,"
+                + ChatDb.Messages.COLUMN_NAME_AUTHOR_NAME + " TEXT,"
                 + "UNIQUE("
                 + ChatDb.Messages.COLUMN_NAME_TIMESTAMP + ","
                 + ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML

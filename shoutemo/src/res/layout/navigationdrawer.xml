@@ -44,7 +44,7 @@
             android:textSize="10sp"
             android:textColor="@color/autemo_grey_bright" />
 
-        <de.msal.shoutemo.ui.widgets.DigitalClock
+        <de.msal.shoutemo.widgets.DigitalClock
             android:layout_above="@id/navigationdrawer_timezone_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

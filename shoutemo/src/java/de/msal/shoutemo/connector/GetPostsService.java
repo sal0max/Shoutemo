@@ -32,34 +32,31 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.Time;
 import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import de.msal.shoutemo.activities.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
 import de.msal.shoutemo.connector.model.Post;
 import de.msal.shoutemo.db.ChatDb;
-import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  *
  */
 public class GetPostsService extends Service {
 
-    private static final String TAG = "Shoutemo|GetPostsService";
+    private static final String TAG = "Shoutemo";
     // everything for showing the udpate status to the user
     private LocalBroadcastManager broadcaster;
     public static final String INTENT_UPDATE = "de.msal.shoutemo.GetPostsService.UPDATING";
-    public static final String INTENT_UPDATE_ENABLED
-            = "de.msal.shoutemo.GetPostsService.UPDATING_ENABLED";
+    public static final String INTENT_UPDATE_ENABLED = "de.msal.shoutemo.GetPostsService.UPDATING_ENABLED";
     // repeating task (get posts)
     private static long INTERVAL = 2500; // default: 2.5s
     private ScheduledExecutorService worker;
@@ -92,13 +89,7 @@ public class GetPostsService extends Service {
                             Bundle bundle;
                             try {
                                 bundle = result.getResult();
-                            } catch (OperationCanceledException e) {
-                                e.printStackTrace();
-                                return;
-                            } catch (AuthenticatorException e) {
-                                e.printStackTrace();
-                                return;
-                            } catch (IOException e) {
+                            } catch (OperationCanceledException | IOException | AuthenticatorException e) {
                                 e.printStackTrace();
                                 return;
                             }
@@ -152,13 +143,7 @@ public class GetPostsService extends Service {
                         Bundle bundle;
                         try {
                             bundle = result.getResult();
-                        } catch (OperationCanceledException e) {
-                            e.printStackTrace();
-                            return;
-                        } catch (AuthenticatorException e) {
-                            e.printStackTrace();
-                            return;
-                        } catch (IOException e) {
+                        } catch (OperationCanceledException | IOException | AuthenticatorException e) {
                             e.printStackTrace();
                             return;
                         }
@@ -168,9 +153,7 @@ public class GetPostsService extends Service {
                         if (worker == null || worker.isShutdown()) {
                             worker = Executors.newSingleThreadScheduledExecutor();
                         }
-                        // fix (possible) wrong time-setting on autemo.com
-                        worker.execute(new SetTimezoneTask());
-                        // only now recieve messages (with right time)
+                        // recieve messages
                         worker.scheduleAtFixedRate(new GetPostsTask(), 0, INTERVAL,
                                 TimeUnit.MILLISECONDS);
                     }
@@ -247,7 +230,7 @@ public class GetPostsService extends Service {
             }
 
             /* insert into DB */
-            ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
             for (Post post : posts) {
                 if (post.getAuthor() != null) {
                     ops.add(
@@ -280,9 +263,7 @@ public class GetPostsService extends Service {
             }
             try {
                 getContentResolver().applyBatch(ChatDb.AUTHORITY, ops);
-            } catch (RemoteException e) {
-                Log.e(TAG, "Error: " + e.getMessage());
-            } catch (OperationApplicationException e) {
+            } catch (RemoteException | OperationApplicationException e) {
                 Log.e(TAG, "Error: " + e.getMessage());
             }
 
@@ -293,31 +274,11 @@ public class GetPostsService extends Service {
             c.moveToFirst();
             long newestPostTimestamp = c.getLong(0);
             c.close();
-            Time now = new Time();
-            now.setToNow();
-            long timeSinceLastPost = now.toMillis(false) - newestPostTimestamp;
+            GregorianCalendar now = new GregorianCalendar();
+            long timeSinceLastPost = now.getTimeInMillis() - newestPostTimestamp;
             setIntervall(timeSinceLastPost);
 
             setUpdatingNotification(false);
-        }
-    }
-
-    private class SetTimezoneTask extends Thread {
-
-        @Override
-        public void run() {
-            /* have to add the dst savings, else during dst the time is off by another hour! */
-            double offsetinHours = (TimeZone.getDefault().getOffset(new Date().getTime())
-                    + TimeZone.getDefault().getDSTSavings()) / 1000.0 / 60 / 60;
-            int returnCode = -2;
-            try {
-                returnCode = Connection.setUserTimezone(mAuthToken, offsetinHours);
-            } catch (IOException e) {
-                Log.e(TAG, e.getMessage());
-            }
-            if (returnCode != 200) {
-                Log.e(TAG, "Error setting the timezone. Returned code=" + returnCode);
-            }
         }
     }
 

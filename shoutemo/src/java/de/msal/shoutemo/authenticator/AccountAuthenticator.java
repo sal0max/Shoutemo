@@ -28,8 +28,8 @@ import android.os.Bundle;
 
 import java.io.IOException;
 
+import de.msal.shoutemo.activities.LoginActivity;
 import de.msal.shoutemo.connector.Connection;
-import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  * @since 03.10.13
@@ -112,7 +112,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if (verified && authtoken != "") {
+            if (verified && !authtoken.equals("")) {
                 final Bundle result = new Bundle();
                 result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
                 result.putString(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE);

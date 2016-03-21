@@ -67,12 +67,6 @@
         Version %1$s
         \n© 2013-%2$d Maximilian Salomon
     </string>
-    <string name="pref_about_translators_title">Translators</string>
-    <string name="pref_about_translators_summary">
-        • Dutch - Sam Vesters
-        \n• Bulgarian - E. Marinov
-        \n• Romanian - Ștefan Alecu
-    </string>
     <string name="pref_about_project_icons_title">Some icons by Mihaiciuc Bogdan</string>
     <string name="pref_about_project_icons_summary">from the set \'Project Icons\'</string>
 

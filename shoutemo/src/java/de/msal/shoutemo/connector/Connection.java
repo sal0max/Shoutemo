@@ -100,7 +100,7 @@ public class Connection {
                 .userAgent(USER_AGENT)
                 .get();
 
-        List<Post> posts = new LinkedList<Post>();
+        List<Post> posts = new LinkedList<>();
 
         for (Element element : document.getElementsByClass("ys-post")) {
             posts.add(new Post(element));
@@ -117,7 +117,7 @@ public class Connection {
      * Author}s, containting the currently online users.
      */
     public static List<Author> getOnlineUsers() throws IOException {
-        List<Author> authors = new ArrayList<Author>(25);
+        List<Author> authors = new ArrayList<>(25);
 
         Document document = Jsoup
                 .connect("http://www.autemo.com/forums/")
@@ -163,7 +163,7 @@ public class Connection {
 
       /* Code for splitting too long strings to chunks without cutting words. */
         List<String> splits = Splitter.on(" ").splitToList(message); //separate all words
-        List<String> sewns = new LinkedList<String>();
+        List<String> sewns = new LinkedList<>();
         StringBuilder sb = new StringBuilder();
 
         for (String split : splits) { // iterate through all words
@@ -220,6 +220,7 @@ public class Connection {
      * @return the http status code of the response. If the provided {@code offsetInHours} couldn't
      * be mapped to a timezone value, {@code -1} is returned.
      */
+    @Deprecated
     public static int setUserTimezone(String authtoken, double offsetInHours) throws IOException {
 
         double[] timezoneMapping = new double[35];

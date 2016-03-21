@@ -18,24 +18,24 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile 'com.google.guava:guava:18.0'
-    compile 'org.jsoup:jsoup:1.7.1'
-    compile 'com.github.bumptech.glide:glide:3.5.2'
-    compile 'com.android.support:recyclerview-v7:22.0.0'
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.jsoup:jsoup:1.8.3'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:support-v4:23.2.1'
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '22.0.1'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId "de.msal.shoutemo"
         minSdkVersion 15
-        targetSdkVersion 22
-        versionCode 9
-        versionName '2.0.0'
+        targetSdkVersion 23
+        versionCode 10
+        versionName '2.1.0'
     }
 
     sourceSets {

@@ -131,6 +131,9 @@ public final class ChatDb {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd."
                 + AUTHORITY + TABLE_NAME;
 
+        /*
+         * Column definitions
+         */
         public static final String COLUMN_NAME_NAME = "author_name";
 
         public static final String COLUMN_NAME_TYPE = "author_type";

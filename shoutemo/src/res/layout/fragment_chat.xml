@@ -17,30 +17,31 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<LinearLayout
-    android:id="@+id/chat_rl_parent"
+<LinearLayout android:id="@+id/chat_rl_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@android:id/list"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:stackFromBottom="true"
+        android:fastScrollEnabled="true"
+        android:scrollbars="vertical"
         android:transcriptMode="normal"
-        android:fastScrollEnabled="true" />
+        tools:listitem="@layout/listrow_shout" />
 
     <View
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/autemo_green_primary" />
 
     <LinearLayout
         android:id="@+id/rl_input"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/autemo_trns_shadow"
         android:gravity="center"
@@ -50,12 +51,13 @@
             android:id="@+id/ib_update_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/circle_accent"
-            android:visibility="gone"
             android:layout_gravity="start|top"
-            android:layout_marginRight="-9dp"
             android:layout_marginEnd="-9dp"
-            android:padding="2dp" />
+            android:layout_marginRight="-9dp"
+            android:padding="2dp"
+            android:scrollbars="vertical"
+            android:src="@drawable/circle_accent"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/ib_emoticons"
@@ -95,8 +97,8 @@
     </LinearLayout>
 
     <include
-        layout="@layout/emoticons_grid"
         android:id="@+id/emoticons_grid"
+        layout="@layout/emoticons_grid"
         android:layout_width="match_parent"
         android:layout_height="@dimen/keyboard_height"
         android:visibility="gone" />

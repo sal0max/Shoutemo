@@ -17,7 +17,13 @@
 
 package de.msal.shoutemo.connector.model;
 
+import com.google.common.base.Objects;
+
 import org.jsoup.nodes.Element;
+
+import android.database.Cursor;
+
+import de.msal.shoutemo.db.ChatDb;
 
 /**
  * A Message contains the text, both as html and plain text, and the type of a {@link
@@ -28,7 +34,7 @@ import org.jsoup.nodes.Element;
  */
 public class Message implements Comparable<Message> {
 
-    private String html, text;
+    private final String html, text;
     private Type type;
 
     /**
@@ -56,6 +62,12 @@ public class Message implements Comparable<Message> {
         } else if (type.equals("Just got Promoted")) {
             this.type = Type.PROMOTION;
         }
+    }
+
+    Message(String html, String text, Type type) {
+        this.html = html;
+        this.text = text;
+        this.type = type;
     }
 
     /**
@@ -102,6 +114,33 @@ public class Message implements Comparable<Message> {
         tmp = this.type.compareTo(message.type);
         tmp = tmp == 0 ? this.type.compareTo(message.type) : tmp;
         return tmp == 0 ? this.text.compareTo(message.text) : tmp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Message message = (Message) o;
+        return Objects.equal(html, message.html) &&
+                Objects.equal(text, message.text) &&
+                type == message.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(html, text, type);
+    }
+
+    public static Message fromCursor(Cursor c) {
+        String html = c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
+        String text = c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+        Type type = Type.valueOf(c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_TYPE)));
+
+        return new Message(html, text, type);
     }
 
     /**

@@ -17,14 +17,18 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout android:id="@+id/onlineusers_swipe"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/onlineusers_swipe">
+    android:layout_height="match_parent">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
+        android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@android:id/list" />
+        android:layout_height="match_parent"
+        android:fastScrollEnabled="true"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/listrow_users" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

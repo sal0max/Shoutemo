@@ -24,4 +24,3 @@
     android:columnWidth="@dimen/emoticon_area"
     android:gravity="center"
     android:numColumns="auto_fit" />
-

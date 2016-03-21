@@ -17,7 +17,11 @@
 
 package de.msal.shoutemo.connector.model;
 
+import com.google.common.base.Objects;
+
 import org.jsoup.nodes.Element;
+
+import android.database.Cursor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+
+import de.msal.shoutemo.db.ChatDb;
 
 /**
  * A Post contains the {@link Message} itself, the {@link java.util.Date} of the post and (if
@@ -36,8 +42,8 @@ import java.util.Locale;
 public class Post implements Comparable<Post> {
 
     private Author author;
-    private Message message;
-    private Date date;
+    private final Message message;
+    private final Date date;
 
     /**
      * Creates a new Post through parsing the given {@link Element}. Tries to set {@link Message},
@@ -51,6 +57,12 @@ public class Post implements Comparable<Post> {
         }
         this.message = new Message(e);
         this.date = toDate(e.getElementsByClass("ys-post-info").text());
+    }
+
+    public Post(Author author, Message message, Date date) {
+        this.author = author;
+        this.message = message;
+        this.date = date;
     }
 
     /**
@@ -94,6 +106,46 @@ public class Post implements Comparable<Post> {
         tmp = this.date.compareTo(post.date);
         tmp = tmp == 0 ? this.author.compareTo(post.author) : tmp;
         return tmp == 0 ? this.message.compareTo(post.message) : tmp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Post post = (Post) o;
+        return Objects.equal(author, post.author) &&
+                Objects.equal(message, post.message) &&
+                Objects.equal(date, post.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(author, message, date);
+    }
+
+    public static Post fromCursor(Cursor c) {
+        // Author (optional!)
+        Author author = null;
+        String authorName = c.getString(c.getColumnIndexOrThrow(ChatDb.Authors.COLUMN_NAME_NAME));
+        if (authorName != null) {
+            Author.Type authorType = Author.Type.valueOf(c.getString(c.getColumnIndexOrThrow(ChatDb.Authors.COLUMN_NAME_TYPE)));
+            author = new Author(authorName, authorType, null);
+        }
+
+        // Message
+        String messageHtml = c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_MESSAGE_HTML));
+        String messageText = c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_MESSAGE_TEXT));
+        Message.Type messageType = Message.Type.valueOf(c.getString(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_TYPE)));
+        Message message = new Message(messageHtml, messageText, messageType);
+
+        // Post
+        Long timestamp = c.getLong(c.getColumnIndexOrThrow(ChatDb.Messages.COLUMN_NAME_TIMESTAMP));
+
+        return new Post(author, message, new Date(timestamp));
     }
 
     /**

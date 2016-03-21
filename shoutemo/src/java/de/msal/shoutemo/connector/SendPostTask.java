@@ -30,8 +30,8 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import de.msal.shoutemo.activities.LoginActivity;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
-import de.msal.shoutemo.ui.login.LoginActivity;
 
 /**
  * Tries to send a new {@link de.msal.shoutemo.connector.model.Post} to the server. <b>Needs a
@@ -91,11 +91,7 @@ public class SendPostTask extends AsyncTask<String, Void, Integer> {
             );
             try {
                 return result.getResult().getString(AccountManager.KEY_AUTHTOKEN);
-            } catch (OperationCanceledException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (AuthenticatorException e) {
+            } catch (OperationCanceledException | IOException | AuthenticatorException e) {
                 e.printStackTrace();
             }
         }

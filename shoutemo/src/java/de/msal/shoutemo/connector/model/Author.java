@@ -17,10 +17,15 @@
 
 package de.msal.shoutemo.connector.model;
 
+import com.google.common.base.Objects;
+
 import org.jsoup.nodes.Element;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import de.msal.shoutemo.db.ChatDb;
 
 /**
  * An Authors exists of his (nick)name and his rank (admin, mod or user).
@@ -31,13 +36,11 @@ import android.os.Parcelable;
 public class Author implements Comparable<Author>, Parcelable {
 
     private final String name;
-
     private final Type type;
-
     private final String avatar;
 
     /**
-     * Creates a new Authors by parsing the given Element and stripping out the (nick)name and type
+     * Creates a new Author by parsing the given Element and stripping out the (nick)name and type
      * of it.
      *
      * @param e1        needs to look like
@@ -53,6 +56,12 @@ public class Author implements Comparable<Author>, Parcelable {
         } else {
             this.type = Type.USER;
         }
+        this.avatar = avatarUrl;
+    }
+
+    public Author(String name, Type type, String avatarUrl) {
+        this.name = name;
+        this.type = type;
         this.avatar = avatarUrl;
     }
 
@@ -107,6 +116,32 @@ public class Author implements Comparable<Author>, Parcelable {
     public int compareTo(Author author) {
         int tmp = this.type.compareTo(author.type);
         return tmp == 0 ? this.name.compareTo(author.name) : tmp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Author author = (Author) o;
+        return Objects.equal(name, author.name) &&
+                type == author.type &&
+                Objects.equal(avatar, author.avatar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name, type, avatar);
+    }
+
+    public static Author fromCursor(Cursor c) {
+        String authorName = c.getString(c.getColumnIndexOrThrow(ChatDb.Authors.COLUMN_NAME_NAME));
+        Type authorType = Type.valueOf(c.getString(c.getColumnIndexOrThrow(ChatDb.Authors.COLUMN_NAME_TYPE)));
+
+        return new Author(authorName, authorType, null);
     }
 
     /**
