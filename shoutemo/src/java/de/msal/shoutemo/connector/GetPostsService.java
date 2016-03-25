@@ -106,8 +106,7 @@ public class GetPostsService extends Service {
                                     bundle.getString(AccountManager.KEY_ACCOUNT_NAME),
                                     bundle.getString(AccountManager.KEY_ACCOUNT_TYPE)
                             );
-                            Log.v(TAG,
-                                    "Added account " + mAccount.name + "; now fetching new posts.");
+                            Log.v(TAG, "Added account " + mAccount.name + "; now fetching new posts.");
                             startGetPostsTask();
                         }
                     },
@@ -148,7 +147,6 @@ public class GetPostsService extends Service {
                             return;
                         }
                         mAuthToken = bundle.getString(AccountManager.KEY_AUTHTOKEN);
-                        Log.v(TAG, "Received authentication token=" + mAuthToken);
                         // now get messages!
                         if (worker == null || worker.isShutdown()) {
                             worker = Executors.newSingleThreadScheduledExecutor();

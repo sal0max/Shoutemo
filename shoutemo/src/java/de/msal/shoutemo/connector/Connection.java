@@ -59,7 +59,7 @@ public class Connection {
 
     /**
      * Checks if the given nickname and password combination can successfully authenticate on the
-     * server and recieve messages from it.
+     * server and receive messages from it.
      *
      * @param nick     the username. On autemo that is the email address which is registered.
      * @param password the password of that account.
@@ -78,7 +78,6 @@ public class Connection {
      */
     public static String getToken(String nick, String password) throws IOException {
         Map<String, String> cookies = connect(nick, password);
-        Log.v(TAG, "Returning session id: PHPSESSID=" + cookies.get("PHPSESSID"));
         return cookies.get("PHPSESSID");
     }
 
@@ -172,8 +171,7 @@ public class Connection {
                 sb.append(split).append(" ");
             } else { // reached max message length now
                 if (sb.length() > MAX_MESSAGE_LENGTH) { // chunk too big to be sent: send nothing
-                    throw new IllegalArgumentException(
-                            "Connection.post(): max. 256 characters are allowed for input.");
+                    throw new IllegalArgumentException("Connection.post(): max. 256 characters are allowed for input.");
                 } else if (sb.length() != 0) { // chunk seems fine: add to message list
                     sewns.add(sb.toString());
                 }

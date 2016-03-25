@@ -52,7 +52,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         AccountManager am = AccountManager.get(context);
         Account[] acc = am.getAccountsByType(ACCOUNT_TYPE);
 
-        Bundle bundle = new Bundle(); //TODO: allow multiple accounts
+        Bundle bundle = new Bundle(); //TODO: allow multiple accounts?
         if (acc.length == 0) { // only allow a single instance of our account type
             Intent intent = new Intent(context, LoginActivity.class);
             intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);

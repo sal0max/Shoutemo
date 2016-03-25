@@ -17,8 +17,7 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 
-<manifest
-    package="de.msal.shoutemo"
+<manifest package="de.msal.shoutemo"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
@@ -49,7 +48,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".authenticator.AuthenticationService">
+        <service
+            android:name=".authenticator.AuthenticationService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -62,7 +63,8 @@
 
         <provider
             android:name=".db.ChatProvider"
-            android:authorities="de.msal.provider.ChatDb" />
+            android:authorities="de.msal.provider.ChatDb"
+            android:exported="false" />
     </application>
 
 </manifest>
