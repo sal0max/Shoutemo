@@ -33,16 +33,11 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import de.msal.shoutemo.R;
 import de.msal.shoutemo.authenticator.AccountAuthenticator;
@@ -57,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
     public static final String PARAM_USERNAME = "username";
     private static final String TAG = "Shoutemo|LoginActivity";
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
     private String mEmail, mPassword;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -77,16 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView = (EditText) findViewById(R.id.password);
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusView = findViewById(R.id.login_status);
-
-        /* Auto complete for email */
-        Account[] accounts = AccountManager.get(this).getAccounts();
-        Set<String> emailSet = new HashSet<>();
-        for (Account account : accounts) {
-            if (EMAIL_PATTERN.matcher(account.name).matches()) {
-                emailSet.add(account.name);
-            }
-        }
-        mEmailView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<>(emailSet)));
 
         /* link description to autemo.com/signup */
         ((TextView) findViewById(R.id.sign_in_desc_head_to_autemo_com))
