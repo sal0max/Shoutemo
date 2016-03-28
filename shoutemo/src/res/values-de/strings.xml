@@ -31,6 +31,12 @@
     <string name="input_empty">Hey! Schreibe etwas!</string>
     <string name="refresh">Aktualisieren</string>
 
+    <string name="dialog_post_clipboard">Kopiere in Zwischenablage</string>
+    <string name="dialog_post_share">Teile Beitrag</string>
+    <string name="dialog_post_user">Zeige %1$s auf autemo.com</string>
+    <string name="dialog_copied">In Zwischenablage kopiert</string>
+    <string name="share_title">Teilen</string>
+
     <!-- List rows -->
     <string name="promotion">%s wurde befördert!</string>
     <string name="award_author">%s hat eine neue Auszeichnug erhalten:\u0020</string>
@@ -49,7 +55,7 @@
     <string name="prompt_password">Passwort</string>
     <string name="action_sign">Anmelden</string>
     <string name="login_dont_have_account_yet_question">Du besitzt noch keinen Account?</string>
-    <string name="login_head_to_autemo_com">Gehe auf &lt;a href="http://www.autemo.com/signup/?m=artist"&gt;autemo.com&lt;/a&gt; und melde dich an!</string>
+    <string name="login_head_to_autemo_com">Gehe auf &lt;a href="http://www.autemo.com/signup/?m=artist">autemo.com&lt;/a> und melde dich an!</string>
     <string name="login_progress_signing_in">Logge ein…</string>
     <string name="error_invalid_email_or_password">Email-Adresse oder Passwort ungültig.</string>
     <string name="error_field_required">Pflichtfeld.</string>

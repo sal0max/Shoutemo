@@ -18,17 +18,20 @@
 package de.msal.shoutemo.adapters;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.util.SortedListAdapterCallback;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -45,6 +48,17 @@ import de.msal.shoutemo.widgets.ExtendedSortedList;
  */
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
 
+    /**
+     * Interface definition for a callback to be invoked when an item has been longclicked.
+     */
+    public interface OnItemLongClickListener {
+        void onItemLongClicked(int position, Post post);
+    }
+
+    /**
+     * listener that receives notifications when an item is clicked
+     */
+    private OnItemLongClickListener mOnItemLongClickListener;
     private Context mContext;
     private ExtendedSortedList<Post> mPosts;
 
@@ -125,23 +139,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         }
         /* EVENTS */
         else {
-            RelativeLayout parent = ((RelativeLayout) holder.tvMessage.getParent());
-
             switch (post.getMessage().getType()) {
                 case THREAD:
                 /* styling */
-                    parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_green_secondary));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_green_secondary));
                     holder.tvMessage.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey));
                     holder.tvTimestamp.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey_bright));
                     holder.ivIcon.setImageResource(R.drawable.ic_event_thread);
                     holder.tvGlobalTitle.setVisibility(View.GONE);
                 /* alter message */
-                    message = mContext.getResources().getString(R.string.thread_author, author)
-                            + message;
+                    message = mContext.getResources().getString(R.string.thread_author, author) + message;
                     break;
                 case AWARD:
                 /* styling */
-                    parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_white_dirty));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_white_dirty));
                     holder.tvMessage.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey));
                     holder.tvTimestamp.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey_bright));
                     holder.ivIcon.setImageResource(R.drawable.ic_event_award);
@@ -151,7 +162,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     break;
                 case GLOBAL:
                 /* styling */
-                    parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_pink));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_pink));
                     holder.tvMessage.setTextAppearance(mContext, android.R.style.TextAppearance_Medium);
                     holder.tvMessage.setTypeface(holder.tvMessage.getTypeface(), Typeface.BOLD);
                     holder.tvMessage.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey));
@@ -163,7 +174,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     break;
                 case COMPETITION:
                 /* styling */
-                    parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_blue));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_blue));
                     holder.tvMessage.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey));
                     holder.tvMessage.setLinkTextColor(ContextCompat.getColor(mContext, R.color.autemo_white_dirty));
                     holder.tvTimestamp.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_grey));
@@ -174,7 +185,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                     break;
                 case PROMOTION:
                 /* styling */
-                    parent.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_orange));
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.autemo_orange));
                     holder.tvMessage.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_white_dirty));
                     holder.tvTimestamp.setTextColor(ContextCompat.getColor(mContext, R.color.autemo_white_dirty));
                     holder.ivIcon.setImageResource(R.drawable.ic_event_promotion);
@@ -185,11 +196,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             }
         }
 
+        // message
         GlideImageGetter imageGetter = new GlideImageGetter(mContext, holder.tvMessage);
         holder.tvMessage.setText(Html.fromHtml(message, imageGetter, null));
-
-        // make links clickable (disables click of entire row, too)
-        holder.tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        // time
         holder.tvTimestamp.setText(TimeUtils.getRelativeTime(mContext, timestamp));
 
     }
@@ -235,10 +245,20 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         return mPosts.size() != postsCount;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    /**
+     * Register a callback to be invoked when this view is clicked.
+     *
+     * @param l The callback that will run
+     */
+    public void setOnItemLongClickListener(OnItemLongClickListener l) {
+        mOnItemLongClickListener = l;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
 
         TextView tvMessage, tvTimestamp, tvGlobalTitle, tvAuthor;
         ImageView ivIcon;
+        View itemView;
 
         public ViewHolder(View itemView, Message.Type messageType) {
             super(itemView);
@@ -251,6 +271,67 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
                 ivIcon = (ImageView) itemView.findViewById(R.id.listrow_event_icon);
                 tvMessage = (TextView) itemView.findViewById(R.id.listrow_event_message);
                 tvTimestamp = (TextView) itemView.findViewById(R.id.listrow_event_timestamp);
+            }
+            this.itemView = itemView;
+
+            // row longclick
+            itemView.setOnLongClickListener(this);
+
+            // show a nice background during onclick
+            int[] attrs = new int[]{R.attr.selectableItemBackground};
+            TypedArray typedArray = mContext.obtainStyledAttributes(attrs);
+            int backgroundResource = typedArray.getResourceId(0, 0);
+            itemView.setBackgroundResource(backgroundResource);
+            itemView.setClickable(true);
+            typedArray.recycle();
+
+            // make links clickable
+            tvMessage.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    boolean ret = false;
+                    CharSequence text = ((TextView) v).getText();
+                    Spannable stext = Spannable.Factory.getInstance().newSpannable(text);
+                    TextView widget = (TextView) v;
+                    int action = event.getAction();
+
+                    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_DOWN) {
+                        int x = (int) event.getX();
+                        int y = (int) event.getY();
+
+                        x -= widget.getTotalPaddingLeft();
+                        y -= widget.getTotalPaddingTop();
+
+                        x += widget.getScrollX();
+                        y += widget.getScrollY();
+
+                        Layout layout = widget.getLayout();
+                        int line = layout.getLineForVertical(y);
+                        int off = layout.getOffsetForHorizontal(line, x);
+
+                        ClickableSpan[] link = stext.getSpans(off, off, ClickableSpan.class);
+
+                        if (link.length != 0) {
+                            if (action == MotionEvent.ACTION_UP) {
+                                link[0].onClick(widget);
+                            }
+                            ret = true;
+                        }
+                    }
+                    return ret;
+                }
+            });
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = getAdapterPosition();
+            Post post = mPosts.get(position);
+            if (post.getMessage().getType().equals(Message.Type.SHOUT) && mOnItemLongClickListener != null) {
+                mOnItemLongClickListener.onItemLongClicked(position, post);
+                return true;
+            } else {
+                return false;
             }
         }
     }

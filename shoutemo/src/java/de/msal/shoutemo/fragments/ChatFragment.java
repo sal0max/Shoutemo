@@ -17,18 +17,25 @@
 
 package de.msal.shoutemo.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -43,13 +50,18 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.msal.shoutemo.R;
 import de.msal.shoutemo.adapters.ChatAdapter;
@@ -59,8 +71,9 @@ import de.msal.shoutemo.connector.SendPostTask;
 import de.msal.shoutemo.connector.model.Message;
 import de.msal.shoutemo.connector.model.Post;
 import de.msal.shoutemo.db.ChatDb;
+import de.msal.shoutemo.widgets.DividerItemDecoration;
 
-public class ChatFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,ChatAdapter.OnItemLongClickListener {
 
     private final static int LOADER_ID_MESSAGES = 0;
     private LinearLayoutManager mLayoutManager;
@@ -84,8 +97,7 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
         /* set the fragment title of the toolbar */
@@ -152,11 +164,13 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         });
 
         /* LIST STUFF */
-        mListAdapter = new ChatAdapter(getActivity(), new ArrayList<Post>());
         RecyclerView recyclerView = (RecyclerView) view.findViewById(android.R.id.list);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(mLayoutManager);
+        mListAdapter = new ChatAdapter(getActivity(), new ArrayList<Post>());
+        mListAdapter.setOnItemLongClickListener(this);
         recyclerView.setAdapter(mListAdapter);
         getLoaderManager().initLoader(LOADER_ID_MESSAGES, null, this);
 
@@ -302,6 +316,69 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onItemLongClicked(int position, final Post post) {
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                @SuppressLint("SimpleDateFormat")
+                SimpleDateFormat sdf = new SimpleDateFormat("d. MMM, HH:mm", Locale.ENGLISH);
+                String shareString = getString(R.string.clipboard_post, sdf.format(post.getDate()), post.getAuthor(), post.getMessage().getText());
+                switch (which) {
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                    case 0: // clipboard
+                        ClipData clip = ClipData.newPlainText(shareString, shareString);
+                        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(getActivity(), R.string.dialog_copied, Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1: // share
+                        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                        sharingIntent.setType("text/plain");
+                        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareString);
+                        startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_title)));
+                        break;
+                    case 2: // user profile
+                        String url = "http://www.autemo.com/profiles/?id=";
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url + post.getAuthor()));
+                        startActivity(i);
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        @SuppressWarnings("unchecked")
+        final Pair<String, Integer>[] items = new Pair[]{
+                new Pair<>(getString(R.string.dialog_post_clipboard), R.drawable.ic_content_copy_white_24dp),
+                new Pair<>(getString(R.string.dialog_post_share), R.drawable.ic_share_white_24dp),
+                new Pair<>(getString(R.string.dialog_post_user, post.getAuthor()), R.drawable.ic_person_white_24dp)
+        };
+        builder.setAdapter(new ArrayAdapter<Pair<String, Integer>>(getActivity(),
+                        R.layout.row_dialog_listitem,
+                        R.id.text,
+                        items) {
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        View v = super.getView(position, convertView, parent);
+                        // text
+                        TextView tv = (TextView) v.findViewById(R.id.text);
+                        tv.setText(items[position].first);
+
+                        // icon
+                        ImageView iv = (ImageView) v.findViewById(R.id.icon);
+                        iv.setImageResource(items[position].second);
+
+                        return v;
+                    }
+                }, listener)
+                .setNegativeButton(android.R.string.cancel, listener);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void hideKeyboard() {
         InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
@@ -353,5 +430,4 @@ public class ChatFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mListAdapter.swap(new ArrayList<Post>());
     }
-
 }
